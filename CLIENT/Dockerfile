@@ -16,8 +16,4 @@ COPY . .
 # Compile l'application pour la production
 RUN npm run build
 
-# Configuration de l'image de production légère
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 5173
