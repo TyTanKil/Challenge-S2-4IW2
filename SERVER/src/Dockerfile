@@ -16,5 +16,3 @@ COPY . .
 # Expose le port sur lequel le serveur écoute
 EXPOSE 3000
 
-# Commande pour démarrer le serveur
-CMD ["node", "server.js"]
