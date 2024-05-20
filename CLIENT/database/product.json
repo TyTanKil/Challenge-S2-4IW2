@@ -1,0 +1,123 @@
+[
+  {
+    "_id":"1",
+    "label":"Asus GeForce RTX 4060 DUAL OC WHITE",
+    "unit_price":365,
+    "details": {
+      "Chipset graphique":"NVIDIA GeForce RTX 4060",
+      "Taille mémoire Vidéo":8,
+      "Type de refroidissement":"Actif (fansink)",
+      "Sorties vidéo":[
+        "1 X HDMI Femelle",
+        "3 X DisplayPort Femelle"
+      ],
+      "Bus": [
+        "PCI Express 4.0 16x"
+      ],
+      "Overclockée":true,
+      "Résolution de jeu optimale":"Full HD 1080p "
+    },
+    "id_category":"1",
+    "id_manufacturer":"2"
+  },
+  {
+    "_id":"2",
+    "label":"Gigabyte Radeon RX 6600 EAGLE",
+    "unit_price":249,
+    "details": {
+      "Chipset graphique":"AMD Radeon RX 6600",
+      "Taille mémoire Vidéo":8,
+      "Type de refroidissement":"Actif (fansink)",
+      "Sorties vidéo":[
+        "2 X HDMI Femelle",
+        "2 X DisplayPort Femelle"
+      ],
+      "Bus": [
+        "PCI Express 4.0 16x"
+      ],
+      "Overclockée":false,
+      "Résolution de jeu optimale":"Full HD 1080p "
+    },
+    "id_category":"1",
+    "id_manufacturer":"1"
+  },
+  {
+    "_id":"3",
+    "label":"MSI GeForce GTX 1650 D6 VENTUS XS OCV3",
+    "unit_price":179.95,
+    "details": {
+      "Chipset graphique":"NVIDIA GeForce GTX 1650",
+      "Taille mémoire Vidéo":4,
+      "Type de refroidissement":"Actif (fansink)",
+      "Sorties vidéo":[
+        "1 X DisplayPort Femelle",
+        "1 X DVI Femelle",
+        "1 X HDMI Femelle"
+      ],
+      "Bus": [
+        "PCI Express 3.0 16x"
+      ],
+      "Overclockée":true
+    },
+    "id_category":"1",
+    "id_manufacturer":"3"
+  },
+  {
+    "_id":"4",
+    "label":"Apple Studio Display - Verre standard - Hauteur/Inclinaison",
+    "unit_price":2209,
+    "details": {
+      "Modèle":"MK0Q3FN/A",
+      "Taille de l'écran":"27",
+      "Format de l'écran":"16/9",
+      "Résolution Max":"5120 x 2880 pixels",
+      "Type de dalle":"Dalle IPS",
+      "NVIDIA G-Sync":false,
+      "AMD FREESYNC":false,
+      "Entrées vidéo":[
+        "Thunderbolt 3"
+      ],
+      "Hauts-parleur intégrés":true,
+      "Webcam":true,
+      "Écran incurvé":false,
+      "Écran tactile":false,
+      "Portable":false,
+      "Dalle antireflets":true,
+      "Pivot":false,
+      "Type d'activité": [
+        "Professionnel",
+        "Graphisme"
+      ]
+    },
+    "id_category":"3",
+    "id_manufacturer":"7"
+  },
+  {
+    "_id":"5",
+    "label":"Samsung C32R500FHP",
+    "unit_price":259.94,
+    "details": {
+      "Modèle":"LC32R500FHPXEN",
+      "Taille de l'écran":"31.5",
+      "Format de l'écran":"16/9",
+      "Résolution Max":"1920 x 1080 pixels",
+      "Type de dalle":"Dalle VA (MVA, PVA)",
+      "Temps de réponse":"4 ms",
+      "Fréquence verticale Maximale":"75 Hz",
+      "NVIDIA G-Sync":false,
+      "AMD FREESYNC":false,
+      "Entrées vidéo":[
+        "1 X VGA (D-sub 15 Femelle)",
+        "1 X HDMI Femelle"
+      ],
+      "Hauts-parleur intégrés":false,
+      "Webcam":false,
+      "Écran incurvé":true,
+      "Écran tactile":false,
+      "Portable":false,
+      "Pivot":false
+    },
+    "id_category":"3",
+    "id_manufacturer":"8"
+  }
+]

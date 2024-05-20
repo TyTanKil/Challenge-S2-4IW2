@@ -1,0 +1,67 @@
+[
+  {
+    "_id":"1",
+    "first_name":"rafael",
+    "last_name":"coppe",
+    "gender":"m",
+    "login":"rcoppe",
+    "email":"rafael.coppe.jr@gmail.com",
+    "phone":"0627062255",
+    "password":"12345",
+    "birth_date": { "$date": "2018-11-10T00:00:00.111Z" },
+    "status":1,
+    "type":1
+  },
+  {
+    "_id":"2",
+    "first_name":"hugo",
+    "last_name":"andre",
+    "gender":"m",
+    "login":"handre",
+    "email":"hugo.andre1501@gmail.com",
+    "phone":"0627062255",
+    "password":"12345",
+    "birth_date": { "$date": "2018-11-10T00:00:00.111Z" },
+    "status":1,
+    "type":1
+  },
+  {
+    "_id":"3",
+    "first_name":"jean-pierre",
+    "last_name":"Beguerisse",
+    "gender":"m",
+    "login":"jpbeguerisse",
+    "email":"jeanbeguerisse@gmail.com",
+    "phone":"0627062255",
+    "password":"12345",
+    "birth_date": { "$date": "2018-11-10T00:00:00.111Z" },
+    "status":1,
+    "type":1
+  },
+  {
+    "_id":"4",
+    "first_name":"kylian",
+    "last_name":"halimi",
+    "gender":"m",
+    "login":"khalimi",
+    "email":"halimikilyan@gmail.com",
+    "phone":"0627062255",
+    "password":"12345",
+    "birth_date": { "$date": "2018-11-10T00:00:00.111Z" },
+    "status":1,
+    "type":1
+  },
+  {
+    "_id":"5",
+    "first_name":"stephanie",
+    "last_name":"chabert",
+    "gender":"m",
+    "login":"schabert",
+    "email":"stephanie.chabert@gmail.com",
+    "phone":"0627062255",
+    "password":"12345",
+    "birth_date": { "$date": "2018-11-10T00:00:00.111Z" },
+    "status":1,
+    "type":2
+  }
+]

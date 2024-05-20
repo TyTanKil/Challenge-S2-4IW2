@@ -1,0 +1,19 @@
+{
+  "_id":"1",
+  "id_user":"5",
+  "products": [
+    {
+      "id_product":"1",
+      "quantity":1
+    },
+    {
+      "id_product":"4",
+      "quantity":1
+    },
+    {
+      "id_product":"5",
+      "quantity":2
+    }
+  ],
+  "expire_date":{ "$date": "2018-11-10T00:00:00.111Z" }
+}

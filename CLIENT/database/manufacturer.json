@@ -1,0 +1,34 @@
+[
+  {
+    "_id":"1",
+    "first_name":"Gigabyte"
+  },
+  {
+    "_id":"2",
+    "first_name":"ASUS"
+  },
+  {
+    "_id":"3",
+    "first_name":"MSI"
+  },
+  {
+    "_id":"4",
+    "first_name":"AMD"
+  },
+  {
+    "_id":"5",
+    "first_name":"Intel"
+  },
+  {
+    "_id":"6",
+    "first_name":"Acer"
+  },
+  {
+    "_id":"7",
+    "first_name":"Apple"
+  },
+  {
+    "_id":"8",
+    "first_name":"Samsung"
+  }
+]

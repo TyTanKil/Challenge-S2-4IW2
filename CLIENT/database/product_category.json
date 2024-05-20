@@ -1,0 +1,57 @@
+[
+  {
+    "_id":"1",
+    "label":"Carte Graphique",
+    "details": [
+      "Chipset graphique",
+      "Taille mémoire Vidéo",
+      "Type de refroidissement",
+      "Sorties vidéo",
+      "Bus",
+      "Overclockée",
+      "Résolution de jeu optimale"
+    ]
+  },
+  {
+    "_id":"2",
+    "label":"Processeur",
+    "details": [
+      "Modèle du processeur",
+      "Support du processeur",
+      "Plateforme",
+      "Fréquence CPU",
+      "Chipset Graphique",
+      "Utilisation",
+      "Nombre de coeurs",
+      "Enveloppe thermique",
+      "Version boite",
+      "Nombre de coeur",
+      "Controlleur graphique intégré"
+    ]
+  },
+  {
+    "_id":"3",
+    "label":"Ecran",
+    "details": [
+      "Modèle",
+      "Taille de l'écran",
+      "Format de l'écran",
+      "Résolution Max",
+      "Type de dalle",
+      "Temps de réponse",
+      "Fréquence verticale Maximale",
+      "NVIDIA G-Sync",
+      "AMD FREESYNC",
+      "NVIDIA Reflex",
+      "Entrées vidéo",
+      "Hauts-parleur intégrés",
+      "Webcam",
+      "Écran incurvé",
+      "Écran tactile",
+      "Portable",
+      "Dalle antireflets",
+      "Pivot",
+      "Type d'activité"
+    ]
+  }
+]

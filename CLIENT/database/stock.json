@@ -1,0 +1,32 @@
+[
+  {
+    "_id":"1",
+    "id_product":"1",
+    "quantity":100,
+    "pending":0
+  },
+  {
+    "_id":"2",
+    "id_product":"1",
+    "quantity":25,
+    "pending":50
+  },
+  {
+    "_id":"3",
+    "id_product":"1",
+    "quantity":33,
+    "pending":25
+  },
+  {
+    "_id":"4",
+    "id_product":"1",
+    "quantity":72,
+    "pending":0
+  },
+  {
+    "_id":"5",
+    "id_product":"1",
+    "quantity":65,
+    "pending":0
+  }
+]

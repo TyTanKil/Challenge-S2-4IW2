@@ -1,0 +1,18 @@
+[
+  {
+    "_id":"1",
+    "user_id":"5",
+    "number":"121",
+    "address":"Rue Pasteur",
+    "city_id":"3008680",
+    "label":"Domicile"
+  },
+  {
+    "_id":"2",
+    "user_id":"5",
+    "number":"55",
+    "address":"W Marion St",
+    "city_id":"4491180",
+    "label":"US Home"
+  }
+]
