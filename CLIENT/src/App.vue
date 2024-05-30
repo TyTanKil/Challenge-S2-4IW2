@@ -1,47 +1,45 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+<script setup lang='ts'>
+  import AppButtonPrimary from './components/formComponents/AppButtonPrimary.vue';
+  import AppButtonSecondary from './components/formComponents/AppButtonSecondary.vue';
+  import AppInputText from './components/formComponents/AppInputText.vue';
+  import AppInputRadio from './components/formComponents/AppInputRadio.vue';
+  import AppInputSelect from './components/formComponents/AppInputSelect.vue';
+  import AppInputDate from './components/formComponents/AppInputDate.vue';
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
   <main>
-    <TheWelcome />
+    <AppButtonPrimary label="TEST prout" link="https://youtube.com"></AppButtonPrimary>
   </main>
+  <div>
+    <AppButtonPrimary label="TEST" link="https://youtube.com"></AppButtonPrimary>
+    <AppButtonPrimary label="CACA boudin blabla, ahahahaha" link="https://youtube.com"></AppButtonPrimary>
+  </div>
+  <AppButtonPrimary label="voila" link="https://youtube.com"></AppButtonPrimary>
+  <AppButtonPrimary label="12346é" link="https://youtube.com"></AppButtonPrimary>
+  <div>
+    <AppButtonSecondary label="Connexion" link="https://youtube.com"></AppButtonSecondary>
+    <AppButtonSecondary label="Inscription" link="https://youtube.com"></AppButtonSecondary>
+  </div>
+  <AppInputText label="Nom" isNeeded></AppInputText>
+  <AppInputText label="Prenom"></AppInputText>
+  <AppInputRadio label="Genre" :options="['M.', 'Mme.', 'Autre']"></AppInputRadio>
+  <AppInputRadio label="Test" :options="['Option 1', 'Option 2', 'Option 3']" isNeeded></AppInputRadio>
+  <AppInputSelect label="Choisir une option" :options="['Option 1', 'Option 2', 'Option 3']"></AppInputSelect>
+  <AppInputSelect label="Pays" :options="['France', 'Allemagne', 'Suisse', 'Belgique', 'Espagne', 'Portugal', 'Afrique']"></AppInputSelect>
+  <AppInputDate label="Date de naissance"></AppInputDate>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<style>
+body {
+  background-color: white;
+  color: #575757;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #575757;
+    color: white;
   }
 }
 </style>
