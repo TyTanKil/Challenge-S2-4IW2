@@ -27,6 +27,7 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   margin: 0.5rem;
+  width: 80%;
 }
 
 label {
@@ -38,7 +39,8 @@ select {
   background-color: #d9d9d9;
   padding: 0.5rem;
   border-radius: 5px;
-  width: 25%;
+
+  min-width: 10rem;
 }
 
 span {

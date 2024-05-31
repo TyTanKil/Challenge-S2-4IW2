@@ -14,13 +14,19 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 </script>
                           <!-- Composant Bouton -->
 <template>        
-  <button @click="navigate">{{ props.label }}</button>      
+    <div class="button-primary">
+        <button id="primary" @click="navigate">{{ props.label }}</button>      
+    </div>       
 </template>
 
 <style> 
 /* Style du bouton */
-button {
-  font-family: "Aldrich", sans-serif;
+.button-primary{
+    width: 80%;
+    margin: 0.5rem;
+}
+button#primary {
+  font-family: 'Exo', sans-serif;
   background-color: #C4F649; 
   border: none;
   color: black;
@@ -28,7 +34,6 @@ button {
   font-size: 0.9rem;
   border-radius: 4px;
   padding: 0.8rem;
-  margin: 0.5rem;
   &:hover{
     cursor: pointer;
   }

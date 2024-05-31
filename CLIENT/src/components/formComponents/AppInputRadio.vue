@@ -28,6 +28,7 @@ const selectedOption = ref('');
 <style scoped>
 .radio-button {
   margin: 0.5rem;
+  width: 80%;
 }
 
 .radio-button span {

@@ -1,33 +1,20 @@
 <script setup lang='ts'>
-  import AppButtonPrimary from './components/formComponents/AppButtonPrimary.vue';
-  import AppButtonSecondary from './components/formComponents/AppButtonSecondary.vue';
-  import AppInputText from './components/formComponents/AppInputText.vue';
-  import AppInputRadio from './components/formComponents/AppInputRadio.vue';
-  import AppInputSelect from './components/formComponents/AppInputSelect.vue';
-  import AppInputDate from './components/formComponents/AppInputDate.vue';
+
 </script>
 
 <template>
   <main>
-    <AppButtonPrimary label="TEST prout" link="https://youtube.com"></AppButtonPrimary>
-  </main>
-  <div>
-    <AppButtonPrimary label="TEST" link="https://youtube.com"></AppButtonPrimary>
-    <AppButtonPrimary label="CACA boudin blabla, ahahahaha" link="https://youtube.com"></AppButtonPrimary>
-  </div>
-  <AppButtonPrimary label="voila" link="https://youtube.com"></AppButtonPrimary>
-  <AppButtonPrimary label="12346é" link="https://youtube.com"></AppButtonPrimary>
-  <div>
-    <AppButtonSecondary label="Connexion" link="https://youtube.com"></AppButtonSecondary>
-    <AppButtonSecondary label="Inscription" link="https://youtube.com"></AppButtonSecondary>
-  </div>
-  <AppInputText label="Nom" isNeeded></AppInputText>
-  <AppInputText label="Prenom"></AppInputText>
-  <AppInputRadio label="Genre" :options="['M.', 'Mme.', 'Autre']"></AppInputRadio>
-  <AppInputRadio label="Test" :options="['Option 1', 'Option 2', 'Option 3']" isNeeded></AppInputRadio>
-  <AppInputSelect label="Choisir une option" :options="['Option 1', 'Option 2', 'Option 3']"></AppInputSelect>
-  <AppInputSelect label="Pays" :options="['France', 'Allemagne', 'Suisse', 'Belgique', 'Espagne', 'Portugal', 'Afrique']"></AppInputSelect>
-  <AppInputDate label="Date de naissance"></AppInputDate>
+    <p>
+      <strong>Fil d'arianne : </strong> {{ $route.fullPath }}
+    </p>
+    <nav>
+      <RouterLink to="/login">Go to login</RouterLink>
+      <RouterLink to="/test">Go to Test</RouterLink>
+    </nav>
+    <RouterView />
+</main>
+    <br>
+ 
 </template>
 
 <style>

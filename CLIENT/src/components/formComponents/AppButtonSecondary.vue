@@ -13,24 +13,31 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 }
 </script>
                           <!-- Composant Bouton -->
-<template>        
-  <button id="secondary" @click="navigate">{{ props.label }}</button>      
+<template>   
+    <div class="button-secondary">
+        <button id="secondary" @click="navigate">{{ props.label }}</button>      
+    </div>     
 </template>
 
 <style> 
 /* Style du bouton */
+.button-secondary{
+    width: 80%;
+    margin: 0.5rem;
+}
 button#secondary {
   background-color: #000; 
   border: none;
   color: white;
-  font-weight: lighter;
+  font-weight: 400;
   font-size: 0.9rem;
+  font-family: 'Exo', sans-serif;
   border-radius: 2rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  margin: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  min-width: 10rem;
   &:hover{
     cursor: pointer;
     }

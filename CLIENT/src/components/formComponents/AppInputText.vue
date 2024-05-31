@@ -3,7 +3,9 @@ import { defineProps } from 'vue';
 
 const props = defineProps({
   label: String,
+  placeholder: String,
   isNeeded: Boolean,
+  hideContent: Boolean,
 });
 </script>
 
@@ -13,7 +15,7 @@ const props = defineProps({
       {{ props.label }}
       <span v-if="props.isNeeded">*</span>
     </label>        
-    <input :id="props.label" type="text"> 
+    <input :type="props.hideContent ? 'password' : 'text'" :id="props.label" :placeholder="props.placeholder"> 
   </div>
 </template>
 
@@ -23,12 +25,14 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   margin: 0.5rem;
+  width: 80%;
+  
   input{
     border: none;
     background-color: #d9d9d9;
     padding: 0.5rem;
     border-radius: 5px;
-    width: 25%;
+    min-width: 10rem;
   }
   span{
     color: red;
