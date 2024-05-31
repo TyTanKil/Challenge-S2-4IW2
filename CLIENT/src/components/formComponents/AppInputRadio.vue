@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-import { defineProps, ref } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
   label: String,
   isNeeded: Boolean,
   options: Array,
+  modelValue: String,
 });
 
-const selectedOption = ref('');
+const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
@@ -18,7 +19,13 @@ const selectedOption = ref('');
     </label>
     <div class="radio-group">
       <div class="radio-option" v-for="option in props.options" :key="option">
-        <input type="radio" :id="props.label + '-' + option" :value="option" v-model="selectedOption" />
+        <input
+          type="radio"
+          :id="props.label + '-' + option"
+          :value="option"
+          :checked="props.modelValue === option"
+          @change="$emit('update:modelValue', option)"
+        />
         <label :for="props.label + '-' + option">{{ option }}</label>
       </div>
     </div>

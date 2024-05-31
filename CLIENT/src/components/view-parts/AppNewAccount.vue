@@ -29,7 +29,7 @@
   <style scoped>
 
   .newAccount-page{
-    width: 100%;
+    width: 80%;
     margin: auto;
     margin-top: 2rem;
     display: flex;

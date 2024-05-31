@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import { defineProps } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
   label: String,
   isNeeded: Boolean,
   options: Array,
+  modelValue: String,
 });
+
+const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
@@ -14,7 +17,7 @@ const props = defineProps({
       {{ props.label }}
       <span v-if="props.isNeeded">*</span>
     </label>        
-    <select :id="props.label">
+    <select :id="props.label" :value="props.modelValue" @change="$emit('update:modelValue', $event.target.value)">
       <option v-for="option in props.options" :key="option" :value="option">
         {{ option }}
       </option>
@@ -39,7 +42,6 @@ select {
   background-color: #d9d9d9;
   padding: 0.5rem;
   border-radius: 5px;
-
   min-width: 10rem;
 }
 

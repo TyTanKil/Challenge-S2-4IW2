@@ -4,7 +4,10 @@ import { defineProps } from 'vue';
 const props = defineProps({
   label: String,
   isNeeded: Boolean,
+  modelValue: String,
 });
+
+const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
@@ -13,7 +16,12 @@ const props = defineProps({
       {{ props.label }}
       <span v-if="props.isNeeded">*</span>
     </label>        
-    <input :id="props.label" type="date"> 
+    <input 
+        :id="props.label" 
+        type="date"
+        :value="props.modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+    > 
   </div>
 </template>
 
@@ -29,7 +37,6 @@ const props = defineProps({
     background-color: #d9d9d9;
     padding: 0.5rem;
     border-radius: 5px;
-    width: 25%;
   }
   span{
     color: red;

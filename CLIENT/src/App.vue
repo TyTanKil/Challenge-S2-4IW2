@@ -8,7 +8,7 @@
       <strong>Fil d'arianne : </strong> {{ $route.fullPath }}
     </p>
     <nav>
-      <RouterLink to="/login">Go to login</RouterLink>
+      <RouterLink to="/identify">Go to identify page</RouterLink>
       <RouterLink to="/test">Go to Test</RouterLink>
     </nav>
     <RouterView />

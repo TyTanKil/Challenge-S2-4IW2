@@ -110,7 +110,7 @@
   .underline-container {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 60%;
     height: 2px;
     background-color: #000;
     margin-top: 5px;
