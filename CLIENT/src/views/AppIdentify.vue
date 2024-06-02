@@ -136,5 +136,14 @@
         transition: smooth 0.3s ease;
         color: #d3d3d3;
       }
+
+      .tab.active {
+        font-weight: bold;
+        color: #fff;
+      }
+
+      p{
+        color: #d3d3d3;
+      }
   }
   </style>

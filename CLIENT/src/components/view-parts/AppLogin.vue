@@ -46,6 +46,11 @@
         margin: auto;
         color: #00000054;
     }
+    @media (prefers-color-scheme: dark) {
+        p{
+          color: #fff;
+        }
+    }
   }
   
   form {

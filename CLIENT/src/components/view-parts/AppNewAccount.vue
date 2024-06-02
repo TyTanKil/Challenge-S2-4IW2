@@ -35,6 +35,11 @@
         width: 80%;
         margin: auto;
     }
+    @media (prefers-color-scheme: dark) {
+        p{
+          color: #fff;
+        }
+    }
   }
   
   </style>
