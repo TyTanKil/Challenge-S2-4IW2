@@ -1,20 +1,6 @@
 <script setup lang='ts'>
-  import AppButtonPrimary from '../formComponents/AppButtonPrimary.vue'
   import AppButtonSecondary from '../formComponents/AppButtonSecondary.vue';
-  import AppInputText from '../formComponents/AppInputText.vue';
-  import AppInputCheckbox from '../formComponents/AppInputCheckbox.vue';
-  import AppInputSelect from '../formComponents/AppInputSelect.vue';
-
-  import { ref } from 'vue';
   
-  const email = ref('');
-  const password = ref('');
-  
-  const handleLogin = () => {
-    // Logique de connexion
-    console.log('Email:', email.value);
-    console.log('Password:', password.value);
-  };
 </script>
 
 <template>
