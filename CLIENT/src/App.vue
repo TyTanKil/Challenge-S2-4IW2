@@ -1,21 +1,23 @@
-<script setup lang='ts'>
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import AppHeader from './components/AppHeader.vue';
 
+const route = useRoute();
+
+const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.fullPath === '/create' );
 </script>
 
 <template>
+  <header>
+    <AppHeader :test="isIdentifyRoute" />
+  </header>
   <main>
-    <p>
-      <strong>Fil d'arianne : </strong> {{ $route.fullPath }}
-    </p>
-    <nav>
-      <RouterLink to="/identify">Go to identify page</RouterLink>
-      <RouterLink to="/test">Go to Test</RouterLink>
-    </nav>
+    
     <RouterView />
-</main>
-    <br>
- 
+  </main>
 </template>
+
 
 <style>
 body {
