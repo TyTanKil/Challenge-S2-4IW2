@@ -48,7 +48,7 @@ function addToCart() {
     margin: 1rem;
     padding: 0.8rem;
     border-radius: 8px;
-    border: 0.7px #A0DB10 solid;
+    border: 0.7px #C4F649 solid;
     .card_vertical_img {
         height: auto;
         width: 100%;

@@ -49,13 +49,12 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
     justify-content: space-between;
     align-items: center;
     border-radius: 8px;
-    border: 0.7px #A0DB10 solid;
+    border: 0.7px #C4F649 solid;
     .card_horizontal_img {
         height: 5rem;
         width: auto;
         object-fit: contain; /* Permet de contenir l'image dans le conteneur */
-        margin-left: 2rem;
-        margin-right: 2rem;
+        margin: 0 2rem;
       }
   }
   

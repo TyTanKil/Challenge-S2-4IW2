@@ -33,10 +33,7 @@ button#secondary {
   font-size: 0.9rem;
   font-family: 'Exo', sans-serif;
   border-radius: 2rem;
-  padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
-  padding-left: 1.2rem;
-  padding-right: 1.2rem;
+  padding: 0.4rem 1.2rem;
   min-width: 10rem;
   &:hover{
     cursor: pointer;
