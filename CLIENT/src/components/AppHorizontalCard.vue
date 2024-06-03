@@ -49,7 +49,7 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
     justify-content: space-between;
     align-items: center;
     border-radius: 8px;
-    border: 0.7px #C4F649 solid;
+    border: 0.7px #C4F649    solid;
     .card_horizontal_img {
         height: 5rem;
         width: auto;
@@ -74,7 +74,7 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 .card_horizontal .buy_div_container{
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 1rem;
     .cart_img_container{
         button{
             border: none;

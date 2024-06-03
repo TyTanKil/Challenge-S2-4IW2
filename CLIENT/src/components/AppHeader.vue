@@ -14,20 +14,27 @@ const props = defineProps({     //Définition des données passées par le compo
                           <!-- Composant Card Horizontal -->
 <template>        
     <div class="header">
-        <img class="logo" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
+        <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
+        <img class="logo dark_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background-dark.svg" alt="">
         <div class="search_bar">
             <AppInputText placeholder="Rechercher votre produit..."></AppInputText>
-            <button>Loupe.png</button>
+            <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
         </div>
         <div class="actions_btn">
-            <div class="account_div">
-                <img src="" alt="">
-                <p>Compte</p>
-            </div>
-            <div class="cart_div">
-                <img src="" alt="">
-                <p>Panier</p>
-            </div>
+            <a href="">
+                <div class="account_div">
+                    <img class="clear_mode" src="\src\assets\img\svg\icons\account-user.svg" alt="">
+                    <img class="dark_mode" src="\src\assets\img\svg\icons\account-user-dark.svg" alt="">
+                    <p>Compte</p>
+                </div>
+            </a>
+            <a href="">
+                <div class="cart_div">
+                    <img class="clear_mode" src="\src\assets\img\svg\icons\cart1.svg" alt="">
+                    <img class="dark_mode" src="\src\assets\img\svg\icons\cart1-dark.svg" alt="">
+                    <p>Panier</p>
+                </div>
+            </a>
         </div>
     </div>
 </template>
@@ -46,6 +53,9 @@ const props = defineProps({     //Définition des données passées par le compo
         max-width: 30%;
         margin: 0.5rem 3rem;
     }
+    .dark_mode{
+        display: none;
+    }
     .search_bar{
         display: flex;
         width: 40%;
@@ -57,19 +67,57 @@ const props = defineProps({     //Définition des données passées par le compo
             border: none;
             background-color: #fff;
             border-radius: 0 5px 5px 0;
+            padding: .2rem;
+            width: 3rem;
             &:hover{
                 background-color: #b2b2b2;
                 cursor: pointer;
+            }
+            img{
+                height: 100%;
             }
         }
     }
     .actions_btn{
         display: flex;
         align-items: center;
-        width: 30%;
+        width: 20%;
+        justify-content: center;
         margin: 0 3rem;
-        justify-content: space-between;
+        gap: 2.5rem;
         color: #C4F649;
+        a{
+            color: #C4F649;
+            text-decoration: none;
+            div{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+        img{
+            height: 2rem;
+            width: auto;
+        }
+    }
+}
+
+
+@media (prefers-color-scheme: dark) {
+    .header{
+        background-color: white;
+        .clear_mode{
+            display: none;
+        }
+        .dark_mode{
+            display: block;
+        }
+        .search_bar button{
+            background-color: #575757;
+        }
+        .actions_btn p{
+            color: #000;
+        }
     }
 }
 
