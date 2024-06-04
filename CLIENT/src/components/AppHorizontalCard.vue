@@ -28,7 +28,7 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
         <div class="buy_div_container">
             <p>Prix : {{ props.price }} €</p>
             <div class="cart_img_container">
-                <button><img src="" alt=""></button>
+                <button><img class="cart_card" src="\src\assets\img\svg\icons\cart2.svg" alt=""></button>
             </div>
         </div>
     </div>
@@ -78,14 +78,19 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
     .cart_img_container{
         button{
             border: none;
-            min-width: 3rem;
-            height: 1.5rem;
+            min-width: 2.5rem;
+            height: 1.8rem;
             background-color: #d9d9d9;
             border-radius: 3px;
             box-shadow: 1px 2px #3838385d;
+            padding: 0.2rem;
             &:hover{
                 cursor: pointer;
             }
+        }
+        .cart_card{
+            width: 100%;
+            height: 100%;
         }
     }
 }

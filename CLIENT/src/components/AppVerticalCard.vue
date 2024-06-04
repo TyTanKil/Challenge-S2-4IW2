@@ -30,7 +30,7 @@ function addToCart() {
         <div class="buy_div_container">
             <p>Prix : {{ props.price }} €</p>
             <div class="cart_img_container">
-                <button><img src="" alt=""></button>
+                <button><img class="cart_card" src="\src\assets\img\svg\icons\cart2.svg" alt=""></button>
             </div>
         </div>
     </div>
@@ -56,6 +56,8 @@ function addToCart() {
       }
 }
 .infos{
+    margin: 1rem 0;
+
     h3{
         font-weight: 500;
         margin: 0;
@@ -67,21 +69,27 @@ function addToCart() {
     }
 }
 .card_vertical .buy_div_container{
+    margin: 1rem 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     .cart_img_container{
-        margin-right: 2rem;
+        margin-right: 1rem;
         button{
             border: none;
-            min-width: 3rem;
-            height: 1.5rem;
+            min-width: 2.5rem;
+            height: 1.8rem;
             background-color: #d9d9d9;
             border-radius: 3px;
             box-shadow: 1px 2px #3838385d;
+            padding: 0.2rem;
             &:hover{
                 cursor: pointer;
             }
+        }
+        .cart_card{
+            width: 100%;
+            height: 100%;
         }
     }
 }
