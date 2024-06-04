@@ -5,15 +5,14 @@ import { defineProps } from 'vue';
 const props = defineProps({     //Définition des données passées par le composants
     test: Boolean,
 });
-
 </script>
-                          <!-- Composant Card Horizontal -->
+
 <template>        
     <div class="header">
         <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
         <img class="logo dark_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background-dark.svg" alt="">
         <div v-if="!props.test" class="search_bar">
-            <AppInputText placeholder="Rechercher votre produit..."></AppInputText>
+            <input type="text" name="search" id="search" placeholder="Rechercher votre produit...">
             <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
         </div>
         <div v-if="!props.test" class="actions_btn">
@@ -47,19 +46,29 @@ const props = defineProps({     //Définition des données passées par le compo
     margin-bottom: 3rem;
     .logo{
         max-height: 100%;
-        max-width: 30%;
-        margin: 0.5rem 3rem;
+        max-width: 22%;
+        min-width: 15rem;
+        margin: 0.5rem 4rem;
     }
     .dark_mode{
         display: none;
     }
     .search_bar{
         display: flex;
-        width: 40%;
+        width: 50%;
         align-items: center;
+        justify-content: center;
+        input{
+            border: none;
+            background-color: #d9d9d9;
+            padding: 0.5rem;
+            border-radius: 5px;
+            min-width: 15rem;
+            width: 80%
+        }
         button{
             position: relative;
-            right: 30px;
+            right: 45px;
             height: 2.1rem;
             border: none;
             background-color: #fff;
@@ -78,7 +87,7 @@ const props = defineProps({     //Définition des données passées par le compo
     .actions_btn{
         display: flex;
         align-items: center;
-        width: 20%;
+        width: 30%;
         justify-content: center;
         margin: 0 3rem;
         gap: 2.5rem;
@@ -98,7 +107,6 @@ const props = defineProps({     //Définition des données passées par le compo
         }
     }
 }
-
 
 @media (prefers-color-scheme: dark) {
     .header{
