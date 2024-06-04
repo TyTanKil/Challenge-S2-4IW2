@@ -10,6 +10,7 @@ import AppHorizontalCard from '../components/AppHorizontalCard.vue';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
 
 import AppHeader from '../components/AppHeader.vue';
+import AppNavbarCategories from '../components/AppNavbarCategories.vue'
 
 </script>
 
@@ -40,6 +41,7 @@ import AppHeader from '../components/AppHeader.vue';
   <AppVerticalCard label="RTX 4090" description="C'est une super carte graphique qui marche super bien. Elle estv faites pour faire tourner les meileurs jeux." price="529.99" link_img="/src/assets/img/products/img_product_1.PNG"></AppVerticalCard>
 
   <AppHeader> </AppHeader>
+  <AppNavbarCategories :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
 </template>
 
 <style>

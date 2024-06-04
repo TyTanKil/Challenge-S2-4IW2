@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import AppInputText from './formComponents/AppInputText.vue';
 import { defineProps } from 'vue';
 
 const props = defineProps({     //Définition des données passées par le composants
-    test: Boolean,
+    route: Boolean,
 });
 </script>
 
@@ -11,11 +10,11 @@ const props = defineProps({     //Définition des données passées par le compo
     <div class="header">
         <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
         <img class="logo dark_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background-dark.svg" alt="">
-        <div v-if="!props.test" class="search_bar">
+        <div v-if="!props.route" class="search_bar">
             <input type="text" name="search" id="search" placeholder="Rechercher votre produit...">
             <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
         </div>
-        <div v-if="!props.test" class="actions_btn">
+        <div v-if="!props.route" class="actions_btn">
             <a href="">
                 <div class="account_div">
                     <img class="clear_mode" src="\src\assets\img\svg\icons\account-user.svg" alt="">
@@ -43,7 +42,6 @@ const props = defineProps({     //Définition des données passées par le compo
     max-height: 5rem;
     min-height: 3rem;
     align-items: center;
-    margin-bottom: 3rem;
     .logo{
         max-height: 100%;
         max-width: 22%;

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AppHeader from './components/AppHeader.vue';
+import AppNavbarCategories from './components/AppNavbarCategories.vue';
 
 const route = useRoute();
 
@@ -10,8 +11,9 @@ const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.f
 
 <template>
   <header>
-    <AppHeader :test="isIdentifyRoute" />
+    <AppHeader :route="isIdentifyRoute" />
   </header>
+  <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
   <main>
     
     <RouterView />

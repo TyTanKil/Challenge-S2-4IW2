@@ -105,9 +105,8 @@ const handleCreate = () => {
 
 <style scoped>
 .create-page {
-  margin-top: 2rem;
+  margin: 3rem auto;
   width: 50%;
-  margin: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
