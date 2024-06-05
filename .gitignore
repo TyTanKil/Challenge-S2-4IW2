@@ -1,0 +1,6 @@
+/SERVER/node_modules/
+/SERVER/package-lock.json
+/CLIENT/node_modules/
+/CLIENT/package-lock.json
+/CLIENT/.vscode
+/.idea/

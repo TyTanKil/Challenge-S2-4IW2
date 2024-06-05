@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "techshop_site",
+    "password": "3zH659q0fUMW6ve4FXLv",
+    "database": "techshop",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "techshop_site",
+    "password": "3zH659q0fUMW6ve4FXLv",
+    "database": "techshop",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "techshop_site",
+    "password": "3zH659q0fUMW6ve4FXLv",
+    "database": "techshop",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
