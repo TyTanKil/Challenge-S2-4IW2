@@ -108,19 +108,8 @@ const props = defineProps({     //Définition des données passées par le compo
 
 @media (prefers-color-scheme: dark) {
     .header{
-        background-color: white;
-        .clear_mode{
-            display: none;
-        }
-        .dark_mode{
-            display: block;
-        }
-        .search_bar button{
-            background-color: #575757;
-        }
-        .actions_btn p{
-            color: #000;
-        }
+        background-color: #2a2a2a;
+        
     }
 }
 

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
 import { defineProps } from 'vue';
 
 const props = defineProps({
@@ -9,62 +10,123 @@ const props = defineProps({
   },
   route: Boolean,
 });
+
+// État local pour suivre la catégorie active
+const activeCategory = ref<string | null>(null);
+
+const setActiveCategory = (category: string) => {
+  activeCategory.value = activeCategory.value === category ? null : category;
+};
+
+// Exemple de données de sous-catégories pour chaque catégorie
+const subCategories = {
+  'Promos et Bons plans': ['Offres du jour', 'Réductions spéciales', 'Dernières chances'],
+  'PC': ['PC portables', 'PC de bureau', 'PC gaming', 'PC tout-en-un'],
+  'Composants': ['Processeurs', 'Cartes mères', 'Cartes graphiques', 'Mémoire RAM'],
+  'Périphériques': ['Claviers', 'Souris', 'Écrans', 'Casques audio'],
+};
 </script>
-<!-- Composant Navbar -->
+
 <template>
-    <nav v-if="!$props.route" class="navbar">
-        <div class="navbar-container">
-            <div 
-                v-for="(option, index) in categories" 
-                :key="option" 
-                :class="['categorie', `categorie-${index + 1}`]"
-            >
-                {{ option }}
-            </div>
-        </div>
-    </nav>
+  <nav v-if="!$props.route" class="navbar">
+    <div class="navbar-container">
+      <div 
+        v-for="(option, index) in categories" 
+        :key="option" 
+        :class="['categorie', `categorie-${index + 1}`]"
+        @click="setActiveCategory(option)"
+      >
+        {{ option }}
+      </div>
+    </div>
+    <div v-if="activeCategory" class="sub-menu">
+        {{ activeCategory }}
+      <div v-for="subCategory in subCategories[activeCategory]" :key="subCategory" class="sub-categorie">
+        {{ subCategory }}
+      </div>
+      <div class="sub-categorie">
+        Voir tout
+      </div>
+    </div>
+  </nav>
 </template>
 
-<style> 
+<style scoped>
 /* Style de la card */
-nav.navbar{
-    width: 80%;
-    height: 2.5rem;
-    margin: auto;
-    margin-bottom: 2rem;
-    .navbar-container{
-        width: 100%;
-        height: 100%;
-        display: flex;
-        .categorie{
-            width: 25%;
-            height: 100%;
-            background-color: #A0DB10;
-            border: 1px solid black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: black;
-            font-weight: 500;
-            &:nth-child(1){
-                border-radius: 0 0 0 20px;
-            }
-            &:nth-child(4){
-                border-radius: 0 0 20px 0;
-            }
-            &:hover{
-                background-color: #C4F649;
-                cursor: pointer;
-            }
-        }
-    }
-    
+nav.navbar {
+  width: 80%;
+  margin: auto;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
+.navbar-container {
+  width: 100%;
+  height: 2.5rem;
+  display: flex;
+  position: relative; /* Ajouté pour permettre au sous-menu de se positionner par rapport à ce conteneur */
+}
 
+.categorie {
+  width: 25%;
+  height: 100%;
+  background-color: #A0DB10;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.categorie:nth-child(1) {
+  border-radius: 0 0 0 20px;
+}
+
+.categorie:nth-child(4) {
+  border-radius: 0 0 20px 0;
+}
+
+.categorie:hover {
+  background-color: #C4F649;
+}
+
+.sub-menu {
+  position: absolute; /* Permet au sous-menu de flotter */
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  background-color: #C4F649;
+  width: 70%;
+  margin: 2.6rem auto 0 auto;
+  z-index: 1000; /* Assure que le sous-menu est au-dessus des autres éléments */
+  color: black;
+  font-weight: 600;
+}
+
+.sub-categorie {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  max-width: 20%;
+  color: #575757;
+  font-weight: 400;
+}
+
+.sub-categorie:hover {
+  background-color: #e0e0e0;
+}
 
 @media (prefers-color-scheme: dark) {
-
+    .sub-menu {
+        background-color: #2a2a2a;
+        color: white;
+    }
 }
-
 </style>

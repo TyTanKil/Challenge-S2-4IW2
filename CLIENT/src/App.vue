@@ -12,8 +12,8 @@ const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.f
 <template>
   <header>
     <AppHeader :route="isIdentifyRoute" />
+    <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
   </header>
-  <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
   <main>
     
     <RouterView />
@@ -25,6 +25,10 @@ const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.f
 body {
   background-color: white;
   color: #575757;
+}
+header{
+  position: sticky;
+  top: 0;
 }
 
 @media (prefers-color-scheme: dark) {
