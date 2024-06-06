@@ -8,6 +8,7 @@ import AppInputDate from '../components/formComponents/AppInputDate.vue';
 import AppInputCheckbox from '../components/formComponents/AppInputCheckbox.vue';
 import AppHorizontalCard from '../components/AppHorizontalCard.vue';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
+import AppPopUp from '../components/AppPopUp.vue';
 
 import AppHeader from '../components/AppHeader.vue';
 import AppNavbarCategories from '../components/AppNavbarCategories.vue'
@@ -42,6 +43,8 @@ import AppNavbarCategories from '../components/AppNavbarCategories.vue'
 
   <AppHeader> </AppHeader>
   <AppNavbarCategories :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
+
+  <AppPopUp />
 </template>
 
 <style>
