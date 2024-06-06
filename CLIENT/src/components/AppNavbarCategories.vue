@@ -37,15 +37,14 @@ const subCategories = {
         @click="setActiveCategory(option)"
       >
         {{ option }}
-      </div>
-    </div>
-    <div v-if="activeCategory" class="sub-menu">
-        {{ activeCategory }}
-      <div v-for="subCategory in subCategories[activeCategory]" :key="subCategory" class="sub-categorie">
-        {{ subCategory }}
-      </div>
-      <div class="sub-categorie">
-        Voir tout
+        <div v-if="activeCategory === option" class="sub-menu">
+          <div v-for="subCategory in subCategories[activeCategory]" :key="subCategory" class="sub-categorie">
+            {{ subCategory }}
+          </div>
+          <div class="sub-categorie">
+            Voir tout
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -79,6 +78,7 @@ nav.navbar {
   color: black;
   font-weight: 500;
   cursor: pointer;
+  position: relative; /* Nécessaire pour positionner le sous-menu */
 }
 
 .categorie:nth-child(1) {
@@ -95,13 +95,13 @@ nav.navbar {
 
 .sub-menu {
   position: absolute; /* Permet au sous-menu de flotter */
-  padding: 2rem;
+  top: 102%; /* Place le sous-menu juste en dessous de la catégorie */
+  left: 0; /* Aligne le sous-menu avec la catégorie */
+  width: 100%; /* Assure que la largeur du sous-menu correspond à celle de la catégorie */
+  background-color: #C4F649;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  background-color: #C4F649;
-  width: 70%;
-  margin: 2.6rem auto 0 auto;
   z-index: 1000; /* Assure que le sous-menu est au-dessus des autres éléments */
   color: black;
   font-weight: 600;
@@ -111,10 +111,9 @@ nav.navbar {
   background-color: #f0f0f0;
   border: 1px solid #ddd;
   padding: 0.5rem 1rem;
-  margin: 0.5rem;
+  margin: 0.5rem 1.5rem;
   border-radius: 5px;
   cursor: pointer;
-  max-width: 20%;
   color: #575757;
   font-weight: 400;
 }
@@ -124,9 +123,9 @@ nav.navbar {
 }
 
 @media (prefers-color-scheme: dark) {
-    .sub-menu {
-        background-color: #2a2a2a;
-        color: white;
-    }
+  .sub-menu {
+    background-color: #2a2a2a;
+    color: white;
+  }
 }
 </style>

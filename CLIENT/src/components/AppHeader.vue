@@ -43,9 +43,7 @@ const props = defineProps({     //Définition des données passées par le compo
     min-height: 3rem;
     align-items: center;
     .logo{
-        max-height: 100%;
-        max-width: 22%;
-        min-width: 15rem;
+        max-height: 7rem;
         margin: 0.5rem 4rem;
     }
     .dark_mode{
