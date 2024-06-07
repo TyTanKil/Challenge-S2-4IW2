@@ -31,7 +31,8 @@ import AppNavbarCategories from '../components/AppNavbarCategories.vue';
     <AppButtonSecondary label="Inscription" link="https://youtube.com"></AppButtonSecondary>
   </div>
   <AppInputText label="Nom" placeholder="Nom" isNeeded></AppInputText>
-  <AppInputText label="Prenom" placeholder="Prenom" type="password"></AppInputText>
+  <AppInputText label="Prenom" placeholder="Prenom"></AppInputText>
+  <AppInputText label="Mot de Passe" placeholder="Mot de Passe" hideContent isNeeded></AppInputText>
   <AppInputRadio label="Genre" :options="['M.', 'Mme.', 'Autre']"></AppInputRadio>
   <AppInputRadio label="Test" :options="['Option 1', 'Option 2', 'Option 3']" isNeeded></AppInputRadio>
   <AppInputSelect label="Choisir une option" :options="['Option 1', 'Option 2', 'Option 3']"></AppInputSelect>

@@ -36,6 +36,7 @@ const props = defineProps({
   display: flex;
   padding: 2rem;
   align-items: center;
+  height: 6rem;
 }
 
 .logo {
