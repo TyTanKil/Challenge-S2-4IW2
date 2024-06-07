@@ -46,7 +46,7 @@ import AppNavbarCategories from '../components/AppNavbarCategories.vue';
   <AppNavbarCategories :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
 </template>
 
-<style>
+<style scoped>
 body {
   background-color: white;
   color: #575757;
