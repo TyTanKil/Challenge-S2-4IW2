@@ -40,9 +40,9 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 .card_horizontal {
     background-color: #575757;
     color: #fff;
-    width: 90%;
-    max-height: 8rem;
-    min-height: 5rem;
+    width: 60%;
+    max-height: 9rem;
+    min-height: 7rem;
     margin: 1rem;
     padding: 0.8rem;
     display: flex;
@@ -50,27 +50,34 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
     align-items: center;
     border-radius: 8px;
     border: 0.7px #C4F649    solid;
+    p{
+        font-size: large;
+        font-weight: 500;
+    }
     .card_horizontal_img {
-        height: 5rem;
+        height: 7rem;
         width: auto;
         object-fit: contain; /* Permet de contenir l'image dans le conteneur */
-        margin: 0 2rem;
+        margin: 0 1rem 0 3rem;
       }
+      .infos{
+        width: 60%;
+        h3{
+            font-weight: 500;
+            margin: 0;
+            font-size: x-large;
+        }
+        h4{
+            font-weight: 300;
+            margin: 0;
+            font-size: medium
+        }
+    }
   }
   
  
   
-.infos{
-    h3{
-        font-weight: 500;
-        margin: 0;
-    }
-    h4{
-        font-weight: 400;
-        margin: 0;
-        font-size: small;
-    }
-}
+
 .card_horizontal .buy_div_container{
     display: flex;
     align-items: center;
@@ -78,14 +85,15 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
     .cart_img_container{
         button{
             border: none;
-            min-width: 2.5rem;
-            height: 1.8rem;
-            background-color: #d9d9d9;
-            border-radius: 3px;
+            min-width: 3.5rem;
+            height: 2.8rem;
+            background-color: #C4F649;
+            border-radius: 8px;
             box-shadow: 1px 2px #3838385d;
-            padding: 0.2rem;
+            padding: 0.4rem;
             &:hover{
                 cursor: pointer;
+                background-color: #A0DB10;
             }
         }
         .cart_card{

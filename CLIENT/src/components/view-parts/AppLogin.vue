@@ -30,7 +30,7 @@
   <style scoped>
 
   .login-page{
-    width: 100%;
+    width: 80%;
     margin: auto;
     margin-top: 2rem;
     display: flex;
@@ -44,7 +44,11 @@
     p{
         width:80%;
         margin: auto;
-        color: #00000054;
+        color: #575757;
+    }
+    .btnNewAccount{
+        width: 80%;
+        margin: auto;
     }
     @media (prefers-color-scheme: dark) {
         p{

@@ -56,16 +56,17 @@ function addToCart() {
       }
 }
 .infos{
-    margin: 1rem 0;
+    margin: 0.5rem 0;
 
     h3{
         font-weight: 500;
         margin: 0;
+        font-size: x-large;
     }
     h4{
-        font-weight: 400;
+        font-weight: 300;
         margin: 0;
-        font-size: small;
+        font-size: medium
     }
 }
 .card_vertical .buy_div_container{
@@ -73,18 +74,23 @@ function addToCart() {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    p{
+        font-size: large;
+        font-weight: 500;
+    }
     .cart_img_container{
         margin-right: 1rem;
         button{
             border: none;
-            min-width: 2.5rem;
-            height: 1.8rem;
-            background-color: #d9d9d9;
-            border-radius: 3px;
+            min-width: 4rem;
+            height: 3.2rem;
+            background-color: #C4F649;
+            border-radius: 8px;
             box-shadow: 1px 2px #3838385d;
-            padding: 0.2rem;
+            padding: 0.4rem;
             &:hover{
                 cursor: pointer;
+                background-color: #A0DB10;
             }
         }
         .cart_card{

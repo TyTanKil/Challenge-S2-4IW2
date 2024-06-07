@@ -95,16 +95,18 @@ nav.navbar {
 
 .sub-menu {
   position: absolute; /* Permet au sous-menu de flotter */
-  top: 102%; /* Place le sous-menu juste en dessous de la catégorie */
+  top: 130%; /* Place le sous-menu juste en dessous de la catégorie */
   left: 0; /* Aligne le sous-menu avec la catégorie */
   width: 100%; /* Assure que la largeur du sous-menu correspond à celle de la catégorie */
-  background-color: #C4F649;
+  background-color: #575757;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   z-index: 1000; /* Assure que le sous-menu est au-dessus des autres éléments */
   color: black;
   font-weight: 600;
+  padding: 0.8rem 0;
 }
 
 .sub-categorie {

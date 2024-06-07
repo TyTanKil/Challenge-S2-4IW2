@@ -29,7 +29,7 @@
     p{
         width:80%;
         margin: auto;
-        color: #00000054;
+        color: #575757;
     }
     .btnNewAccount{
         width: 80%;

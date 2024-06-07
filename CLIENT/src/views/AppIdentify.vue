@@ -46,14 +46,14 @@
             </div>
             
             <div class="content">
-            <div v-if="isReturningClient">
-                <!-- Contenu pour les clients existants -->
-                <AppLogin></AppLogin>
-            </div>
-            <div v-else>
-                <!-- Contenu pour les nouveaux clients -->
-                <AppNewAccount></AppNewAccount>
-            </div>
+                <div v-if="isReturningClient">
+                    <!-- Contenu pour les clients existants -->
+                    <AppLogin></AppLogin>
+                </div>
+                <div v-else>
+                    <!-- Contenu pour les nouveaux clients -->
+                    <AppNewAccount></AppNewAccount>
+                </div>
             </div>
         </div>
     </div>
@@ -63,7 +63,8 @@
   <style scoped>
   .identify-page{
     margin: 3rem auto;
-    width: 50%;
+    width: 60%;
+    min-width: 40rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -78,6 +79,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    .content{
+        width: 80%;
+    }
 }
   .tabs {
     display: flex;

@@ -23,6 +23,7 @@ const emit = defineEmits(['update:modelValue']);
           type="radio"
           :id="props.label + '-' + option"
           :value="option"
+          :name="props.label"
           :checked="props.modelValue === option"
           @change="$emit('update:modelValue', option)"
         />
