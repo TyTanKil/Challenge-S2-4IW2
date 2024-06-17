@@ -1,56 +1,51 @@
 'use strict';
-const {
-    Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-    class account extends Model {
-        /**
-         * Helper method for defining associations.
-         * This method is not a part of Sequelize lifecycle.
-         * The `models/index` file will call this method automatically.
-         */
-        static associate(models) {
-            // define association here
-        }
-    }
+const { Model, DataTypes } = require("sequelize");
+const bcrypt = require("bcryptjs");
+const connection = require("./db");
 
-    account.init({
-        id: {
-            dataType: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        firstName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        lastName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
-        phone: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
-        login: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        birth_date: DataTypes.DATE
-    }, {
-        sequelize,
-        modelName: 'Account',
-    });
-    return account;
-};
+class account extends Model {}
+
+account.init({
+    firstName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    lastName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    login: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    birth_date: DataTypes.DATE
+}, {
+    sequelize: connection
+});
+
+account.addHook("beforeCreate", async (account) => {
+    account.password = await bcrypt.hash(account.password, await bcrypt.genSalt(10));
+});
+
+account.addHook("beforeUpdate", async (account, options) => {
+    if (options.fields.includes("password")) {
+        account.password = await bcrypt.hash(account.password, await bcrypt.genSalt(10));
+    }
+});
+
+module.exports = account;
