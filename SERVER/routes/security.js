@@ -2,13 +2,14 @@ const { Router } = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Account = require("../models/account");
+const {Op} = require("sequelize");
 
 const router = new Router();
 
 router.post("/login", async (req, res, next) => {
   const account = await Account.findOne({
     where: {
-      email: req.body.email,
+      [Op.or]: [{ email: req.body.login }, { login: req.body.login }],
     },
   });
   if (!account) return res.sendStatus(401);
