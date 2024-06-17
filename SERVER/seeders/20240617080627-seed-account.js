@@ -11,7 +11,7 @@ module.exports = {
         email:'rafael.coppe.jr@gmail.com',
         phone:'0627062255',
         login:'rcoppe',
-        password:'rafael0311',
+        password:'12345',
         birth_date: new Date('2003-03-11'),
         createdAt: new Date(),
       },
@@ -51,6 +51,6 @@ module.exports = {
     ]);
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', null, {});
+    return queryInterface.bulkDelete('account', null, {});
   },
 };
