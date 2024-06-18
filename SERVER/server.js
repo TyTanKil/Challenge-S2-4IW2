@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const UserRouter = require("./src/routes/user");
-const SecurityRouter = require("./src/routes/security");
+const AccountRouter = require("./routes/account");
+const SecurityRouter = require("./routes/security");
 const app = express();
 const cors = require("cors");
 
@@ -36,7 +36,7 @@ app.post("/", (req, res, next) => {
     res.send("Coucou FROM POST " + JSON.stringify(req.body));
 });
 
-app.use("/users", UserRouter);
+app.use("/accounts", AccountRouter);
 app.use(SecurityRouter);
 app.listen(process.env.PORT, () => {
     console.log("Server running on port " + process.env.PORT);

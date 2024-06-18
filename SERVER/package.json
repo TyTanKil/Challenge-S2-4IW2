@@ -1,5 +1,5 @@
 {
-  "name": "SERVER",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -8,7 +8,7 @@
     "d:s:u": "node migrate.js",
     "dev": "node --watch server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev_nodemon": "nodemon --legacy-watch --watch src server.js"
+    "dev_nodemon": "nodemon --legacy-watch --watch models --watch routes --watch middlewares --watch server.js"
   },
   "author": "",
   "license": "ISC",
