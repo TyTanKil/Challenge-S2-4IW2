@@ -18,11 +18,23 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 function addToCart() {
     //Ajouter au panier
 }
+
+
+const emits = defineEmits(['select']);
+
+function selectCard() {
+  emits('select', {
+    name: props.label,
+    description: props.description,
+    price: props.price,
+    link_img: props.link_img
+  });
+}
 </script>
                           <!-- Composant Card Vertical -->
 <template>        
     <div class="card_vertical">
-        <img class="card_vertical_img" :src="props.link_img" :alt="props.label">
+        <img @click="selectCard" class="card_vertical_img" :src="props.link_img" :alt="props.label">
         <div class="infos">
             <h3>{{ props.label }}</h3>
             <h4>{{ props.description }}</h4>
@@ -49,6 +61,11 @@ function addToCart() {
     padding: 0.8rem;
     border-radius: 8px;
     border: 0.7px #C4F649 solid;
+    transition: box-shadow 0.3s ease;
+    &:hover{
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
     .card_vertical_img {
         height: auto;
         width: 100%;
@@ -66,7 +83,13 @@ function addToCart() {
     h4{
         font-weight: 300;
         margin: 0;
-        font-size: medium
+        font-size: medium;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+        max-height: 60px; /* Limit the height */
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 .card_vertical .buy_div_container{

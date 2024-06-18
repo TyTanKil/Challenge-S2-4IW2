@@ -4,18 +4,24 @@ import { useRoute } from 'vue-router';
 import AppHeader from './components/AppHeader.vue';
 import AppNavbarCategories from './components/AppNavbarCategories.vue';
 
+import AppMainView from './views/AppMainView.vue'
+
 const route = useRoute();
 
 const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.fullPath === '/create' );
+const isMainRoute = computed(() => route.fullPath === '/');
 </script>
 
 <template>
   <header>
     <AppHeader :route="isIdentifyRoute" />
     <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
+
+    
   </header>
   <main>
-    
+    <AppMainView :route="isMainRoute"></AppMainView>
+
     <RouterView />
   </main>
 </template>
