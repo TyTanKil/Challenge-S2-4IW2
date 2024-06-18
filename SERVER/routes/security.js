@@ -20,7 +20,7 @@ router.post("/login", async (req, res, next) => {
   const token = jwt.sign(
     {
       id: account.id,
-      role: account.role,
+      admin: account.roles.contains("ROLE_ADMIN"),
     },
     process.env.JWT_SECRET,
     {
