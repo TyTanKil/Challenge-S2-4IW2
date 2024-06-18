@@ -27,11 +27,13 @@ const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
 body {
   background-color: white;
   color: #575757;
+  height: 100vh;
 }
 header{
   position: sticky;
   top: 0;
 }
+
 
 @media (prefers-color-scheme: dark) {
   body {
