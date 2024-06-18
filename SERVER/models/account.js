@@ -33,7 +33,13 @@ account.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    birth_date: DataTypes.DATE
+    birth_date: DataTypes.DATE,
+    roles: {
+        type: DataTypes.ARRAY(DataTypes.ENUM({
+            values: ['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']
+        })),
+        allowNull: false
+    },
 }, {
     sequelize: connection
 });

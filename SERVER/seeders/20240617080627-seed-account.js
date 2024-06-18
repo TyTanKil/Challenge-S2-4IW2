@@ -1,6 +1,7 @@
 'use strict';
 
 const bcrypt = require("bcryptjs");
+const sequelize = require("sequelize");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -16,6 +17,7 @@ module.exports = {
         password:password,
         birth_date: new Date('2003-03-11'),
         createdAt: new Date(),
+        roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
       },
       {
         id:2,
@@ -27,6 +29,7 @@ module.exports = {
         password:password,
         birth_date: new Date('2000-05-10'),
         createdAt: new Date(),
+        roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
       },
       {
         id:3,
@@ -38,6 +41,7 @@ module.exports = {
         password:password,
         birth_date: new Date('2001-02-05'),
         createdAt: new Date(),
+        roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
       },
       {
         id:4,
@@ -49,6 +53,7 @@ module.exports = {
         password:password,
         birth_date: new Date('2002-03-25'),
         createdAt: new Date(),
+        roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
       },
     ]);
   },
