@@ -3,4 +3,7 @@
 /CLIENT/node_modules/
 /CLIENT/package-lock.json
 /CLIENT/.vscode
+node_modules/
+package-lock.json
+package.json
 /.idea/
