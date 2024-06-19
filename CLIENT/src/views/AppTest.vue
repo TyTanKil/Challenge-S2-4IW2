@@ -44,7 +44,16 @@ import AppNavbarCategories from '../components/AppNavbarCategories.vue';
   <AppHeader> </AppHeader>
   <AppNavbarCategories :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
 
-  <AppPopUp />
+  <AppPopUp title="Mon Titre">
+    <div>
+        <p>Voici le contenu de la pop-up avec <strong>du HTML</strong>.</p>
+        <ul>
+          <li>Point 1</li>
+          <li>Point 2</li>
+          <li>Point 3</li>
+        </ul>
+      </div>
+  </AppPopUp>
 </template>
 
 <style scoped>

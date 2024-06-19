@@ -2,10 +2,10 @@
   <div>
     <button @click="openPopUp">Ouvrir la Pop-Up</button>
     
-    <div v-if="isVisible" class="popup-overlay">
+    <div v-if="isVisible" class="popup-overlay" @click="handleOverlayClick">
       <div class="popup">
-        <h2>Pop-Up Title</h2>
-        <p>Ceci est le contenu de la pop-up.</p>
+        <h1>{{ title }}</h1>
+        <slot></slot>
         <button @click="closePopUp">Fermer</button>
       </div>
     </div>
@@ -14,9 +14,12 @@
 
 <script>
 export default {
+  props: {
+    title: String,
+  },
   data() {
     return {
-      isVisible: false
+      isVisible: false,
     };
   },
   methods: {
@@ -25,8 +28,13 @@ export default {
     },
     closePopUp() {
       this.isVisible = false;
-    }
-  }
+    },
+    handleOverlayClick(event) {
+      if (event.target === event.currentTarget) {
+        this.closePopUp();
+      }
+    },
+  },
 };
 </script>
 
@@ -48,6 +56,7 @@ export default {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: black;
 }
 
 button {
