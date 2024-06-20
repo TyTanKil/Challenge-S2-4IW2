@@ -12,7 +12,6 @@ services:
     volumes:
       - ./SERVER:/home/node/app
     command: sh -c "npm install && npm run dev_nodemon"
-    # npm run dev ?
 
   mongo:
     image: mongo:latest
@@ -20,10 +19,11 @@ services:
       - 127.0.0.1:27017:27017
     volumes:
       - db-data:/data/db
-      - ./mongo/data:/home/data
+      - ./SERVER/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_ROOT_USERNAME=techshop_site
+      - MONGO_INITDB_ROOT_PASSWORD=3zH659q0fUMW6ve4FXLv
+      - MONGO_INITDB_DATABASE=techshop
     working_dir: /home/data
 
   postgres:

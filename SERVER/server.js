@@ -4,6 +4,7 @@ const AccountRouter = require("./routes/account");
 const SecurityRouter = require("./routes/security");
 const app = express();
 const cors = require("cors");
+const mongoose = require('mongoose')
 
 //function parseBody(req, res, next) {
 //  const data = [];
@@ -29,6 +30,19 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use(cors());
 
 app.get("/", (req, res, next) => {
+    const product1 = new mongoose.models.product({
+        id: "1",
+        manufacturer: {label: "manufacturer1"},
+        category: {label: "category1"},
+        ref: "ref1",
+        label: "label1",
+        unit_price: 1,
+        description: "description1",
+        images: [{content: "content1", order: 1}],
+        details: [{detail: {label: "label1", type: "type1", group: "group1"}, value: "value1"}],
+        stock: {quantity: 1}
+    });
+    product1.saveToDB();
     res.send("Coucou " + JSON.stringify(req.query));
 });
 
