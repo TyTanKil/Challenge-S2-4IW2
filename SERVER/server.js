@@ -49,11 +49,20 @@ app.use(bodyParser.json());
 
 // Configuration du transporteur
 const transporter = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+    host: 'ssl0.ovh.net',
+    port: 587, // Utiliser 465 pour SSL
+    secure: false, // true pour 465, false pour les autres ports
     auth: {
-      user: "75cd5d72a23fba",
-      pass: "fbd138e371bd17"
+        user: 'administrateur@tech-shop.tech',
+        pass: 'TechShop!A'
+    }
+});
+
+transporter.verify(function(error, success) {
+    if (error) {
+        console.log(error);
+    } else {
+        console.log("Server is ready to take our messages");
     }
 });
 
@@ -71,7 +80,7 @@ app.post('/send-email', async (req, res) => {
     switch (type) {
         case 'confirmation':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Confirmation de commande',
                 html: `
@@ -94,7 +103,7 @@ app.post('/send-email', async (req, res) => {
                             </table>
                             <p>Numéro de commande : <strong>${data.orderNumber}</strong></p>
                             <p>Merci pour votre achat !</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `
@@ -103,7 +112,7 @@ app.post('/send-email', async (req, res) => {
 
         case 'reset-password':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Réinitialisation de mot de passe',
                 html: `
@@ -114,7 +123,7 @@ app.post('/send-email', async (req, res) => {
                             <p>Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le lien ci-dessous pour procéder :</p>
                             <a href="https://www.votre-site.com/reset-password?token=${data.token}" style="color: #4CAF50;">Réinitialiser mon mot de passe</a>
                             <p>Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `
@@ -123,7 +132,7 @@ app.post('/send-email', async (req, res) => {
 
         case 'shipping-notification':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Votre commande a été expédiée',
                 html: `
@@ -136,7 +145,7 @@ app.post('/send-email', async (req, res) => {
                             <p>Vous pouvez suivre votre commande en cliquant sur le lien ci-dessous :</p>
                             <a href="https://www.votre-site.com/track-order?order=${data.orderNumber}" style="color: #4CAF50;">Suivre ma commande</a>
                             <p>Merci pour votre achat et à bientôt !</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `
@@ -145,7 +154,7 @@ app.post('/send-email', async (req, res) => {
 
         case 'birthday':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Joyeux Anniversaire !',
                 html: `
@@ -156,7 +165,7 @@ app.post('/send-email', async (req, res) => {
                             <p>Nous vous souhaitons un très joyeux anniversaire ! Pour célébrer, nous vous offrons une réduction spéciale :</p>
                             <p><strong>Code promo : BIRTHDAY20</strong> - 20% de réduction sur votre prochaine commande.</p>
                             <p>Profitez de votre journée et de ce petit cadeau de notre part !</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `
@@ -165,7 +174,7 @@ app.post('/send-email', async (req, res) => {
 
         case 'account-confirmation':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Confirmation de création de compte',
                 html: `
@@ -176,7 +185,7 @@ app.post('/send-email', async (req, res) => {
                             <p>Votre compte a été créé avec succès. Nous sommes ravis de vous compter parmi nos clients.</p>
                             <p>Vous pouvez dès maintenant vous connecter et découvrir nos produits.</p>
                             <p>Merci de votre confiance et à bientôt !</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `
@@ -185,7 +194,7 @@ app.post('/send-email', async (req, res) => {
 
         case 'abandoned-cart':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Vous avez oublié des articles dans votre panier',
                 html: `
@@ -198,7 +207,7 @@ app.post('/send-email', async (req, res) => {
                                 ${data.items.map(item => `<li>${item.name} - ${item.price}€</li>`).join('')}
                             </ul>
                             <p>Ne manquez pas de finaliser votre commande avant que ces articles ne disparaissent !</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `
@@ -207,7 +216,7 @@ app.post('/send-email', async (req, res) => {
 
         case 'payment-confirmation':
             mailOptions = {
-                from: 'techshop-123@gmail.com',
+                from: 'administrateur@tech-shop.tech',
                 to: to,
                 subject: 'Confirmation de paiement',
                 html: `
@@ -218,7 +227,7 @@ app.post('/send-email', async (req, res) => {
                             <p>Nous confirmons que nous avons bien reçu votre paiement pour la commande numéro <strong>${data.orderNumber}</strong>.</p>
                             <p>Votre commande est en cours de traitement et vous serez informé de son expédition prochainement.</p>
                             <p>Merci pour votre achat !</p>
-                            <p>Cordialement,<br>Votre équipe e-commerce</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
                         </body>
                     </html>
                 `

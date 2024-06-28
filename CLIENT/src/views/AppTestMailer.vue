@@ -1,5 +1,6 @@
 <template>
     <div class="bouttons">
+      <input type="text" v-model="email" placeholder="Entrez l'adresse email">
       <button @click="sendAccountConfirmationEmail">Confirmer la création de compte</button>
       <button @click="sendBirthdayEmail">Envoyer un mail d'anniversaire</button>
       <button @click="sendAbandonedCartEmail">Rappeler panier abandonné</button>
@@ -14,11 +15,16 @@
   import axios from 'axios';
   
   export default {
+    data() {
+      return {
+        email: '' // Ajout de la propriété de données pour l'email
+      };
+    },
     methods: {
       async sendOrderConfirmationEmail() {
         const emailData = {
           type: 'confirmation',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             productName: 'Produit 1',
             quantity: 1,
@@ -37,7 +43,7 @@
       async sendResetPasswordEmail() {
         const emailData = {
           type: 'reset-password',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             token: 'abcdef123456' // Assurez-vous de générer un token réel
           }
@@ -53,7 +59,7 @@
       async sendShippingConfirmationEmail() {
         const emailData = {
           type: 'shipping-notification',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             orderNumber: '12345'
           }
@@ -69,7 +75,7 @@
       async sendBirthdayEmail() {
         const emailData = {
           type: 'birthday',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             name: 'Client'
           }
@@ -85,7 +91,7 @@
       async sendAccountConfirmationEmail() {
         const emailData = {
           type: 'account-confirmation',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             name: 'Client'
           }
@@ -101,7 +107,7 @@
       async sendAbandonedCartEmail() {
         const emailData = {
           type: 'abandoned-cart',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             name: 'Client',
             items: [
@@ -121,7 +127,7 @@
       async sendPaymentConfirmationEmail() {
         const emailData = {
           type: 'payment-confirmation',
-          to: 'client@example.com',
+          to: this.email, // Utilisation de la propriété de données
           data: {
             name: 'Client',
             orderNumber: '12345'
@@ -139,17 +145,18 @@
   };
   </script>
   
-<style scoped>
-.bouttons{
+  <style scoped>
+  .bouttons {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     max-width: 20%;
-    button{
-        padding: 1rem;
-        &:hover{
-            cursor: pointer;
-        }
-    }
-}
-</style>
+  }
+  button {
+    padding: 1rem;
+  }
+  button:hover {
+    cursor: pointer;
+  }
+  </style>
+  
