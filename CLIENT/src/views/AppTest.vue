@@ -11,8 +11,6 @@ import AppVerticalCard from '../components/AppVerticalCard.vue';
 
 import AppHeader from '../components/AppHeader.vue';
 import AppNavbarCategories from '../components/AppNavbarCategories.vue';
-
-
 </script>
 
 <template>
