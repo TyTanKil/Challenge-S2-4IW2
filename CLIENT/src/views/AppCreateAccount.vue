@@ -83,16 +83,16 @@ const handleCreate = () => {
     <form @submit.prevent="handleCreate">
       <div class="identifiers">
         <h2>Identifiants</h2>
-        <AppInputText v-model="email" label="Adresse Email" isNeeded></AppInputText>
+        <AppInputText v-model="email" label="Adresse Email" isNeeded placeholder="example@mail.com"></AppInputText>
         <span v-if="emailError" class="error">{{ emailError }}</span>
-        <AppInputText v-model="password" label="Mot de passe" isNeeded hideContent></AppInputText>
+        <AppInputText v-model="password" label="Mot de passe" isNeeded hideContent placeholder="Password123"></AppInputText>
         <span v-if="passwordError" class="error">{{ passwordError }}</span>
       </div>
       <div class="personal_info">
         <h2>Informations personnelles</h2>
-        <AppInputText v-model="firstName" label="Prénom" isNeeded></AppInputText>
+        <AppInputText v-model="firstName" label="Prénom" isNeeded placeholder="Prénom"></AppInputText>
         <span v-if="firstNameError" class="error">{{ firstNameError }}</span>
-        <AppInputText v-model="lastName" label="Nom" isNeeded></AppInputText>
+        <AppInputText v-model="lastName" label="Nom" isNeeded placeholder="Nom"></AppInputText>
         <span v-if="lastNameError" class="error">{{ lastNameError }}</span>
         <AppInputRadio v-model="gender" label="Civilité" :options="['M.', 'Mme.', 'Autre']"></AppInputRadio>
         <AppInputSelect v-model="country" label="Pays" :options="['France (métropolitaine)', 'France (outre-mer)', 'Allemagne', 'Belgique', 'Suisse', 'Italie', 'Espagne', 'Royaume-Uni', 'Autre']" isNeeded></AppInputSelect>
@@ -106,7 +106,7 @@ const handleCreate = () => {
 <style scoped>
 .create-page {
   margin: 3rem auto;
-  width: 50%;
+  width: 80%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -125,7 +125,13 @@ h2 {
 form {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  div.identifiers, div.personal_info, div.button-secondary{
+    margin: 0.7rem auto;
+    width: 80%;
+    div.inputText, div.inputSelect, div.inputDate{
+      width: 100%;
+    }
+  }
 }
 
 .error {

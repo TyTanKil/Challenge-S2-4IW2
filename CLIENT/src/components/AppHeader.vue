@@ -8,7 +8,9 @@ const props = defineProps({
 
 <template>
   <div class="header">
-    <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
+    <a href="/">
+      <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
+    </a>
     <div v-if="!props.route" class="search_bar">
       <input type="text" name="search" id="search" placeholder="Rechercher votre produit...">
       <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
@@ -37,6 +39,7 @@ const props = defineProps({
   padding: 2rem;
   align-items: center;
   height: 6rem;
+  z-index: 1000;
 }
 
 .logo {

@@ -36,6 +36,10 @@ header{
   position: sticky;
   top: 0;
 }
+main{
+  width: 80%;
+  margin: 0 auto;
+}
 
 @media (prefers-color-scheme: dark) {
   body {
