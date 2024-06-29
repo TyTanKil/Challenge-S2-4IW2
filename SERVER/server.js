@@ -1,57 +1,19 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-//const AccountRouter = require("./routes/account");
-//const SecurityRouter = require("./routes/security");
 const app = express();
 const cors = require("cors");
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 
-//function parseBody(req, res, next) {
-//  const data = [];
-//  req.on("data", (chunk) => {
-//    data.push(chunk);
-//  });
-//  req.on("end", () => {
-//    const buffer = Buffer.concat(data);
-//    const body = buffer.toString();
-//    try {
-//      const bodyParsed = JSON.parse(body);
-//      req.body = bodyParsed;
-//      next();
-//    } catch (e) {
-//      return res.sendStatus(400);
-//    }
-//  });
-//}
-
-//app.use(parseBody);
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(cors());
-
-app.get("/", (req, res, next) => {
-    res.send("Coucou " + JSON.stringify(req.query));
-});
-
-app.post("/", (req, res, next) => {
-    res.send("Coucou FROM POST " + JSON.stringify(req.body));
-});
-
-//app.use("/accounts", AccountRouter);
-//app.use(SecurityRouter);
-
-
-
-//MAILER
-
 app.use(bodyParser.json());
 
-// Configuration du transporteur
 const transporter = nodemailer.createTransport({
     host: 'ssl0.ovh.net',
-    port: 587, // Utiliser 465 pour SSL
-    secure: false, // true pour 465, false pour les autres ports
+    port: 587,
+    secure: false,
     auth: {
         user: 'administrateur@tech-shop.tech',
         pass: 'TechShop!A'
@@ -66,11 +28,9 @@ transporter.verify(function(error, success) {
     }
 });
 
-// Fonction pour envoyer des emails
 function sendEmail(mailOptions) {
     return transporter.sendMail(mailOptions);
 }
-
 // Endpoint pour envoyer des emails
 app.post('/send-email', async (req, res) => {
     const { type, to, data } = req.body;
@@ -234,17 +194,94 @@ app.post('/send-email', async (req, res) => {
             };
             break;
 
-        default:
-            return res.status(400).send('Type de mail non reconnu');
-    }
+        case 'new-product':
+            mailOptions = {
+                from: 'administrateur@tech-shop.tech',
+                to: to,
+                subject: 'Nouveau produit dans la catégorie',
+                html: `
+                    <html>
+                        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                            <h2 style="color: #4CAF50;">Nouveau produit dans la catégorie ${data.categoryName}</h2>
+                            <p>Bonjour ${data.userName},</p>
+                            <p>Nous avons un nouveau produit dans la catégorie ${data.categoryName} :</p>
+                            <ul>
+                                <li>Nom du produit : ${data.productName}</li>
+                                <li>Prix : ${data.price}</li>
+                            </ul>
+                            <p>Venez le découvrir sur notre site !</p>
+                        </body>
+                    </html>
+                `
+            };
+            break;
 
-    try {
-        await sendEmail(mailOptions);
-        res.status(200).send('Email envoyé avec succès');
-    } catch (error) {
-        res.status(500).send('Erreur lors de l\'envoi de l\'email');
-    }
-});
+        case 'restock':
+            mailOptions = {
+                from: 'administrateur@tech-shop.tech',
+                to: to,
+                subject: 'Produit de nouveau en stock',
+                html: `
+                    <html>
+                        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                            <h2 style="color: #4CAF50;">Produit de nouveau en stock</h2>
+                            <p>Bonjour ${data.userName},</p>
+                            <p>Le produit ${data.productName} est de nouveau en stock !</p>
+                            <p>Venez le découvrir sur notre site avant qu'il ne soit à nouveau en rupture de stock.</p>
+                        </body>
+                    </html>
+                `
+            };
+            break;
+
+        case 'price-change':
+            mailOptions = {
+                from: 'administrateur@tech-shop.tech',
+                to: to,
+                subject: 'Changement de prix',
+                html: `
+                    <html>
+                        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                            <h2 style="color: #FFA500;">Changement de prix</h2>
+                            <p>Bonjour ${data.userName},</p>
+                            <p>Le prix du produit ${data.productName} a changé.</p>
+                            <p>Nouveau prix : ${data.newPrice}€</p>
+                        </body>
+                    </html>
+                `
+            };
+            break;
+
+        case 'newsletter-signup':
+            mailOptions = {
+                from: 'administrateur@tech-shop.tech',
+                to: to,
+                subject: 'Inscription à la newsletter',
+                html: `
+                    <html>
+                        <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                            <h2 style="color: #4CAF50;">Bienvenue à notre newsletter !</h2>
+                            <p>Bonjour ${data.userName},</p>
+                            <p>Merci de vous être inscrit à notre newsletter. Vous recevrez bientôt des nouvelles et des offres exclusives.</p>
+                            <p>Cordialement,<br>L'équipe TechShop</p>
+                        </body>
+                    </html>
+                `
+            };
+            break;
+
+            default:
+                return res.status(400).json({ error: 'Type de mail non reconnu' });
+        }
+    
+        try {
+            await sendEmail(mailOptions);
+            res.status(200).json({ message: 'Email envoyé avec succès' });
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi de l\'email:', error);
+            res.status(500).json({ error: 'Erreur lors de l\'envoi de l\'email', details: error.message });
+        }
+    });
 
 app.listen(3001, () => {
     console.log('Serveur démarré sur le port 3001');

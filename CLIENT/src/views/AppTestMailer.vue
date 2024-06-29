@@ -1,144 +1,155 @@
 <template>
-    <div class="bouttons">
-      <input type="text" v-model="email" placeholder="Entrez l'adresse email">
-      <button @click="sendAccountConfirmationEmail">Confirmer la création de compte</button>
-      <button @click="sendBirthdayEmail">Envoyer un mail d'anniversaire</button>
-      <button @click="sendAbandonedCartEmail">Rappeler panier abandonné</button>
-      <button @click="sendResetPasswordEmail">Changer de Mdp</button>
-      <button @click="sendPaymentConfirmationEmail">Confirmer le paiement</button>
-      <button @click="sendOrderConfirmationEmail">Confirmer la commande</button>
-      <button @click="sendShippingConfirmationEmail">Confirmer l'envoi</button>
+    <div class="row">
+      <div class="email-input">
+        <h2>Entrez l'adresse e-mail</h2>
+        <input v-model="email" type="email" placeholder="example@domain.com" />
+      </div>
+      <div class="bouttons">
+        <h1>Test Emails</h1>
+        <button @click="sendEmail('confirmation')">Send Confirmation Email</button>
+        <button @click="sendEmail('reset-password')">Send Reset Password Email</button>
+        <button @click="sendEmail('shipping-notification')">Send Shipping Notification Email</button>
+        <button @click="sendEmail('birthday')">Send Birthday Email</button>
+        <button @click="sendEmail('account-confirmation')">Send Account Confirmation Email</button>
+        <button @click="sendEmail('abandoned-cart')">Send Abandoned Cart Email</button>
+        <button @click="sendEmail('payment-confirmation')">Send Payment Confirmation Email</button>
+      </div>
+      <div class="bouttons">
+        <h1>Test Emails</h1>
+        <button @click="sendEmail('new-product')">Send New Product Email</button>
+        <button @click="sendEmail('restock')">Send Restock Email</button>
+        <button @click="sendEmail('price-change')">Send Price Change Email</button>
+        <button @click="sendEmail('newsletter-signup')">Send Newsletter Signup Email</button>
+      </div>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  
   export default {
     data() {
       return {
-        email: '' // Ajout de la propriété de données pour l'email
+        email: ''
       };
     },
     methods: {
-      async sendOrderConfirmationEmail() {
-        const emailData = {
-          type: 'confirmation',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            productName: 'Produit 1',
-            quantity: 1,
-            price: 20.00,
-            orderNumber: '12345'
+      async sendEmail(type) {
+        const data = {
+          confirmation: {
+            type: 'confirmation',
+            to: this.email,
+            data: {
+              productName: 'Produit 1',
+              quantity: 1,
+              price: 100,
+              orderNumber: '12345'
+            }
+          },
+          'reset-password': {
+            type: 'reset-password',
+            to: this.email,
+            data: {
+              token: 'abcd1234'
+            }
+          },
+          'shipping-notification': {
+            type: 'shipping-notification',
+            to: this.email,
+            data: {
+              orderNumber: '12345'
+            }
+          },
+          birthday: {
+            type: 'birthday',
+            to: this.email,
+            data: {
+              name: 'John Doe'
+            }
+          },
+          'account-confirmation': {
+            type: 'account-confirmation',
+            to: this.email,
+            data: {
+              name: 'John Doe'
+            }
+          },
+          'abandoned-cart': {
+            type: 'abandoned-cart',
+            to: this.email,
+            data: {
+              name: 'John Doe',
+              items: [
+                { name: 'Produit 1', price: 100 },
+                { name: 'Produit 2', price: 200 }
+              ]
+            }
+          },
+          'payment-confirmation': {
+            type: 'payment-confirmation',
+            to: this.email,
+            data: {
+              name: 'John Doe',
+              orderNumber: '12345'
+            }
+          },
+          'new-product': {
+            type: 'new-product',
+            to: this.email,
+            data: {
+              categoryName: 'Catégorie 1',
+              userName: 'John Doe',
+              productName: 'Nouveau Produit',
+              price: 150
+            }
+          },
+          restock: {
+            type: 'restock',
+            to: this.email,
+            data: {
+              userName: 'John Doe',
+              productName: 'Produit Restock'
+            }
+          },
+          'price-change': {
+            type: 'price-change',
+            to: this.email,
+            data: {
+              userName: 'John Doe',
+              productName: 'Produit 1',
+              newPrice: 120
+            }
+          },
+          'newsletter-signup': {
+            type: 'newsletter-signup',
+            to: this.email,
+            data: {
+              userName: 'John Doe'
+            }
           }
         };
   
         try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
-        } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
-        }
-      },
-      async sendResetPasswordEmail() {
-        const emailData = {
-          type: 'reset-password',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            token: 'abcdef123456' // Assurez-vous de générer un token réel
-          }
-        };
+          const response = await fetch('http://localhost:3001/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data[type])
+          });
   
-        try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
-        } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
-        }
-      },
-      async sendShippingConfirmationEmail() {
-        const emailData = {
-          type: 'shipping-notification',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            orderNumber: '12345'
+          // Vérifier si la réponse est du JSON
+          const text = await response.text();
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (error) {
+            // La réponse n'est pas du JSON
+            console.error('Error:', text);
+            return;
           }
-        };
   
-        try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
+          console.log('Success:', result);
         } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
-        }
-      },
-      async sendBirthdayEmail() {
-        const emailData = {
-          type: 'birthday',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            name: 'Client'
-          }
-        };
-  
-        try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
-        } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
-        }
-      },
-      async sendAccountConfirmationEmail() {
-        const emailData = {
-          type: 'account-confirmation',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            name: 'Client'
-          }
-        };
-  
-        try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
-        } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
-        }
-      },
-      async sendAbandonedCartEmail() {
-        const emailData = {
-          type: 'abandoned-cart',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            name: 'Client',
-            items: [
-              { name: 'Produit 1', price: 10.00 },
-              { name: 'Produit 2', price: 15.00 }
-            ]
-          }
-        };
-  
-        try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
-        } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
-        }
-      },
-      async sendPaymentConfirmationEmail() {
-        const emailData = {
-          type: 'payment-confirmation',
-          to: this.email, // Utilisation de la propriété de données
-          data: {
-            name: 'Client',
-            orderNumber: '12345'
-          }
-        };
-  
-        try {
-          const response = await axios.post('http://localhost:3001/send-email', emailData);
-          console.log('Email envoyé:', response.data);
-        } catch (error) {
-          console.error('Erreur lors de l\'envoi de l\'email:', error);
+          console.error('Error:', error);
         }
       }
     }
@@ -146,6 +157,19 @@
   </script>
   
   <style scoped>
+  .row {
+    display: flex;
+    gap: 2rem;
+  }
+  .email-input {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .email-input input {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
   .bouttons {
     display: flex;
     flex-direction: column;
