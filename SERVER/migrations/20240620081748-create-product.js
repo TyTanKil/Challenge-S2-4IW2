@@ -9,9 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id: {
-        type: Sequelize.UUID
-      },
       id_manufacturer: {
         type: Sequelize.INTEGER
       },
@@ -28,14 +25,15 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1000),
       },
       createdAt: {
         allowNull: false,
+        defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       }
     });
