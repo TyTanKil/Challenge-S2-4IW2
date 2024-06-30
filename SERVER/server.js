@@ -93,6 +93,6 @@ app.use((req, res) => {
   res.status(404).send("Page not found");
 });
 
-app.listen(3001, () => {
-  console.log("Serveur démarré sur le port 3001");
+app.listen(3000, () => {
+  console.log("Serveur démarré sur le port 3000");
 });
