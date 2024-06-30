@@ -12,6 +12,7 @@
     "watch": "npx tailwindcss -i ./src/assets/css/app.css -o ./src/assets/main.css --watch"
   },
   "dependencies": {
+    "chart.js": "^4.4.3",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },
