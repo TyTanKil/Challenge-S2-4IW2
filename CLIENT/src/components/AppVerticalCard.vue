@@ -54,7 +54,7 @@ function selectCard() {
 .card_vertical{
     background-color: #575757;
     color: #fff;
-    max-width: 20%;
+    max-width: 25%;
     min-width: 12rem;
     height: auto;
     margin: 1rem;
@@ -63,13 +63,15 @@ function selectCard() {
     border: 0.7px #C4F649 solid;
     transition: box-shadow 0.3s ease;
     &:hover{
-        cursor: pointer;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .card_vertical_img {
         height: auto;
         width: 100%;
         object-fit: contain; /* Permet de contenir l'image dans le conteneur */
+        &:hover{
+            cursor: pointer;
+        }
       }
 }
 .infos{
