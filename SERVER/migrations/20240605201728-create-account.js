@@ -18,6 +18,18 @@ module.exports = {
       lastName: {
         type: Sequelize.STRING
       },
+      gender: {
+        type: Sequelize.ENUM({
+          values: ['m', 'f', 'a']
+        }),
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM({
+          values: ['a', 'd', 's']
+        }),
+        allowNull: false
+      },
       email: {
         type: Sequelize.STRING
       },

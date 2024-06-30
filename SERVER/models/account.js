@@ -3,7 +3,13 @@ const { Model, DataTypes } = require("sequelize");
 const bcrypt = require("bcryptjs");
 const connection = require("./db");
 
-class account extends Model {}
+class account extends Model {
+    static associate(models) {
+        account.hasMany(models.userAddress, { foreignKey: 'id_user' });
+        account.hasMany(models.order, { foreignKey: 'id_user' });
+        account.hasOne(models.cart, { foreignKey: 'id_user' });
+      }
+}
 
 account.init({
     firstName: {
@@ -13,6 +19,16 @@ account.init({
     lastName: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    gender: {
+        type: DataTypes.STRING,
+        enum: ['m', 'f', 'a'], 
+        default: 'm'
+    },
+    status: {
+        type: DataTypes.STRING,
+        enum: ['a', 'd', 's'], 
+        default: 'd'
     },
     email: {
         type: DataTypes.STRING,
