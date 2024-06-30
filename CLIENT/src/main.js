@@ -8,23 +8,29 @@ import Identify from './views/AppIdentify.vue'
 import Create from './views/AppCreateAccount.vue'
 import Test from './views/AppTest.vue'
 import Product from './views/AppProduct.vue'
+import Mailer from './views/AppTestMailer.vue'
+import NotFound from './views/AppNotFound.vue'
+import ServerError from './views/AppServerError.vue'
 
 const routes = [
+  { path: '/' },
   { path: '/identify', component: Identify },
   { path: '/create', component: Create },
   { path: '/test', component: Test },
+  { path: '/mailer', component: Mailer },
   {
     path: '/product/:name:description:price:link_img',
     name: 'Product',
     component: Product,
-    props: route => ({
+    props: (route) => ({
       name: route.params.name,
       description: route.params.description,
       price: route.params.price,
       link_img: route.params.link_img
     })
-  }
-  // autres routes
+  },
+  { path: '/server-error', name: 'ServerError', component: ServerError },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound } // Catch-all route for 404
 ]
 
 const router = createRouter({
