@@ -21,6 +21,7 @@
                         <th class="py-3 px-6 text-center">Prix</th>
                         <th class="py-3 px-6 text-center">Stock</th>
                         <th class="py-3 px-6 text-center">Catégorie</th>
+                        <th class="py-3 px-6 text-center">Statut</th>
                         <th class="py-3 px-6 text-center">Actions</th>
                     </tr>
                 </thead>
@@ -36,8 +37,14 @@
                         <td class="py-3 px-6 text-center">{{ product.stock }}</td>
                         <td class="py-3 px-6 text-center">{{ product.category }}</td>
                         <td class="py-3 px-6 text-center">
+                            <span
+                                :class="{ 'bg-customGreen px-4 py-1 rounded-lg': product.status === 'active', 'bg-customRed px-4 py-1 rounded-lg': product.status === 'inactive' }">
+                                {{ product.status === 'active' ? 'Actif' : 'Inactif' }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-6 text-center">
                             <div class="flex item-center justify-center space-x-2 w-full gap-4">
-                                <button @click="editProduct(product)"
+                                <button @click="editProduct(product.id)"
                                     class="bg-customGreen hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -45,7 +52,7 @@
                                             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                     </svg>
                                 </button>
-                                <button @click="deleteProduct(product.id)"
+                                <button @click="confirmDelete(product.id)"
                                     class="bg-customRed hover:bg-customGreen-600 text-black font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -63,18 +70,23 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import axios from '../../axios'; 
 import { useRouter } from 'vue-router';
-
-// Exemple de données produits
-const products = ref([
-    { id: 1, name: 'Produit A', description: 'Description du produit A', price: 20.99, stock: 100, category: 'Catégorie 1', image: 'path/to/imageA.jpg' },
-    { id: 2, name: 'Produit B', description: 'Description du produit B', price: 15.49, stock: 50, category: 'Catégorie 2', image: 'path/to/imageB.jpg' },
-    { id: 3, name: 'Produit C', description: 'Description du produit C', price: 30.00, stock: 75, category: 'Catégorie 1', image: 'path/to/imageC.jpg' },
-]);
-
+import { useToast } from 'vue-toastification'; 
+const products = ref([]);
 const searchQuery = ref('');
 const router = useRouter();
+const toast = useToast();
+
+const fetchProducts = async () => {
+    try {
+        const response = await axios.get('/products');
+        products.value = response.data;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+};
 
 // Fonction pour filtrer les produits selon la barre de recherche
 const filteredProducts = computed(() => {
@@ -85,18 +97,35 @@ const filteredProducts = computed(() => {
     );
 });
 
+// Appeler fetchProducts quand le composant est monté
+onMounted(fetchProducts);
+
 // Fonctions pour ajouter, éditer et supprimer des produits
 const addProduct = () => {
     router.push({ name: 'AddProduct' });
 };
 
-const editProduct = (product) => {
-    console.log('Edit Product:', product);
+const editProduct = (id) => {
+    router.push({ name: 'EditProduct', params: { id } });
 };
 
-const deleteProduct = (id) => {
-    console.log('Delete Product with ID:', id);
+const confirmDelete = (id) => {
+    if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
+        deleteProduct(id);
+    }
+};
+
+const deleteProduct = async (id) => {
+    try {
+        await axios.delete(`/products/${id}`);
+        products.value = products.value.filter(product => product.id !== id);
+        toast.success('Produit supprimé avec succès');
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        toast.error('Erreur lors de la suppression du produit');
+    }
 };
 </script>
 
-<style scoped>/* Ajoutez des styles supplémentaires si nécessaire */</style>
+<style scoped>
+</style>

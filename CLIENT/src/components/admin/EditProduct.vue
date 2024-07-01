@@ -4,21 +4,26 @@
             <h1 class="text-2xl font-bold mb-8">Modifier un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
                 <FormInput id="name" label="Nom du produit" type="text" :modelValue="product.name"
-                    @update:modelValue="product.name = $event" required />
+                    @update:modelValue="product.name = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
-                    @update:modelValue="product.description = $event" required />
-                <FormInput id="price" label="Prix" type="number" :modelValue="product.price"
-                    @update:modelValue="product.price = $event" required />
+                    @update:modelValue="product.description = $event" required class="mb-4" />
+                <FormInput id="price" label="Prix" type="double" step="0.01" :modelValue="product.price"
+                    @update:modelValue="product.price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
-                    @update:modelValue="product.stock = $event" required />
-                <FormInput id="category" label="Catégorie" type="text" :modelValue="product.category"
-                    @update:modelValue="product.category = $event" required />
-                <FormFileInput id="image" label="Image" :modelValue="product.image"
-                    @update:modelValue="product.image = $event" required />
-                <div class="text-right">
+                    @update:modelValue="product.stock = $event" required class="mb-4" />
+                <FormSelect id="category" label="Catégorie" :options="categories" :modelValue="product.category"
+                    @update:modelValue="product.category = $event" required class="mb-4" />
+                <FormSelect id="status" label="Statut" :options="statusOptions" :modelValue="product.status"
+                    @update:modelValue="product.status = $event" required class="mb-4" />
+                <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
+                <div class="flex justify-between items-center">
                     <button type="submit"
                         class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
                         Enregistrer
+                    </button>
+                    <button type="button" @click="confirmDelete"
+                        class="bg-customRed hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                        Supprimer
                     </button>
                 </div>
             </form>
@@ -29,12 +34,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import axios from '../../axios'; 
+import { useToast } from 'vue-toastification';
+import FormSelect from '../formComponents/admin/FormSelect.vue';
 import FormInput from '../formComponents/admin/FormInput.vue';
 import FormTextarea from '../formComponents/admin/FormTextarea.vue';
 import FormFileInput from '../formComponents/admin/FormFileInput.vue';
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
+const categories = ref([]);
+const statusOptions = ref([
+    { value: 'active', text: 'Actif' },
+    { value: 'inactive', text: 'Inactif' }
+]);
 
 const product = ref({
     name: '',
@@ -42,36 +56,76 @@ const product = ref({
     price: 0,
     stock: 0,
     category: '',
-    image: null
+    image: null,
+    status: 'active'
 });
 
-onMounted(() => {
-    const productId = route.params.id;
-    // Fetch the product data using the productId
-    // This is a placeholder. Replace it with your actual data fetching logic.
-    fetchProductData(productId);
-});
-
-const fetchProductData = (productId) => {
-    // Placeholder function to simulate fetching product data from an API
-    // Replace this with your actual API call
-    const fetchedProduct = {
-        id: productId,
-        name: 'Produit Exemple',
-        description: 'Ceci est un produit exemple',
-        price: 100,
-        stock: 10,
-        category: 'Catégorie Exemple',
-        image: null // Replace with actual image data if available
-    };
-    product.value = fetchedProduct;
+const fetchCategories = async () => {
+    try {
+        const response = await axios.get('/categories');
+        categories.value = response.data.map(category => ({
+            value: category.name,
+            text: category.name
+        }));
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+    }
 };
 
-const submitForm = () => {
-    console.log('Product updated:', product.value);
-    // Ajouter la logique pour mettre à jour le produit
-    router.push({ name: 'ProductList' });
+onMounted(async () => {
+    const productId = route.params.id;
+    try {
+        const response = await axios.get(`/products/${productId}`);
+        product.value = response.data;
+    } catch (error) {
+        console.error('Error fetching product:', error);
+    }
+    fetchCategories();
+});
+
+const handleFileUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+        const response = await axios.post('/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        product.value.image = `/images/${response.data.filename}`;
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    }
+};
+
+const submitForm = async () => {
+    const productId = route.params.id;
+    try {
+        await axios.put(`/products/${productId}`, product.value);
+        toast.success('Produit modifié avec succès');
+        router.push({ name: 'ProductList' });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        toast.error('Erreur lors de la modification du produit');
+    }
+};
+
+const confirmDelete = () => {
+    if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
+        deleteProduct();
+    }
+};
+
+const deleteProduct = async () => {
+    const productId = route.params.id;
+    try {
+        await axios.delete(`/products/${productId}`);
+        toast.success('Produit supprimé avec succès');
+        router.push({ name: 'ProductList' });
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        toast.error('Erreur lors de la suppression du produit');
+    }
 };
 </script>
 
-<style scoped>/* Ajoutez des styles supplémentaires si nécessaire */</style>
