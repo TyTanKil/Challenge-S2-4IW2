@@ -1,6 +1,7 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
+import { createStore } from 'vuex'
 import App from './App.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -13,12 +14,30 @@ import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue';
 
+import {jwtDecode} from 'jwt-decode';
+
+// Create a new store instance.
+const store = createStore({
+  state () {
+    return {
+      user_id: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).id : null,
+    }
+  },
+  mutations: {
+    updateUser(state) {
+      const token = localStorage.getItem('jwtToken');
+      if(token) {
+        state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id;
+      }
+    }
+  }
+})
 
 const routes = [
   { path: '/' },
-  { path: '/login', component: Identify },
+  { path: '/login', component: Identify, meta: { requiresNoAuth: true } },
   { path: '/create', component: Create },
-  { path: '/test', component: Test },
+  { path: '/test', component: Test, meta: { requiresAuth: true } },
   { path: '/mailer', component: Mailer },
   {
     path: '/product/:name:description:price:link_img',
@@ -41,6 +60,23 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach((to, from) => {
+  if (to.meta.requiresAuth && store.state.user_id == null) {
+    return {
+      path: '/login',
+      // save the location we were at to come back later
+      query: {redirect: to.fullPath},
+    }
+  }
+
+  if(to.meta.requiresNoAuth && store.state.user_id != null){
+    return {
+      path: "/",
+    }
+  }
+});
+
 const app = createApp(App)
 app.use(router)
+app.use(store);
 app.mount('#app')
