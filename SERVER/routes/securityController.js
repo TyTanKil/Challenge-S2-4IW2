@@ -20,7 +20,7 @@ router.post("/login", async (req, res, next) => {
   const token = jwt.sign(
     {
       id: account.id,
-      admin: account.roles.contains("ROLE_ADMIN"),
+      admin: (Object.values(account.roles).indexOf('ROLE_ADMIN') !== -1),
     },
     process.env.JWT_SECRET,
     {
@@ -29,12 +29,7 @@ router.post("/login", async (req, res, next) => {
     }
   );
 
-  res.cookie("JWT", token, {
-    httpOnly: true,
-    signed: true,
-  });
-
-  res.json(account);
+  res.json({account, token: token});
 });
 
 module.exports = router;

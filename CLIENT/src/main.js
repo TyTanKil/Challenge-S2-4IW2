@@ -13,9 +13,10 @@ import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue';
 
+
 const routes = [
   { path: '/' },
-  { path: '/identify', component: Identify },
+  { path: '/login', component: Identify },
   { path: '/create', component: Create },
   { path: '/test', component: Test },
   { path: '/mailer', component: Mailer },
