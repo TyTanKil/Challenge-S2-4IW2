@@ -6,17 +6,28 @@
   import { ref } from 'vue';
   import ApiClient from '@/assets/js/apiClient';
 
+  import { useStore } from 'vuex';
+  import { useRouter } from 'vue-router';
+
+  const store = useStore(); // Accéder au store Vuex
+  const router = useRouter(); // Accéder au router
+
   const email = ref('');
   const password = ref('');
 
   const handleLogin = async () => {
     try {
-      let response = await ApiClient.login(email.value,password.value);
+      let response = await ApiClient.login(email.value, password.value);
 
-      localStorage.setItem('jwtToken', response.data.token);
+      localStorage.setItem('jwtToken', response.data);
+      store.commit('updateUser')
 
-      const userData = response.data;
-      console.log(userData);
+      if(false){
+        //TODO : pas de redirect
+        console.log("pas de redirect");
+      }else{
+        await router.push({path: '/'});
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
