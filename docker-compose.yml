@@ -12,7 +12,6 @@ services:
     volumes:
       - ./SERVER:/home/node/app
     command: sh -c "npm install && npm run dev_nodemon"
-    # npm run dev ?
 
   mongo:
     image: mongo:latest
