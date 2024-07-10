@@ -1,7 +1,10 @@
 'use strict';
+const {DataTypes} = require("sequelize");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`CREATE TYPE "enum_account_roles" AS ENUM('ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN');`);
+
     await queryInterface.createTable('account', {
       id: {
         allowNull: false,
@@ -9,14 +12,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id: {
-        type: Sequelize.INTEGER
-      },
       firstName: {
         type: Sequelize.STRING
       },
       lastName: {
         type: Sequelize.STRING
+      },
+      gender: {
+        type: Sequelize.ENUM({
+          values: ['m', 'f', 'a']
+        }),
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM({
+          values: ['a', 'd', 's']
+        }),
+        allowNull: false
       },
       email: {
         type: Sequelize.STRING
@@ -33,17 +45,26 @@ module.exports = {
       birth_date: {
         type: Sequelize.DATE
       },
+      roles: {
+        type: DataTypes.ARRAY(DataTypes.ENUM({
+          values: ['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']
+        })),
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
+        defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('account');
+
+    await queryInterface.sequelize.query(`DROP TYPE "enum_account_roles";`);
   }
 };
