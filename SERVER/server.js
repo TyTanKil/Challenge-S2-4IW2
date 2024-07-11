@@ -18,10 +18,19 @@ const restockTemplate = require("./templates-mail/restock");
 const priceChangeTemplate = require("./templates-mail/price-change");
 const newsletterSignupTemplate = require("./templates-mail/newsletter-signup");
 
+const productController = require("./routes/productController");
+const categoryController = require("./routes/categoryController");
+const manufacturerController = require("./routes/manufacturerController");
+const uploadController = require("./routes/uploadController");
+
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/products", productController);
+app.use("/category", categoryController);
+app.use("/manufacturer", manufacturerController);
+app.use("/upload", uploadController);
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
