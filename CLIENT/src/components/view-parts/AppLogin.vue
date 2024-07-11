@@ -4,14 +4,33 @@
   import AppInputCheckbox from '../formComponents/AppInputCheckbox.vue';
 
   import { ref } from 'vue';
-  
+  import ApiClient from '@/assets/js/apiClient';
+
+  import { useStore } from 'vuex';
+  import { useRouter } from 'vue-router';
+
+  const store = useStore(); // Accéder au store Vuex
+  const router = useRouter(); // Accéder au router
+
   const email = ref('');
   const password = ref('');
-  
-  const handleLogin = () => {
-    // Logique de connexion
-    console.log('Email:', email.value);
-    console.log('Password:', password.value);
+
+  const handleLogin = async () => {
+    try {
+      let response = await ApiClient.login(email.value, password.value);
+
+      localStorage.setItem('jwtToken', response.data);
+      store.commit('updateUser')
+
+      if(false){
+        //TODO : pas de redirect
+        console.log("pas de redirect");
+      }else{
+        await router.push({path: '/'});
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 </script>
 
@@ -19,8 +38,8 @@
     <div class="login-page">
       <p>Connectez-vous avec votre adresse email et votre mot de passe pour accéder à votre espace client.</p>
       <form @submit.prevent="handleLogin">
-        <AppInputText label="Email" placeholder="test@mail.com" isNeeded></AppInputText>
-        <AppInputText label="Mot de passe" placeholder="123456789" isNeeded hideContent></AppInputText>
+        <AppInputText label="Email" v-model="email" placeholder="test@mail.com" isNeeded></AppInputText>
+        <AppInputText label="Mot de passe" v-model="password" placeholder="123456789" isNeeded hideContent></AppInputText>
         <AppInputCheckbox label="Rester connecté ?"></AppInputCheckbox>
         <AppButtonSecondary  label="Connexion"></AppButtonSecondary>
       </form>
