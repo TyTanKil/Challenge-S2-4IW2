@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
 const app = express();
 const AccountRouter = require("./routes/accountController");
+const CartRouter = require("./routes/cartController");
 const SecurityRouter = require("./routes/securityController");
 
 // Import email templates
@@ -91,6 +92,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use("/users", AccountRouter);
+app.use("/cart", CartRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {

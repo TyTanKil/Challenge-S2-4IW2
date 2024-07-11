@@ -3,13 +3,6 @@ const Cart = require("../models/cart");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
-router.get("/", checkAuth, async (req, res, next) => {
-  const carts = await Cart.findAll({
-    where: req.query,
-  });
-  res.json(carts);
-});
-
 router.post("/", async (req, res, next) => {
   try {
     const cart = await Cart.create(req.body);
