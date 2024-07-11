@@ -10,6 +10,7 @@ router.post("/login", async (req, res, next) => {
   const account = await Account.findOne({
     where: {
       [Op.or]: [{ email: req.body.login }, { login: req.body.login }],
+      [Op.and]: [{ status: "a" }],
     },
   });
   if (!account) return res.sendStatus(401);
