@@ -11,6 +11,7 @@ import Product from './views/AppProduct.vue'
 import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
+import MyAccount from './views/AppMyAccount.vue';
 
 const routes = [
   { path: '/' },
@@ -30,7 +31,8 @@ const routes = [
     })
   },
   { path: '/server-error', name: 'ServerError', component: ServerError },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound } // Catch-all route for 404
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
+  { path: '/MyAccount', component: MyAccount },
 ]
 
 const router = createRouter({
