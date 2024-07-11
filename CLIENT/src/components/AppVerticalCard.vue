@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { defineProps } from 'vue';
+import { useToast } from 'vue-toast-notification';
 
 const props = defineProps({     //Définition des données passées par le composants
     label: String,
@@ -9,6 +10,8 @@ const props = defineProps({     //Définition des données passées par le compo
     link_img: String
 });
 
+const toast = useToast();
+
 function navigate() {         //Fonction pour naviguer sur la page grace au lien fourni
   if (props.link) {
     window.location.href = props.link;
@@ -17,6 +20,7 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 
 function addToCart() {
     //Ajouter au panier
+    toast.success(`Produit ajouté au panier : ${props.label}`);
 }
 
 
@@ -42,7 +46,7 @@ function selectCard() {
         <div class="buy_div_container">
             <p>Prix : {{ props.price }} €</p>
             <div class="cart_img_container">
-                <button><img class="cart_card" src="\src\assets\img\svg\icons\cart2.svg" alt=""></button>
+                <button @click="addToCart"><img class="cart_card" src="\src\assets\img\svg\icons\cart2.svg" alt=""></button>
             </div>
         </div>
     </div>
