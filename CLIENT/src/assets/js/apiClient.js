@@ -29,6 +29,16 @@ class ApiClient {
         }
     }
 
+    // Méthode pour effectuer une requête PATCH
+    async patch(url, data) {
+        try {
+            const response = await this.client.patch(url, data);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     // Méthode pour effectuer une requête PUT
     async put(url, data) {
         try {
