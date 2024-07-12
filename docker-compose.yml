@@ -5,6 +5,7 @@ services:
       PORT: 3000
       MONGO_URL: mongodb://root:password@mongo:27017/app?authSource=admin
       DATABASE_URL: postgres://techshop_site:3zH659q0fUMW6ve4FXLv@postgres:5432/techshop
+      JWT_SECRET: 'codeSecretJWTTechshop'
     ports:
       - 3000:3000
     working_dir: /home/node/app
@@ -44,7 +45,6 @@ services:
     working_dir: /home/app/
     environment:
       NODE_ENV: development
-      JWT_SECRET: 'codeSecretJWTTechshop'
     volumes:
       - ./CLIENT:/home/app
       - /app/node_modules

@@ -4,13 +4,15 @@ const {DataTypes} = require("sequelize");
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`CREATE TYPE "enum_account_roles" AS ENUM('ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN');`);
+    await queryInterface.sequelize.query(`CREATE TYPE "enum_account_status" AS ENUM('a', 'd', 's', 'c');`);
+    await queryInterface.sequelize.query(`CREATE TYPE "enum_account_gender" AS ENUM('m', 'f', 'a');`);
 
     await queryInterface.createTable('account', {
       id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+        primaryKey: true
       },
       firstName: {
         type: Sequelize.STRING
@@ -26,7 +28,7 @@ module.exports = {
       },
       status: {
         type: Sequelize.ENUM({
-          values: ['a', 'd', 's']
+          values: ['a', 'd', 's', 'c']
         }),
         allowNull: false
       },
@@ -34,7 +36,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       phone: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true
       },
       login: {
         type: Sequelize.STRING
@@ -66,5 +69,7 @@ module.exports = {
     await queryInterface.dropTable('account');
 
     await queryInterface.sequelize.query(`DROP TYPE "enum_account_roles";`);
+    await queryInterface.sequelize.query(`DROP TYPE "enum_account_status";`);
+    await queryInterface.sequelize.query(`DROP TYPE "enum_account_gender";`);
   }
 };
