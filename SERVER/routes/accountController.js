@@ -1,7 +1,10 @@
 const { Router } = require("express");
 const Account = require("../models/account");
 const checkAuth = require("../middlewares/checkAuth");
+const sequelize = require("sequelize");
 const router = new Router();
+const {Op} = require("sequelize");
+const { v4: uuidv4 } = require('uuid');
 
 router.get("/", checkAuth, async (req, res, next) => {
   const accounts = await Account.findAll({
@@ -12,10 +15,27 @@ router.get("/", checkAuth, async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const account = await Account.create(req.body);
-    res.status(201).json(account);
+    req.body.login = `${req.body.firstName[0]}${req.body.lastName}`;
+    const nbExisting = await Account.count({
+      where: {
+        login: {
+          [Op.like]: `${req.body.login}%`
+        }
+      }
+    });
+    if(nbExisting > 0){
+      req.body.login += nbExisting + 1;
+    }
+
+    const account = await Account.create({
+      id: uuidv4(),
+      ...req.body,
+      status: 'c',
+      roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`)
+    });
+    res.sendStatus(201);
   } catch (e) {
-    next(e);
+    res.sendStatus(400);
   }
 });
 
