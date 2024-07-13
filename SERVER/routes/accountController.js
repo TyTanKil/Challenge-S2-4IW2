@@ -5,6 +5,8 @@ const sequelize = require("sequelize");
 const router = new Router();
 const {Op} = require("sequelize");
 const { v4: uuidv4 } = require('uuid');
+const accountConfirmationTemplate = require("../templates-mail/account-confirmation");
+const {sendEmail} = require("../mailer");
 
 router.get("/", checkAuth, async (req, res, next) => {
   const accounts = await Account.findAll({
@@ -15,7 +17,7 @@ router.get("/", checkAuth, async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    req.body.login = `${req.body.firstName[0]}${req.body.lastName}`;
+    req.body.login = `${req.body.firstName[0]}${req.body.lastName}`.toLowerCase();
     const nbExisting = await Account.count({
       where: {
         login: {
@@ -27,15 +29,29 @@ router.post("/", async (req, res, next) => {
       req.body.login += nbExisting + 1;
     }
 
+    const validate_hash = uuidv4();
+
     const account = await Account.create({
       id: uuidv4(),
       ...req.body,
       status: 'c',
-      roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`)
+      roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
+      validate_hash: validate_hash
     });
+
+    const mailOptions = accountConfirmationTemplate({
+      to: req.body.email,
+      name: `${req.body.firstName} ${req.body.lastName}`,
+      valid_link: `${process.env.FRONT_URL}/validate-account/${validate_hash}`
+    });
+
+    await sendEmail(mailOptions);
     res.sendStatus(201);
   } catch (e) {
-    res.sendStatus(400);
+    if(e.errors[0].type === "unique violation"){
+        return res.status(409).json({field: e.errors[0].path});
+    }
+    res.status(400).json(e);
   }
 });
 

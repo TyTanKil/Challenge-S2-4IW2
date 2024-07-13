@@ -62,6 +62,10 @@ account.init({
         })),
         allowNull: false
     },
+    validate_hash: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
 }, {
     sequelize: connection,
     indexes: [
