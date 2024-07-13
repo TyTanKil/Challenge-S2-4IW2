@@ -15,6 +15,8 @@ import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue';
 
 import {jwtDecode} from 'jwt-decode';
+import VueToast from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-sugar.css';
 
 // Create a new store instance.
 const store = createStore({
@@ -78,5 +80,8 @@ router.beforeEach((to, from) => {
 
 const app = createApp(App)
 app.use(router)
+app.use(VueToast, {
+  position: 'top-right'
+});
 app.use(store);
 app.mount('#app')

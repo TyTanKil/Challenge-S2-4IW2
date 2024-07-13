@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import AppButtonSecondary from '../components/formComponents/AppButtonSecondary.vue';
-import AppInputText from '../components/formComponents/AppInputText.vue';
+import AppButtonSecondary from '@/components/formComponents/AppButtonSecondary.vue';
+import AppInputText from '@/components/formComponents/AppInputText.vue';
 import AppInputDate from '@/components/formComponents/AppInputDate.vue';
 import AppInputRadio from '@/components/formComponents/AppInputRadio.vue';
+import { useToast } from 'vue-toast-notification';
+import ApiClient from '@/assets/js/apiClient';
 
 const email = ref('');
 const password = ref('');
@@ -20,8 +22,10 @@ const lastNameError = ref('');
 const firstNameError = ref('');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{12,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const phoneRegex = /^(?:(?:\+33|0)\s*[1-9](?:[\s.-]*\d{2}){4}|\d{10})$/;
+
+const toast = useToast();
 
 const validateEmail = () => {
   if (!emailRegex.test(email.value)) {
@@ -34,7 +38,7 @@ const validateEmail = () => {
 
 const validatePassword = () => {
   if (!passwordRegex.test(password.value)) {
-    passwordError.value = "Le mot de passe doit contenir au moins 12 caractères, avec des lettres majuscules, minuscules, des chiffres et des symboles.";
+    passwordError.value = "Le mot de passe doit contenir des lettres majuscules, minuscules, des chiffres et des symboles.";
     return false;
   }
   passwordError.value = '';
@@ -68,22 +72,36 @@ const validateLastName = () => {
     return true;
 }
 
-const handleCreate = () => {
+const handleCreate = async () => {
   const isEmailValid = validateEmail();
   const isPasswordValid = validatePassword();
   const isPhoneValid = validatePhone();
   const isFirstNameValid = validateFirstName();
   const isLastNameValid = validateLastName();
 
-  if (isEmailValid && isPasswordValid && isPhoneValid && isFirstNameValid && isLastNameValid) {
-    console.log('Inscription');
-    console.log('Adresse Email:', email.value);
-    console.log('Telephone:', phone.value);
-    console.log('Mot de passe:', password.value);
-    console.log('Prénom:', firstName.value);
-    console.log('Nom:', lastName.value);
-    console.log('Civilité:', gender.value);
-    console.log('Date de naissance:', birthDate.value);
+  if ( isEmailValid && isPasswordValid && isPhoneValid && isFirstNameValid && isLastNameValid ) {
+    try {
+      let response = await ApiClient.post( "/user", {
+        "firstName": firstName.value,
+        "lastName": lastName.value,
+        "gender": gender.value,
+        "email": email.value,
+        "password": password.value,
+        "phone": phone.value,
+        "birth_date": birthDate.value
+      } );
+
+      toast.success(`Compte crée : vous avez reçu un email de confirmation. Veuillez vérifier votre boîte de réception.`);
+    } catch ( error ) {
+      switch ( error.response.status ) {
+        case 409:
+          toast.error( `Impossible de créer le compte - le champ ${error.response.data.field} n'est pas unique` );
+          break;
+        default:
+          toast.error( 'Impossible de créer le compte - veuillez contacter l\'assistance' );
+          break;
+      }
+    }
   }
 };
 </script>
@@ -107,7 +125,7 @@ const handleCreate = () => {
         <span v-if="firstNameError" class="error">{{ firstNameError }}</span>
         <AppInputText v-model="lastName" label="Nom" isNeeded placeholder="Nom"></AppInputText>
         <span v-if="lastNameError" class="error">{{ lastNameError }}</span>
-        <AppInputRadio v-model="gender" label="Civilité" :options="['M.', 'Mme.', 'Autre']"></AppInputRadio>
+        <AppInputRadio v-model="gender" label="Civilité" :options="[{value: 'm', label: 'M.'}, {value: 'f', label: 'Mme.'}, {value: 'a', label: 'Autre'}]"></AppInputRadio>
         <AppInputDate v-model="birthDate" label="Date de naissance" isNeeded></AppInputDate>
       </div>
       <AppButtonSecondary label="Valider"></AppButtonSecondary>
