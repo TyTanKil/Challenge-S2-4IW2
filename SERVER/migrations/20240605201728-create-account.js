@@ -12,7 +12,8 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        unique: true
       },
       firstName: {
         type: Sequelize.STRING
@@ -33,14 +34,18 @@ module.exports = {
         allowNull: false
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
+        unique: true
       },
       login: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       },
       password: {
         type: Sequelize.STRING
@@ -53,6 +58,10 @@ module.exports = {
           values: ['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']
         })),
         allowNull: false
+      },
+      validate_hash: {
+        type: DataTypes.STRING,
+        allowNull: true
       },
       createdAt: {
         allowNull: false,
