@@ -10,11 +10,6 @@
   const selectTab = (tab: string) => {
     isReturningClient.value = (tab === 'returning');
   };
-  
-  const createAccount = () => {
-    // Logique pour créer un compte
-    console.log('Création de compte');
-  };
 </script>
 
 <template>
