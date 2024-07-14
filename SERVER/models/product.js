@@ -1,14 +1,8 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class product extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       product.belongsTo(models.category, { foreignKey: 'id_category' });
       product.belongsTo(models.manufacturer, { foreignKey: 'id_manufacturer' });
@@ -18,8 +12,13 @@ module.exports = (sequelize, DataTypes) => {
       product.hasOne(models.stock, { foreignKey: 'id_product' });
     }
   }
+
   product.init({
-    id: DataTypes.UUID,
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      allowNull: false,
+    },
     id_manufacturer: DataTypes.INTEGER,
     id_category: DataTypes.INTEGER,
     ref: DataTypes.STRING,
@@ -29,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'product',
+    tableName: 'products',
+    timestamps: true,
   });
+
   return product;
 };

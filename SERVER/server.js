@@ -94,7 +94,7 @@ app.use((err, req, res, next) => {
 
 app.use("/users", AccountRouter);
 app.use("/cart", CartRouter);
-app.use("/product", ProductRouter);
+app.use("/products", ProductRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {
