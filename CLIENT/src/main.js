@@ -6,6 +6,7 @@ import App from './App.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
+import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
 import Test from './views/AppTest.vue'
 import Product from './views/AppProduct.vue'
@@ -36,6 +37,13 @@ const store = createStore({
 const routes = [
   { path: '/' },
   { path: '/login', component: Identify, meta: { requiresNoAuth: true } },
+  { path: '/validate/:hash',
+    component: Validate,
+    meta: { requiresNoAuth: true },
+    props: (route) => ({
+      hash: route.params.hash
+    })
+  },
   { path: '/create', component: Create },
   { path: '/test', component: Test, meta: { requiresAuth: true } },
   { path: '/mailer', component: Mailer },
@@ -63,7 +71,6 @@ router.beforeEach((to, from) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
     return {
       path: '/login',
-      // save the location we were at to come back later
       query: {redirect: to.fullPath},
     }
   }
