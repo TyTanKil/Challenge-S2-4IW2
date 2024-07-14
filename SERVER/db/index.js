@@ -7,9 +7,11 @@ db.Sequelize = Sequelize;
 db.DataTypes = DataTypes; //krl
 db.sequelize = sequelize;
 
-db.Category = require("../models/Category")(sequelize, DataTypes);
-db.Product = require("../models/Product")(sequelize, DataTypes);
-db.Manufacturer = require("../models/Manufacturer")(sequelize, DataTypes);
+db.Category = require("../models/category")(sequelize, DataTypes);
+db.Product = require("../models/product")(sequelize, DataTypes);
+db.Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
+db.Stock = require("../models/stock")(sequelize, DataTypes);
+db.ProductImage = require("../models/productimage")(sequelize, DataTypes);
 
 // db.Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
 

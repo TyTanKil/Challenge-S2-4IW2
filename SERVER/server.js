@@ -22,6 +22,8 @@ const productController = require("./routes/productController");
 const categoryController = require("./routes/categoryController");
 const manufacturerController = require("./routes/manufacturerController");
 const uploadController = require("./routes/uploadController");
+const stockController = require("./routes/stockController");
+const productimageController = require("./routes/productimageController");
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
@@ -30,6 +32,8 @@ app.use(bodyParser.json());
 app.use("/products", productController);
 app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
+app.use("/stocks", stockController);
+app.use("/productimage", productimageController);
 app.use("/upload", uploadController);
 
 // Endpoint pour envoyer des emails
