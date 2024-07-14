@@ -3,16 +3,19 @@
         <div class="w-full max-w-lg">
             <h1 class="text-2xl font-bold mb-8">Modifier un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
-                <FormInput id="name" label="Nom du produit" type="text" :modelValue="product.name"
-                    @update:modelValue="product.name = $event" required class="mb-4" />
+                <FormInput id="label" label="Nom du produit" type="text" :modelValue="product.label"
+                    @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
-                <FormInput id="price" label="Prix" type="double" step="0.01" :modelValue="product.price"
-                    @update:modelValue="product.price = $event" required class="mb-4" />
+                <FormInput id="unit_price" label="Prix" type="double" step="0.01" :modelValue="product.unit_price"
+                    @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
                     @update:modelValue="product.stock = $event" required class="mb-4" />
-                <FormSelect id="category" label="Catégorie" :options="categories" :modelValue="product.category"
-                    @update:modelValue="product.category = $event" required class="mb-4" />
+                <FormSelect id="category" label="Catégorie" :options="categories" :modelValue="product.id_category"
+                    @update:modelValue="product.id_category = $event" required class="mb-4" />
+                <FormSelect id="manufacturer" label="Fabricant" :options="manufacturers"
+                    :modelValue="product.id_manufacturer" @update:modelValue="product.id_manufacturer = $event" required
+                    class="mb-4" />
                 <FormSelect id="status" label="Statut" :options="statusOptions" :modelValue="product.status"
                     @update:modelValue="product.status = $event" required class="mb-4" />
                 <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
@@ -34,7 +37,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import axios from '../../axios'; 
+import axios from '../../axios';
 import { useToast } from 'vue-toastification';
 import FormSelect from '../formComponents/admin/FormSelect.vue';
 import FormInput from '../formComponents/admin/FormInput.vue';
@@ -45,30 +48,44 @@ const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 const categories = ref([]);
+const manufacturers = ref([]);
 const statusOptions = ref([
     { value: 'active', text: 'Actif' },
     { value: 'inactive', text: 'Inactif' }
 ]);
 
 const product = ref({
-    name: '',
+    label: '',
     description: '',
-    price: 0,
+    unit_price: 0,
     stock: 0,
-    category: '',
-    image: null,
+    id_category: '',
+    id_manufacturer: '',
+    image: '',
     status: 'active'
 });
 
 const fetchCategories = async () => {
     try {
-        const response = await axios.get('/categories');
+        const response = await axios.get('/category');
         categories.value = response.data.map(category => ({
-            value: category.name,
-            text: category.name
+            value: category.id,
+            text: category.label
         }));
     } catch (error) {
         console.error('Error fetching categories:', error);
+    }
+};
+
+const fetchManufacturers = async () => {
+    try {
+        const response = await axios.get('/manufacturer');
+        manufacturers.value = response.data.map(manufacturer => ({
+            value: manufacturer.id,
+            text: manufacturer.label
+        }));
+    } catch (error) {
+        console.error('Error fetching manufacturers:', error);
     }
 };
 
@@ -77,10 +94,13 @@ onMounted(async () => {
     try {
         const response = await axios.get(`/products/${productId}`);
         product.value = response.data;
+        product.value.stock = response.data.Stock ? response.data.Stock.quantity : 0; 
+        product.value.stock = response.data.Stock.quantity;
     } catch (error) {
         console.error('Error fetching product:', error);
     }
     fetchCategories();
+    fetchManufacturers();
 });
 
 const handleFileUpload = async (file) => {
@@ -101,7 +121,7 @@ const handleFileUpload = async (file) => {
 const submitForm = async () => {
     const productId = route.params.id;
     try {
-        await axios.put(`/products/${productId}`, product.value);
+        await axios.patch(`/products/${productId}`, product.value); // Use PATCH instead of PUT
         toast.success('Produit modifié avec succès');
         router.push({ name: 'ProductList' });
     } catch (error) {
@@ -129,3 +149,6 @@ const deleteProduct = async () => {
 };
 </script>
 
+<style scoped>
+/* Ajoutez des styles supplémentaires si nécessaire */
+</style>

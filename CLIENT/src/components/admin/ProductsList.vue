@@ -29,13 +29,17 @@
                     <tr v-for="product in filteredProducts" :key="product.id"
                         class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">
-                            <img :src="product.image" alt="Product Image" class="w-10 h-10 object-cover rounded" />
+                            <img v-if="product.ProductImages && product.ProductImages.length"
+                                :src="'data:image/jpeg;base64,' + product.ProductImages[0].content" alt="Product Image"
+                                class="w-10 h-10 object-cover rounded" />
+                            <img v-else src="" alt="Default Image"
+                                class="w-10 h-10 object-cover rounded" />
                         </td>
-                        <td class="py-3 px-6 text-left">{{ product.name }}</td>
+                        <td class="py-3 px-6 text-left">{{ product.label }}</td>
                         <td class="py-3 px-6 text-left">{{ product.description }}</td>
-                        <td class="py-3 px-6 text-center">{{ product.price }} €</td>
-                        <td class="py-3 px-6 text-center">{{ product.stock }}</td>
-                        <td class="py-3 px-6 text-center">{{ product.category }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.unit_price.toFixed(2) }} €</td>
+                        <td class="py-3 px-6 text-center">{{ product.Stock.quantity }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.Category.label }}</td>
                         <td class="py-3 px-6 text-center">
                             <span
                                 :class="{ 'bg-customGreen px-4 py-1 rounded-lg': product.status === 'active', 'bg-customRed px-4 py-1 rounded-lg': product.status === 'inactive' }">
@@ -53,7 +57,7 @@
                                     </svg>
                                 </button>
                                 <button @click="confirmDelete(product.id)"
-                                    class="bg-customRed hover:bg-customGreen-600 text-black font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
+                                    class="btn-red hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -71,9 +75,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import axios from '../../axios'; 
+import axios from '../../axios';
 import { useRouter } from 'vue-router';
-import { useToast } from 'vue-toastification'; 
+import { useToast } from 'vue-toastification';
 const products = ref([]);
 const searchQuery = ref('');
 const router = useRouter();
@@ -91,9 +95,9 @@ const fetchProducts = async () => {
 // Fonction pour filtrer les produits selon la barre de recherche
 const filteredProducts = computed(() => {
     return products.value.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        product.label.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.value.toLowerCase())
+        product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
 });
 
@@ -127,5 +131,4 @@ const deleteProduct = async (id) => {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped>/* Ajoutez des styles supplémentaires si nécessaire */</style>

@@ -3,18 +3,19 @@
         <div class="w-full max-w-lg">
             <h1 class="text-2xl font-bold mb-8">Ajouter un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
-                <FormInput id="name" label="Nom du produit" type="text" :modelValue="product.name"
-                    @update:modelValue="product.name = $event" required class="mb-4" />
+                <FormInput id="label" label="Nom du produit" type="text" :modelValue="product.label"
+                    @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
-                <FormInput id="price" label="Prix" type="double" step="0.01" :modelValue="product.price"
-                    @update:modelValue="product.price = $event" required class="mb-4" />
+                <FormInput id="unit_price" label="Prix" type="double" step="0.01" :modelValue="product.unit_price"
+                    @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
-                    @update:modelValue="product.stock = $event" required class="mb-4" />
-                <FormSelect id="category" label="Catégorie" :options="categories" :modelValue="product.category"
-                    @update:modelValue="product.category = $event" required class="mb-4" />
-                <FormSelect id="status" label="Statut" :options="statusOptions" :modelValue="product.status"
-                    @update:modelValue="product.status = $event" required class="mb-4" />
+                        @update:modelValue="product.stock = $event" required class="mb-4" />
+                <FormSelect id="category" label="Catégorie" :options="categories" :modelValue="product.id_category"
+                    @update:modelValue="product.id_category = $event" required class="mb-4" />
+                <FormSelect id="manufacturer" label="Fabricant" :options="manufacturers"
+                    :modelValue="product.id_manufacturer" @update:modelValue="product.id_manufacturer = $event" required
+                    class="mb-4" />
                 <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
                 <div class="text-right">
                     <button type="submit"
@@ -30,25 +31,27 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from '../../axios'; 
+import axios from '../../axios';
 import FormInput from '../formComponents/admin/FormInput.vue';
 import FormTextarea from '../formComponents/admin/FormTextarea.vue';
 import FormFileInput from '../formComponents/admin/FormFileInput.vue';
 import FormSelect from '../formComponents/admin/FormSelect.vue';
+import { useToast } from 'vue-toastification';
+const toast = useToast();
+
+
+
 
 const router = useRouter();
 const categories = ref([]);
-const statusOptions = ref([
-    { value: 'active', text: 'Actif' },
-    { value: 'inactive', text: 'Inactif' }
-]);
-
+const manufacturers = ref([]);
 const product = ref({
-    name: '',
+    label: '',
     description: '',
-    price: 0,
+    unit_price: 0,
     stock: 0,
-    category: '',
+    id_category: '',
+    id_manufacturer: '',
     image: '',
     status: 'active'
 });
@@ -62,21 +65,34 @@ const handleFileUpload = async (file) => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-        product.value.image = `/images/${response.data.filename}`;
+        product.value.image = `/uploads/${response.data.filename}`; 
     } catch (error) {
         console.error('Error uploading file:', error);
     }
 };
 
+
 const fetchCategories = async () => {
     try {
-        const response = await axios.get('/categories');
+        const response = await axios.get('/category');
         categories.value = response.data.map(category => ({
-            value: category.name,
-            text: category.name
+            value: category.id,
+            text: category.label
         }));
     } catch (error) {
         console.error('Error fetching categories:', error);
+    }
+};
+
+const fetchManufacturers = async () => {
+    try {
+        const response = await axios.get('/manufacturer');
+        manufacturers.value = response.data.map(manufacturer => ({
+            value: manufacturer.id,
+            text: manufacturer.label
+        }));
+    } catch (error) {
+        console.error('Error fetching manufacturers:', error);
     }
 };
 
@@ -84,12 +100,19 @@ const submitForm = async () => {
     try {
         await axios.post('/products', product.value);
         router.push({ name: 'ProductList' });
+        toast.success('Produit ajouté avec succès');
     } catch (error) {
         console.error('Error adding product:', error);
+        toast.error('Erreur lors de l\'ajout du produit');
     }
 };
 
-onMounted(fetchCategories);
+onMounted(() => {
+    fetchCategories();
+    fetchManufacturers();
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Ajoutez des styles supplémentaires si nécessaire */
+</style>
