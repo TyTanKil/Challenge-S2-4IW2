@@ -1,8 +1,16 @@
 <script lang="ts" setup>
+import ApiClient from '@/assets/js/apiClient';
+
 import { defineProps } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
-const props = defineProps({     //Définition des données passées par le composants
+import { useStore } from 'vuex';
+import { ref } from 'vue';
+
+const store = useStore();
+
+const props = defineProps({ //Définition des données passées par le composants
+    id: String,    
     label: String,
     description: String,
     price: String,
@@ -18,9 +26,15 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
   }
 }
 
-function addToCart() {
+const addToCart = async () => {
     //Ajouter au panier
-    toast.success(`Produit ajouté au panier : ${props.label}`);
+    try {
+      let response = await ApiClient.get();
+
+      toast.success(`Produit ajouté au panier : ${props.label}`);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
 }
 
 
@@ -40,7 +54,7 @@ function selectCard() {
     <div class="card_vertical">
         <img @click="selectCard" class="card_vertical_img" :src="props.link_img" :alt="props.label">
         <div class="infos">
-            <h3>{{ props.label }}</h3>
+            <h3>{{ props.label }}(ID: {{ props.id }})</h3>
             <h4>{{ props.description }}</h4>
         </div>
         <div class="buy_div_container">

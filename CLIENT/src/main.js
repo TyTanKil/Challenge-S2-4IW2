@@ -10,6 +10,7 @@ import Create from './views/AppCreateAccount.vue'
 import Test from './views/AppTest.vue'
 import Product from './views/AppProduct.vue'
 import Mailer from './views/AppTestMailer.vue'
+import Cart from './views/AppCart.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import {jwtDecode} from 'jwt-decode';
@@ -50,6 +51,7 @@ const routes = [
       link_img: route.params.link_img
     })
   },
+  { path: '/cart', component: Cart },
   { path: '/server-error', name: 'ServerError', component: ServerError },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound } // Catch-all route for 404
 ]
