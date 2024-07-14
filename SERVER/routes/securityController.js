@@ -9,13 +9,22 @@ const router = new Router();
 router.post("/login", async (req, res, next) => {
   const account = await Account.findOne({
     where: {
-      [Op.or]: [{ email: req.body.login }, { login: req.body.login }],
-      [Op.and]: [{ status: "a" }],
+      [Op.and]: [
+        {
+          [Op.or]: [{ email: req.body.login }, { login: req.body.login }],
+        },
+        {
+          [Op.or]: [{ status: "a" }, { status: "c" }],
+        },
+      ],
     },
   });
   if (!account) return res.sendStatus(401);
   if (!(await bcrypt.compare(req.body.password, account.password))) {
     return res.sendStatus(401);
+  }
+  if(account.status === "c"){
+    return res.sendStatus(409);
   }
 
   const token = jwt.sign(
@@ -29,7 +38,28 @@ router.post("/login", async (req, res, next) => {
     }
   );
 
-  res.json(token);
+  return res.json(token);
+});
+
+router.patch("/validate-account/:hash", async (req, res, next) => {
+  try {
+    const account = await Account.findOne({
+      where: {
+          validate_hash: req.params.hash
+      }
+    });
+
+    if (account) {
+      account.validate_hash = null;
+      account.status = 'a';
+      await account.save();
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(401);
+    }
+  } catch (e) {
+    next(e);
+  }
 });
 
 module.exports = router;

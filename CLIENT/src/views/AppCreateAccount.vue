@@ -81,7 +81,7 @@ const handleCreate = async () => {
 
   if ( isEmailValid && isPasswordValid && isPhoneValid && isFirstNameValid && isLastNameValid ) {
     try {
-      let response = await ApiClient.post( "/user", {
+      await ApiClient.post( "/user", {
         "firstName": firstName.value,
         "lastName": lastName.value,
         "gender": gender.value,

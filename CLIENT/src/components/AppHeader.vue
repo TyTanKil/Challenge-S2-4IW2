@@ -1,5 +1,17 @@
 <script lang="ts" setup>
-import { defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
+import { useStore } from 'vuex';
+
+const store = useStore(); // Accéder au store Vuex
+
+const account_button_route = ref('');
+
+if(store.state.user_id == null){
+  account_button_route.value = "/login";
+}else{
+  //TODO : /account
+  account_button_route.value = "";
+}
 
 const props = defineProps({
   route: Boolean,

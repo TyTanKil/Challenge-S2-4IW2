@@ -1,7 +1,6 @@
 <script setup lang='ts'>
   import AppCreateAccount from './AppCreateAccount.vue';
   import AppLogin from '../components/view-parts/AppLogin.vue';
-  import AppNewAccount from '../components/view-parts/AppNewAccount.vue';
 
   import { ref } from 'vue';
   

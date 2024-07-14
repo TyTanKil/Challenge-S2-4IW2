@@ -42,7 +42,7 @@ router.post("/", async (req, res, next) => {
     const mailOptions = accountConfirmationTemplate({
       to: req.body.email,
       name: `${req.body.firstName} ${req.body.lastName}`,
-      valid_link: `${process.env.FRONT_URL}/validate-account/${validate_hash}`
+      valid_link: `${process.env.FRONT_URL}/validate/${validate_hash}`
     });
 
     await sendEmail(mailOptions);
