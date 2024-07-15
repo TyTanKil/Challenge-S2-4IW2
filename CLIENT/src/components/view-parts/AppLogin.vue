@@ -25,9 +25,11 @@
       localStorage.setItem('jwtToken', response.data);
       store.commit('updateUser')
 
-      if(false){
-        //TODO : pas de redirect
-        console.log("pas de redirect");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get('redirect');
+
+      if(redirect){
+        window.location.href = redirect;
       }else{
         window.location.href = '/';
       }
