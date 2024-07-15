@@ -24,6 +24,7 @@ const store = createStore({
   state () {
     return {
       user_id: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).id : null,
+      user_name: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).name : null,
     }
   },
   mutations: {
@@ -31,6 +32,7 @@ const store = createStore({
       const token = localStorage.getItem('jwtToken');
       if(token) {
         state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id;
+        state.user_name = jwtDecode(localStorage.getItem('jwtToken')).name;
       }
     }
   }
