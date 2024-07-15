@@ -16,9 +16,22 @@ const {
 
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
-// const { upload } = require("./uploadController");
+const syncProductWithMongo = require("../service/denormalizations/productService");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, "../uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
 
 router.get("", async (req, res, next) => {
   try {
@@ -37,16 +50,6 @@ router.get("", async (req, res, next) => {
     next(e);
   }
 });
-
-// router.post("", async (req, res, next) => {
-//   try {
-//     const product = await Product.create(req.body);
-//     console.log(product);
-//     res.status(201).json(product);
-//   } catch (e) {
-//     next(e);
-//   }
-// });
 
 // router.post("", upload.array("images", 10), async (req, res, next) => {
 //   const t = await sequelize.transaction();
@@ -76,22 +79,6 @@ router.get("", async (req, res, next) => {
 // });
 
 // Route pour créer un produit avec upload d'image
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, "../uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage });
 
 router.post("/", upload.single("image"), async (req, res, next) => {
   const t = await sequelize.transaction();
@@ -129,6 +116,7 @@ router.post("/", upload.single("image"), async (req, res, next) => {
     }
 
     await t.commit();
+
     res.status(201).json({ product });
   } catch (error) {
     await t.rollback();
@@ -157,52 +145,6 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// router.patch("/:id", async (req, res, next) => {
-//   try {
-//     const [nbUpdated, products] = await Product.update(req.body, {
-//       where: {
-//         id: parseInt(req.params.id),
-//       },
-//       returning: true,
-//       individualHooks: true,
-//     });
-//     if (products[0]) {
-//       res.json(products[0]);
-//     } else {
-//       res.sendStatus(404);
-//     }
-//   } catch (e) {
-//     next(e);
-//   }
-// });
-
-// router.patch("/:id", async (req, res, next) => {
-//   try {
-//     const productId = parseInt(req.params.id);
-//     const [nbUpdated, products] = await Product.update(req.body, {
-//       where: { id: productId },
-//       returning: true,
-//     });
-
-//     if (nbUpdated === 1) {
-//       const updatedProduct = products[0];
-//       if (req.body.stock !== undefined) {
-//         await sequelize.models.Stock.update(
-//           { quantity: req.body.stock },
-//           { where: { id_product: productId } }
-//         );
-//       }
-
-//       return res.json(updatedProduct);
-//     }
-
-//     res.sendStatus(404);
-//   } catch (error) {
-//     console.error("Error updating product:", error);
-//     next(error);
-//   }
-// });
-
 router.patch("/:id", upload.single("image"), async (req, res, next) => {
   const t = await sequelize.transaction();
   try {
@@ -215,6 +157,16 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       id_manufacturer,
       status,
     } = req.body;
+
+    // Find the existing product to get the current image URL
+    const existingProduct = await Product.findByPk(req.params.id, {
+      include: [ProductImage],
+    });
+
+    if (!existingProduct) {
+      await t.rollback();
+      return res.sendStatus(404);
+    }
 
     const [nbUpdated] = await Product.update(
       {
@@ -234,7 +186,6 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       return res.sendStatus(404);
     }
 
-    // Update the stock quantity if provided
     if (stock !== undefined) {
       await Stock.update(
         { quantity: stock },
@@ -249,12 +200,21 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         transaction: t,
       });
 
+      if (existingProduct.ProductImages.length > 0) {
+        const oldImagePath = path.join(
+          __dirname,
+          "../uploads",
+          existingProduct.ProductImages[0].url
+        );
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+
       if (existingImage) {
-        // Update the existing image record
         existingImage.url = imagePath;
         await existingImage.save({ transaction: t });
       } else {
-        // Create a new image record if none exists
         await ProductImage.create(
           {
             id_product: req.params.id,
