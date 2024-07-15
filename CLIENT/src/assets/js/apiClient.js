@@ -22,8 +22,7 @@ class ApiClient {
     // Méthode pour effectuer une requête POST
     async post(url, data) {
         try {
-            const response = await this.client.post(url, data);
-            return response.data;
+            return await this.client.post(url, data);
         } catch (error) {
             throw error;
         }

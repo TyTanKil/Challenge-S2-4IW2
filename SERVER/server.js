@@ -90,7 +90,7 @@ app.use((err, req, res, next) => {
   res.status(502).redirect("/server-error");
 });
 
-app.use("/users", AccountRouter);
+app.use("/user", AccountRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {
