@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import store from './store/index'; 
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
@@ -11,9 +12,13 @@ import Product from './views/AppProduct.vue'
 import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
+import Cart from "./views/AppCart.vue"
+import Success from "./views/Payment/AppSuccess.vue"
+import Cancel from "./views/Payment/AppCancel.vue"
+import Payment from "./views/Payment/AppTestPayment.vue"
 
 const routes = [
-  { path: '/' },
+  { path: '/', name: 'Home' },
   { path: '/identify', component: Identify },
   { path: '/create', component: Create },
   { path: '/test', component: Test },
@@ -30,7 +35,12 @@ const routes = [
     })
   },
   { path: '/server-error', name: 'ServerError', component: ServerError },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound } // Catch-all route for 404
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
+  //Stripe
+  { path: "/payment", name: "Payment", component: Payment },
+  { path: "/cart", name: "Cart", component: Cart },
+  { path: "/success", name: "Success", component: Success },
+  { path: "/cancel", name: "Cancel", component: Cancel },
 ]
 
 const router = createRouter({
@@ -39,5 +49,6 @@ const router = createRouter({
 })
 
 const app = createApp(App)
+app.use(store);
 app.use(router)
 app.mount('#app')
