@@ -37,12 +37,12 @@ const props = defineProps({
           <p>{{ account_name }}</p>
         </div>
       </router-link>
-      <a href="">
+      <router-link to="Cart">
         <div class="cart_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\cart1.svg" alt="">
           <p>Panier</p>
         </div>
-      </a>
+      </router-link>
     </div>
   </div>
 </template>
