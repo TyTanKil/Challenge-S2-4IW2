@@ -1,7 +1,8 @@
 const { Router } = require("express");
 const db = require("../db");
 const multer = require("multer");
-
+const path = require("path");
+const fs = require("fs");
 // console.log(db);
 const {
   sequelize,
@@ -15,8 +16,9 @@ const {
 
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+// const { upload } = require("./uploadController");
 
 router.get("", async (req, res, next) => {
   try {
@@ -28,6 +30,7 @@ router.get("", async (req, res, next) => {
         { model: Stock },
         { model: ProductImage },
       ],
+      order: [["createdAt", "DESC"]],
     });
     res.json(products);
   } catch (e) {
@@ -72,6 +75,24 @@ router.get("", async (req, res, next) => {
 //   }
 // });
 
+// Route pour créer un produit avec upload d'image
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, "../uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
 router.post("/", upload.single("image"), async (req, res, next) => {
   const t = await sequelize.transaction();
   try {
@@ -97,7 +118,7 @@ router.post("/", upload.single("image"), async (req, res, next) => {
     );
 
     if (req.file) {
-      const imagePath = `/uploads/${req.file.filename}`;
+      const imagePath = req.file.filename;
       await ProductImage.create(
         {
           id_product: product.id,
@@ -155,29 +176,102 @@ router.get("/:id", async (req, res, next) => {
 //   }
 // });
 
-router.patch("/:id", async (req, res, next) => {
+// router.patch("/:id", async (req, res, next) => {
+//   try {
+//     const productId = parseInt(req.params.id);
+//     const [nbUpdated, products] = await Product.update(req.body, {
+//       where: { id: productId },
+//       returning: true,
+//     });
+
+//     if (nbUpdated === 1) {
+//       const updatedProduct = products[0];
+//       if (req.body.stock !== undefined) {
+//         await sequelize.models.Stock.update(
+//           { quantity: req.body.stock },
+//           { where: { id_product: productId } }
+//         );
+//       }
+
+//       return res.json(updatedProduct);
+//     }
+
+//     res.sendStatus(404);
+//   } catch (error) {
+//     console.error("Error updating product:", error);
+//     next(error);
+//   }
+// });
+
+router.patch("/:id", upload.single("image"), async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
-    const productId = parseInt(req.params.id);
-    const [nbUpdated, products] = await Product.update(req.body, {
-      where: { id: productId },
-      returning: true,
-    });
+    const {
+      label,
+      description,
+      unit_price,
+      stock,
+      id_category,
+      id_manufacturer,
+      status,
+    } = req.body;
 
-    if (nbUpdated === 1) {
-      const updatedProduct = products[0];
-      if (req.body.stock !== undefined) {
-        await sequelize.models.Stock.update(
-          { quantity: req.body.stock },
-          { where: { id_product: productId } }
-        );
-      }
+    const [nbUpdated] = await Product.update(
+      {
+        label,
+        description,
+        unit_price,
+        stock,
+        id_category,
+        id_manufacturer,
+        status,
+      },
+      { where: { id: req.params.id }, transaction: t }
+    );
 
-      return res.json(updatedProduct);
+    if (nbUpdated === 0) {
+      await t.rollback();
+      return res.sendStatus(404);
     }
 
-    res.sendStatus(404);
+    // Update the stock quantity if provided
+    if (stock !== undefined) {
+      await Stock.update(
+        { quantity: stock },
+        { where: { id_product: req.params.id }, transaction: t }
+      );
+    }
+
+    if (req.file) {
+      const imagePath = req.file.filename;
+      const existingImage = await ProductImage.findOne({
+        where: { id_product: req.params.id },
+        transaction: t,
+      });
+
+      if (existingImage) {
+        // Update the existing image record
+        existingImage.url = imagePath;
+        await existingImage.save({ transaction: t });
+      } else {
+        // Create a new image record if none exists
+        await ProductImage.create(
+          {
+            id_product: req.params.id,
+            url: imagePath,
+          },
+          { transaction: t }
+        );
+      }
+    }
+
+    await t.commit();
+    const product = await Product.findByPk(req.params.id, {
+      include: [Category, Manufacturer, Stock, ProductImage],
+    });
+    res.json(product);
   } catch (error) {
-    console.error("Error updating product:", error);
+    await t.rollback();
     next(error);
   }
 });

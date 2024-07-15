@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
 const app = express();
+const path = require("path");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
@@ -34,7 +35,8 @@ app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
 app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
-app.use("/upload", uploadController);
+// app.use("/upload", uploadController);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {

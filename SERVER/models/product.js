@@ -34,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       ref: DataTypes.STRING,
       label: DataTypes.STRING,
-      unit_price: DataTypes.FLOAT,
+      unit_price: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+      },
       description: DataTypes.STRING,
       stock: {
         type: DataTypes.VIRTUAL,
