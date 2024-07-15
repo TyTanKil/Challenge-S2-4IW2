@@ -7,10 +7,10 @@
                     @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
-                <FormInput id="unit_price" label="Prix" type="double" step="0.01" :modelValue="product.unit_price"
+                <FormInput id="unit_price" label="Prix" type="double" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
-                        @update:modelValue="product.stock = $event" required class="mb-4" />
+                    @update:modelValue="product.stock = $event" required class="mb-4" />
                 <FormSelect id="category" label="Catégorie" :options="categories" :modelValue="product.id_category"
                     @update:modelValue="product.id_category = $event" required class="mb-4" />
                 <FormSelect id="manufacturer" label="Fabricant" :options="manufacturers"
@@ -39,9 +39,6 @@ import FormSelect from '../formComponents/admin/FormSelect.vue';
 import { useToast } from 'vue-toastification';
 const toast = useToast();
 
-
-
-
 const router = useRouter();
 const categories = ref([]);
 const manufacturers = ref([]);
@@ -52,25 +49,12 @@ const product = ref({
     stock: 0,
     id_category: '',
     id_manufacturer: '',
-    image: '',
-    status: 'active'
+    image: null,
 });
 
-const handleFileUpload = async (file) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    try {
-        const response = await axios.post('/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        product.value.image = `/uploads/${response.data.filename}`; 
-    } catch (error) {
-        console.error('Error uploading file:', error);
-    }
+const handleFileUpload = (file) => {
+    product.value.image = file;
 };
-
 
 const fetchCategories = async () => {
     try {
@@ -97,8 +81,23 @@ const fetchManufacturers = async () => {
 };
 
 const submitForm = async () => {
+    const formData = new FormData();
+    formData.append('label', product.value.label);
+    formData.append('description', product.value.description);
+    formData.append('unit_price', product.value.unit_price);
+    formData.append('stock', product.value.stock);
+    formData.append('id_category', product.value.id_category);
+    formData.append('id_manufacturer', product.value.id_manufacturer);
+    if (product.value.image) {
+        formData.append('image', product.value.image);
+    }
+
     try {
-        await axios.post('/products', product.value);
+        await axios.post('/products', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         router.push({ name: 'ProductList' });
         toast.success('Produit ajouté avec succès');
     } catch (error) {

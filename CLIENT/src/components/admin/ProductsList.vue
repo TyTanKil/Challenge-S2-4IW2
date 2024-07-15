@@ -26,24 +26,23 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
-                    <tr v-for="product in filteredProducts" :key="product.id"
+                    <tr v-for="product in paginatedProducts" :key="product.id"
                         class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">
                             <img v-if="product.ProductImages && product.ProductImages.length"
-                                :src="'data:image/jpeg;base64,' + product.ProductImages[0].content" alt="Product Image"
+                                :src="urlServerImg + product.ProductImages[0].url" alt="Product Image"
                                 class="w-10 h-10 object-cover rounded" />
-                            <img v-else src="" alt="Default Image"
-                                class="w-10 h-10 object-cover rounded" />
+                            <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />
                         </td>
                         <td class="py-3 px-6 text-left">{{ product.label }}</td>
                         <td class="py-3 px-6 text-left">{{ product.description }}</td>
                         <td class="py-3 px-6 text-center">{{ product.unit_price.toFixed(2) }} €</td>
-                        <td class="py-3 px-6 text-center">{{ product.Stock.quantity }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.Stock ? product.Stock.quantity : 0 }}</td>
                         <td class="py-3 px-6 text-center">{{ product.Category.label }}</td>
                         <td class="py-3 px-6 text-center">
                             <span
-                                :class="{ 'bg-customGreen px-4 py-1 rounded-lg': product.status === 'active', 'bg-customRed px-4 py-1 rounded-lg': product.status === 'inactive' }">
-                                {{ product.status === 'active' ? 'Actif' : 'Inactif' }}
+                                :class="{ 'bg-customGreen px-4 py-1 rounded-lg text-white': (product.Stock && product.Stock.quantity > 0), 'btn-red text-white px-4 py-1 rounded-lg': !(product.Stock && product.Stock.quantity > 0) }">
+                                {{ product.Stock && product.Stock.quantity > 0 ? 'Actif' : 'Inactif' }}
                             </span>
                         </td>
                         <td class="py-3 px-6 text-center">
@@ -70,6 +69,29 @@
                 </tbody>
             </table>
         </div>
+        <div class="flex justify-center mt-10 space-x-2">
+            <button @click="prevPage" :disabled="currentPage === 1"
+                class="flex px-3 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                 </svg>
+                
+            </button>
+            <div class="flex items-center space-x-1">
+                <button v-for="page in totalPages" :key="page" @click="goToPage(page)"
+                    :class="['px-3 py-2 rounded-md transition duration-200', currentPage === page ? 'bg-customGreen text-white' : 'bg-gray-300 text-gray-800 hover:bg-gray-400']">
+                    {{ page }}
+                </button>
+            </div>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+                class="flex px-3 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+    </svg>
+
+            </button>
+        </div>
     </div>
 </template>
 
@@ -78,10 +100,16 @@ import { ref, computed, onMounted } from 'vue';
 import axios from '../../axios';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+
 const products = ref([]);
 const searchQuery = ref('');
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
 const router = useRouter();
 const toast = useToast();
+
+const urlServerImg = 'http://localhost:3000/uploads/';
 
 const fetchProducts = async () => {
     try {
@@ -100,6 +128,33 @@ const filteredProducts = computed(() => {
         product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
 });
+
+// Calcul du nombre total de pages
+const totalPages = computed(() => {
+    return Math.ceil(filteredProducts.value.length / itemsPerPage);
+});
+
+// Produits pour la page actuelle
+const paginatedProducts = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredProducts.value.slice(start, end);
+});
+
+// Fonctions pour changer de page
+const prevPage = () => {
+    if (currentPage.value > 1) currentPage.value--;
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) currentPage.value++;
+};
+
+const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+    }
+};
 
 // Appeler fetchProducts quand le composant est monté
 onMounted(fetchProducts);
@@ -131,4 +186,6 @@ const deleteProduct = async (id) => {
 };
 </script>
 
-<style scoped>/* Ajoutez des styles supplémentaires si nécessaire */</style>
+<style scoped>
+/* Ajoutez des styles supplémentaires si nécessaire */
+</style>

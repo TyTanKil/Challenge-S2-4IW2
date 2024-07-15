@@ -7,7 +7,7 @@
                     @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
-                <FormInput id="unit_price" label="Prix" type="double" step="0.01" :modelValue="product.unit_price"
+                <FormInput id="unit_price" label="Prix" type="number" step="0.01" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
                     @update:modelValue="product.stock = $event" required class="mb-4" />
@@ -16,8 +16,11 @@
                 <FormSelect id="manufacturer" label="Fabricant" :options="manufacturers"
                     :modelValue="product.id_manufacturer" @update:modelValue="product.id_manufacturer = $event" required
                     class="mb-4" />
-                <FormSelect id="status" label="Statut" :options="statusOptions" :modelValue="product.status"
-                    @update:modelValue="product.status = $event" required class="mb-4" />
+                <div v-if="product.currentImage" class="mb-4">
+                    <img v-if="product.ProductImages && product.ProductImages.length"
+                        :src="urlServerImg + product.ProductImages[0].url" alt="Product Image"
+                        class="w-10 h-10 object-cover rounded" />
+                    <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />                </div>
                 <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
                 <div class="flex justify-between items-center">
                     <button type="submit"
@@ -49,11 +52,7 @@ const route = useRoute();
 const toast = useToast();
 const categories = ref([]);
 const manufacturers = ref([]);
-const statusOptions = ref([
-    { value: 'active', text: 'Actif' },
-    { value: 'inactive', text: 'Inactif' }
-]);
-
+const urlServerImg = 'http://localhost:3000/uploads/';
 const product = ref({
     label: '',
     description: '',
@@ -61,8 +60,8 @@ const product = ref({
     stock: 0,
     id_category: '',
     id_manufacturer: '',
-    image: '',
-    status: 'active'
+    currentImage: '',
+    image: null,
 });
 
 const fetchCategories = async () => {
@@ -94,8 +93,10 @@ onMounted(async () => {
     try {
         const response = await axios.get(`/products/${productId}`);
         product.value = response.data;
-        product.value.stock = response.data.Stock ? response.data.Stock.quantity : 0; 
-        product.value.stock = response.data.Stock.quantity;
+        product.value.stock = response.data.Stock ? response.data.Stock.quantity : 0;
+        if (response.data.ProductImages && response.data.ProductImages.length > 0) {
+            product.value.currentImage = `/uploads/${response.data.ProductImages[0].url}`;
+        }
     } catch (error) {
         console.error('Error fetching product:', error);
     }
@@ -103,25 +104,29 @@ onMounted(async () => {
     fetchManufacturers();
 });
 
-const handleFileUpload = async (file) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    try {
-        const response = await axios.post('/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        product.value.image = `/images/${response.data.filename}`;
-    } catch (error) {
-        console.error('Error uploading file:', error);
-    }
+const handleFileUpload = (file) => {
+    product.value.image = file;
 };
 
 const submitForm = async () => {
     const productId = route.params.id;
+    const formData = new FormData();
+    formData.append('label', product.value.label);
+    formData.append('description', product.value.description);
+    formData.append('unit_price', product.value.unit_price);
+    formData.append('stock', product.value.stock);
+    formData.append('id_category', product.value.id_category);
+    formData.append('id_manufacturer', product.value.id_manufacturer);
+    if (product.value.image) {
+        formData.append('image', product.value.image);
+    }
+
     try {
-        await axios.patch(`/products/${productId}`, product.value); // Use PATCH instead of PUT
+        await axios.patch(`/products/${productId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         toast.success('Produit modifié avec succès');
         router.push({ name: 'ProductList' });
     } catch (error) {
