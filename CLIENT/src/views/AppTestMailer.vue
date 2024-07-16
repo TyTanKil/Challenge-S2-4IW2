@@ -39,9 +39,10 @@
             to: this.email,
             data: {
               productName: 'Produit 1',
-              quantity: 1,
-              price: 100,
-              orderNumber: '12345'
+              items: [
+                { name: 'Produit 1', quantity: 2, price: 100 },
+                { name: 'Produit 2', quantity: 2, price: 200 }
+              ]
             }
           },
           'reset-password': {
@@ -88,7 +89,11 @@
             to: this.email,
             data: {
               name: 'John Doe',
-              orderNumber: '12345'
+              orderNumber: '12345',
+              items: [
+                { name: 'Produit 1', price: 100 },
+                { name: 'Produit 2', price: 200 }
+              ]
             }
           },
           'new-product': {
