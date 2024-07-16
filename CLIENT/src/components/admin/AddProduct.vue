@@ -7,6 +7,8 @@
                     @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
+                <FormTextarea id="ref" label="Ref" :modelValue="product.ref"
+                    @update:modelValue="product.ref = $event" required class="mb-4" />
                 <FormInput id="unit_price" label="Prix" type="double" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
@@ -45,6 +47,7 @@ const manufacturers = ref([]);
 const product = ref({
     label: '',
     description: '',
+    ref: '',
     unit_price: 0,
     stock: 0,
     id_category: '',
@@ -84,6 +87,7 @@ const submitForm = async () => {
     const formData = new FormData();
     formData.append('label', product.value.label);
     formData.append('description', product.value.description);
+    formData.append('ref', product.value.ref);
     formData.append('unit_price', product.value.unit_price);
     formData.append('stock', product.value.stock);
     formData.append('id_category', product.value.id_category);

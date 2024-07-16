@@ -32,7 +32,7 @@ const toast = useToast();
 
 const submitForm = async () => {
     try {
-        await axios.post('/manufacturers', manufacturer.value);
+        await axios.post('/manufacturer', manufacturer.value);
         router.push({ name: 'ManufacturerList' }); 
         toast.success('Fabricant ajouté avec succès');
     } catch (error) {
