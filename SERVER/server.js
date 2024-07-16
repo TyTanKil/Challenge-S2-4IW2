@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
 const paymentRoutes = require("./payment"); // Importation du fichier de paiement
 const app = express();
+const AccountRouter = require("./routes/accountController");
+const SecurityRouter = require("./routes/securityController");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
@@ -92,11 +94,18 @@ app.use((err, req, res, next) => {
   res.status(502).redirect("/server-error");
 });
 
-// Middleware pour gérer les erreurs 404 (doit être ajouté après toutes les routes)
-app.use((req, res) => {
-  res.status(404).send("Page not found");
+app.use("/user", AccountRouter);
+app.use(SecurityRouter);
+
+app.get("/", (req, res, next) => {
+  res.send("Coucou " + JSON.stringify(req.query));
 });
 
 app.listen(3000, () => {
   console.log("Serveur démarré sur le port 3000");
+});
+
+// Middleware pour gérer les erreurs 404 (doit être ajouté après toutes les routes)
+app.use((req, res) => {
+  res.status(404).send("Page not found");
 });

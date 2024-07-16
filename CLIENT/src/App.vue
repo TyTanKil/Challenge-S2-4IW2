@@ -8,7 +8,7 @@ import AppMainView from './views/AppMainView.vue'
 
 const route = useRoute();
 
-const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.fullPath === '/create' );
+const isIdentifyRoute = computed(() => route.fullPath === '/login' || route.fullPath === '/create' );
 const isMainRoute = computed(() => route.fullPath === '/');
 </script>
 
