@@ -7,8 +7,8 @@
                     @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
-                <FormTextarea id="ref" label="Ref" :modelValue="product.ref"
-                        @update:modelValue="product.ref = $event" required class="mb-4" />
+                <FormTextarea id="ref" label="Ref" :modelValue="product.ref" @update:modelValue="product.ref = $event"
+                    required class="mb-4" />
                 <FormInput id="unit_price" label="Prix" type="number" step="0.01" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
@@ -22,7 +22,8 @@
                     <img v-if="product.ProductImages && product.ProductImages.length"
                         :src="urlServerImg + product.ProductImages[0].url" alt="Product Image"
                         class="w-10 h-10 object-cover rounded" />
-                    <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />                </div>
+                    <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />
+                </div>
                 <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
                 <div class="flex justify-between items-center">
                     <button type="submit"
@@ -42,19 +43,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import axios from '../../axios';
 import { useToast } from 'vue-toast-notification';
 import FormSelect from '../formComponents/admin/FormSelect.vue';
 import FormInput from '../formComponents/admin/FormInput.vue';
 import FormTextarea from '../formComponents/admin/FormTextarea.vue';
 import FormFileInput from '../formComponents/admin/FormFileInput.vue';
+import ApiClient from '../../assets/js/apiClient';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 const categories = ref([]);
 const manufacturers = ref([]);
-const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par le lien du server
+const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par le lien du serveur
 const product = ref({
     label: '',
     description: '',
@@ -69,8 +70,8 @@ const product = ref({
 
 const fetchCategories = async () => {
     try {
-        const response = await axios.get('/category');
-        categories.value = response.data.map(category => ({
+        const response = await ApiClient.get('/category');
+        categories.value = response.map(category => ({
             value: category.id,
             text: category.label
         }));
@@ -81,8 +82,8 @@ const fetchCategories = async () => {
 
 const fetchManufacturers = async () => {
     try {
-        const response = await axios.get('/manufacturer');
-        manufacturers.value = response.data.map(manufacturer => ({
+        const response = await ApiClient.get('/manufacturer');
+        manufacturers.value = response.map(manufacturer => ({
             value: manufacturer.id,
             text: manufacturer.label
         }));
@@ -94,11 +95,11 @@ const fetchManufacturers = async () => {
 onMounted(async () => {
     const productId = route.params.id;
     try {
-        const response = await axios.get(`/products/${productId}`);
-        product.value = response.data;
-        product.value.stock = response.data.Stock ? response.data.Stock.quantity : 0;
-        if (response.data.ProductImages && response.data.ProductImages.length > 0) {
-            product.value.currentImage = `/uploads/${response.data.ProductImages[0].url}`;
+        const response = await ApiClient.get(`/products/${productId}`);
+        product.value = response;
+        product.value.stock = response.Stock ? response.Stock.quantity : 0;
+        if (response.ProductImages && response.ProductImages.length > 0) {
+            product.value.currentImage = `/uploads/${response.ProductImages[0].url}`;
         }
     } catch (error) {
         console.error('Error fetching product:', error);
@@ -126,7 +127,7 @@ const submitForm = async () => {
     }
 
     try {
-        await axios.patch(`/products/${productId}`, formData, {
+        await ApiClient.patch(`/products/${productId}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -148,7 +149,7 @@ const confirmDelete = () => {
 const deleteProduct = async () => {
     const productId = route.params.id;
     try {
-        await axios.delete(`/products/${productId}`);
+        await ApiClient.delete(`/products/${productId}`);
         toast.success('Produit supprimé avec succès');
         router.push({ name: 'ProductList' });
     } catch (error) {
@@ -159,5 +160,4 @@ const deleteProduct = async () => {
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
 </style>

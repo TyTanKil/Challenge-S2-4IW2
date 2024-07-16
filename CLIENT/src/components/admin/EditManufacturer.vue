@@ -23,9 +23,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import axios from '../../axios';
 import { useToast } from 'vue-toast-notification';
 import FormInput from '../formComponents/admin/FormInput.vue';
+import ApiClient from '../../assets/js/apiClient'; 
 
 const router = useRouter();
 const route = useRoute();
@@ -38,8 +38,8 @@ const manufacturer = ref({
 onMounted(async () => {
     const manufacturerId = route.params.id;
     try {
-        const response = await axios.get(`/manufacturer/${manufacturerId}`);
-        manufacturer.value = response.data;
+        const response = await ApiClient.get(`/manufacturer/${manufacturerId}`);
+        manufacturer.value = response;
     } catch (error) {
         console.error('Error fetching manufacturer:', error);
     }
@@ -48,7 +48,7 @@ onMounted(async () => {
 const submitForm = async () => {
     const manufacturerId = route.params.id;
     try {
-        await axios.put(`/manufacturer/${manufacturerId}`, manufacturer.value);
+        await ApiClient.put(`/manufacturer/${manufacturerId}`, manufacturer.value);
         toast.success('Fabricant modifié avec succès');
         router.push({ name: 'ManufacturerList' });
     } catch (error) {
@@ -66,7 +66,7 @@ const confirmDelete = () => {
 const deleteManufacturer = async () => {
     const manufacturerId = route.params.id;
     try {
-        await axios.delete(`/manufacturer/${manufacturerId}`);
+        await ApiClient.delete(`/manufacturer/${manufacturerId}`);
         toast.success('Fabricant supprimé avec succès');
         router.push({ name: 'ManufacturerList' });
     } catch (error) {

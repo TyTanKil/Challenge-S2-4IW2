@@ -7,8 +7,8 @@
                     @update:modelValue="product.label = $event" required class="mb-4" />
                 <FormTextarea id="description" label="Description" :modelValue="product.description"
                     @update:modelValue="product.description = $event" required class="mb-4" />
-                <FormTextarea id="ref" label="Ref" :modelValue="product.ref"
-                    @update:modelValue="product.ref = $event" required class="mb-4" />
+                <FormTextarea id="ref" label="Ref" :modelValue="product.ref" @update:modelValue="product.ref = $event"
+                    required class="mb-4" />
                 <FormInput id="unit_price" label="Prix" type="double" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
@@ -33,14 +33,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from '../../axios';
+import ApiClient from '../../assets/js/apiClient'; 
 import FormInput from '../formComponents/admin/FormInput.vue';
 import FormTextarea from '../formComponents/admin/FormTextarea.vue';
 import FormFileInput from '../formComponents/admin/FormFileInput.vue';
 import FormSelect from '../formComponents/admin/FormSelect.vue';
 import { useToast } from 'vue-toast-notification';
-const toast = useToast();
 
+const toast = useToast();
 const router = useRouter();
 const categories = ref([]);
 const manufacturers = ref([]);
@@ -61,8 +61,8 @@ const handleFileUpload = (file) => {
 
 const fetchCategories = async () => {
     try {
-        const response = await axios.get('/category');
-        categories.value = response.data.map(category => ({
+        const response = await ApiClient.get('/category');
+        categories.value = response.map(category => ({
             value: category.id,
             text: category.label
         }));
@@ -73,8 +73,8 @@ const fetchCategories = async () => {
 
 const fetchManufacturers = async () => {
     try {
-        const response = await axios.get('/manufacturer');
-        manufacturers.value = response.data.map(manufacturer => ({
+        const response = await ApiClient.get('/manufacturer');
+        manufacturers.value = response.map(manufacturer => ({
             value: manufacturer.id,
             text: manufacturer.label
         }));
@@ -97,7 +97,7 @@ const submitForm = async () => {
     }
 
     try {
-        await axios.post('/products', formData, {
+        await ApiClient.post('/products', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -117,5 +117,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
 </style>

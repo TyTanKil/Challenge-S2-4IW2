@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Liste des Catégories</h1>
             <button @click="addCategory"
-                class="bg-customGreen hover:bg-green-600 text-black font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
                 <a href="/admin/category/new">Ajouter une catégorie</a>
             </button>
         </div>
@@ -20,7 +20,10 @@
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
-                    <tr v-for="category in filteredCategories" :key="category.id"
+                    <tr v-if="paginatedCategories.length === 0">
+                        <td colspan="2" class="text-center py-4">Aucune catégorie</td>
+                    </tr>
+                    <tr v-else v-for="category in paginatedCategories" :key="category.id"
                         class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">{{ category.label }}</td>
                         <td class="py-3 px-6 text-center">
@@ -47,39 +50,86 @@
                 </tbody>
             </table>
         </div>
+        <div class="flex justify-center mt-10 space-x-2" v-if="totalPages > 1">
+            <button @click="prevPage" :disabled="currentPage === 1"
+                class="flex px-3 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+            </button>
+            <div class="flex items-center space-x-1">
+                <button v-for="page in totalPages" :key="page" @click="goToPage(page)"
+                    :class="['px-3 py-2 rounded-md transition duration-200', currentPage === page ? 'bg-customGreen text-white' : 'bg-gray-300 text-gray-800 hover:bg-gray-400']">
+                    {{ page }}
+                </button>
+            </div>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+                class="flex px-3 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import axios from '../../axios';
+import ApiClient from '../../assets/js/apiClient'; 
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
+
 const categories = ref([]);
 const searchQuery = ref('');
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
 const router = useRouter();
 const toast = useToast();
 
 const fetchCategories = async () => {
     try {
-        const response = await axios.get('/category');
-        categories.value = response.data;
+        const response = await ApiClient.get('/category'); // Utilisez ApiClient
+        categories.value = response;
     } catch (error) {
         console.error('Error fetching categories:', error);
     }
 };
 
-// Fonction pour filtrer les catégories selon la barre de recherche
 const filteredCategories = computed(() => {
     return categories.value.filter(category =>
         category.label.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
 });
 
-// Appeler fetchCategories quand le composant est monté
+const totalPages = computed(() => {
+    return Math.ceil(filteredCategories.value.length / itemsPerPage);
+});
+
+const paginatedCategories = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredCategories.value.slice(start, end);
+});
+
+const prevPage = () => {
+    if (currentPage.value > 1) currentPage.value--;
+};
+
+const nextPage = () => {
+    if (currentPage.value < totalPages.value) currentPage.value++;
+};
+
+const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+    }
+};
+
 onMounted(fetchCategories);
 
-// Fonctions pour ajouter, éditer et supprimer des catégories
 const addCategory = () => {
     router.push({ name: 'AddCategory' });
 };
@@ -96,7 +146,7 @@ const confirmDelete = (id) => {
 
 const deleteCategory = async (id) => {
     try {
-        await axios.delete(`/category/${id}`);
+        await ApiClient.delete(`/category/${id}`); 
         categories.value = categories.value.filter(category => category.id !== id);
         toast.success('Catégorie supprimée avec succès');
     } catch (error) {
@@ -106,4 +156,5 @@ const deleteCategory = async (id) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

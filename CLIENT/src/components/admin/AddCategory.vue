@@ -19,9 +19,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from '../../axios';
 import FormInput from '../formComponents/admin/FormInput.vue';
 import { useToast } from 'vue-toast-notification';
+import ApiClient from '../../assets/js/apiClient';
+
 
 const router = useRouter();
 const category = ref({
@@ -32,7 +33,7 @@ const toast = useToast();
 
 const submitForm = async () => {
     try {
-        await axios.post('/category', category.value);
+        await ApiClient.post('/category', category.value);
         router.push({ name: 'CategoryList' }); // Assurez-vous que cette route existe
         toast.success('Catégorie ajouté avec succès');
 

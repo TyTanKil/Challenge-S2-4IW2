@@ -23,7 +23,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import axios from '../../axios';
+import ApiClient from '../../assets/js/apiClient'; 
 import { useToast } from 'vue-toast-notification';
 import FormInput from '../formComponents/admin/FormInput.vue';
 
@@ -38,8 +38,8 @@ const category = ref({
 onMounted(async () => {
     const categoryId = route.params.id;
     try {
-        const response = await axios.get(`/category/${categoryId}`);
-        category.value = response.data;
+        const response = await ApiClient.get(`/category/${categoryId}`); 
+        category.value = response;
     } catch (error) {
         console.error('Error fetching category:', error);
     }
@@ -48,7 +48,7 @@ onMounted(async () => {
 const submitForm = async () => {
     const categoryId = route.params.id;
     try {
-        await axios.put(`/category/${categoryId}`, category.value);
+        await ApiClient.put(`/category/${categoryId}`, category.value); 
         toast.success('Catégorie modifiée avec succès');
         router.push({ name: 'CategoryList' });
     } catch (error) {
@@ -66,7 +66,7 @@ const confirmDelete = () => {
 const deleteCategory = async () => {
     const categoryId = route.params.id;
     try {
-        await axios.delete(`/category/${categoryId}`);
+        await ApiClient.delete(`/category/${categoryId}`); 
         toast.success('Catégorie supprimée avec succès');
         router.push({ name: 'CategoryList' });
     } catch (error) {

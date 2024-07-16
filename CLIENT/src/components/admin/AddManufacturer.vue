@@ -19,9 +19,9 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from '../../axios';
 import FormInput from '../formComponents/admin/FormInput.vue';
 import { useToast } from 'vue-toast-notification';
+import ApiClient from '../../assets/js/apiClient';
 
 const router = useRouter();
 const manufacturer = ref({
@@ -32,7 +32,7 @@ const toast = useToast();
 
 const submitForm = async () => {
     try {
-        await axios.post('/manufacturer', manufacturer.value);
+        await ApiClient.post('/manufacturer', manufacturer.value);
         router.push({ name: 'ManufacturerList' }); 
         toast.success('Fabricant ajouté avec succès');
     } catch (error) {

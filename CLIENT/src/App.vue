@@ -17,13 +17,10 @@ const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
 <template>
     <header v-if="!isAdminRoute">
       <AppHeader :route="isIdentifyRoute" />
-    <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
-
-    
+    <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>    
   </header>
-  <main>
-    <AppMainView :route="isMainRoute"></AppMainView>
-
+    <main :class="{ 'admin-route': isAdminRoute, 'default-route': !isAdminRoute }">
+      <AppMainView :route="isMainRoute"></AppMainView>
     <RouterView />
   </main>
 </template>
@@ -39,12 +36,15 @@ header{
   position: sticky;
   top: 0;
 }
-main{
+main.default-route {
   width: 80%;
   margin: 0 auto;
 }
 
-
+main.admin-route {
+  width: 100%; 
+  margin: 0;
+}
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #575757;

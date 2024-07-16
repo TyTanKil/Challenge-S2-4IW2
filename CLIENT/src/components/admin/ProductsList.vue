@@ -3,7 +3,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Liste des Produits</h1>
             <button @click="addProduct"
-                class="bg-customGreen hover:bg-green-600 text-black font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
                 <a href="/admin/product/new">Ajouter un produit</a>
             </button>
         </div>
@@ -21,12 +21,16 @@
                         <th class="py-3 px-6 text-center">Prix</th>
                         <th class="py-3 px-6 text-center">Stock</th>
                         <th class="py-3 px-6 text-center">Catégorie</th>
+                        <th class="py-3 px-6 text-center">Fabricant</th>
                         <th class="py-3 px-6 text-center">Statut</th>
                         <th class="py-3 px-6 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
-                    <tr v-for="product in paginatedProducts" :key="product.id"
+                    <tr v-if="paginatedProducts.length === 0">
+                        <td colspan="9" class="text-center py-4">Aucun produit</td>
+                    </tr>
+                    <tr v-else v-for="product in paginatedProducts" :key="product.id"
                         class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">
                             <img v-if="product.ProductImages && product.ProductImages.length"
@@ -38,7 +42,8 @@
                         <td class="py-3 px-6 text-left">{{ product.description }}</td>
                         <td class="py-3 px-6 text-center">{{ product.unit_price.toFixed(2) }} €</td>
                         <td class="py-3 px-6 text-center">{{ product.Stock ? product.Stock.quantity : 0 }}</td>
-                        <td class="py-3 px-6 text-center">{{ product.Category.label }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.Category ? product.Category.label : 'Non catégorisé' }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.Manufacturer ? product.Manufacturer.label : 'Fabricant inconnu' }}</td>
                         <td class="py-3 px-6 text-center">
                             <span
                                 :class="{ 'bg-customGreen px-4 py-1 rounded-lg text-white': (product.Stock && product.Stock.quantity > 0), 'btn-red text-white px-4 py-1 rounded-lg': !(product.Stock && product.Stock.quantity > 0) }">
@@ -69,13 +74,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-center mt-10 space-x-2">
+        <div class="flex justify-center mt-10 space-x-2" v-if="totalPages > 1">
             <button @click="prevPage" :disabled="currentPage === 1"
                 class="flex px-3 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                 </svg>
-                
+                </svg>
             </button>
             <div class="flex items-center space-x-1">
                 <button v-for="page in totalPages" :key="page" @click="goToPage(page)"
@@ -85,11 +90,10 @@
             </div>
             <button @click="nextPage" :disabled="currentPage === totalPages"
                 class="flex px-3 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-    </svg>
-
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
             </button>
         </div>
     </div>
@@ -97,10 +101,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import axios from '../../axios';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
-
+import ApiClient from '../../assets/js/apiClient';
 
 const products = ref([]);
 const searchQuery = ref('');
@@ -110,39 +113,36 @@ const itemsPerPage = 10;
 const router = useRouter();
 const toast = useToast();
 
-const urlServerImg = 'http://localhost:3000/uploads/';
+const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par l'url du server
 
 const fetchProducts = async () => {
     try {
-        const response = await axios.get('/products');
-        products.value = response.data;
+        const response = await ApiClient.get('/products');
+        products.value = response;
     } catch (error) {
         console.error('Error fetching products:', error);
     }
 };
 
-// Fonction pour filtrer les produits selon la barre de recherche
 const filteredProducts = computed(() => {
     return products.value.filter(product =>
         product.label.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())
+        (product.Category && product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+        (product.Manufacturer && product.Manufacturer.label.toLowerCase().includes(searchQuery.value.toLowerCase()))
     );
 });
 
-// Calcul du nombre total de pages
 const totalPages = computed(() => {
     return Math.ceil(filteredProducts.value.length / itemsPerPage);
 });
 
-// Produits pour la page actuelle
 const paginatedProducts = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     return filteredProducts.value.slice(start, end);
 });
 
-// Fonctions pour changer de page
 const prevPage = () => {
     if (currentPage.value > 1) currentPage.value--;
 };
@@ -157,10 +157,8 @@ const goToPage = (page) => {
     }
 };
 
-// Appeler fetchProducts quand le composant est monté
 onMounted(fetchProducts);
 
-// Fonctions pour ajouter, éditer et supprimer des produits
 const addProduct = () => {
     router.push({ name: 'AddProduct' });
 };
@@ -177,7 +175,7 @@ const confirmDelete = (id) => {
 
 const deleteProduct = async (id) => {
     try {
-        await axios.delete(`/products/${id}`);
+        await ApiClient.delete(`/products/${id}`);
         products.value = products.value.filter(product => product.id !== id);
         toast.success('Produit supprimé avec succès');
     } catch (error) {
@@ -188,5 +186,4 @@ const deleteProduct = async (id) => {
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
 </style>
