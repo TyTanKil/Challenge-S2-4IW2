@@ -8,13 +8,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
-import Test from './views/AppTest.vue'
 import Product from './views/AppProduct.vue'
-import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import {jwtDecode} from 'jwt-decode';
 import VueToast from 'vue-toast-notification';
+
+import Test from './views/AppTest.vue'
+import Mailer from './views/AppTestMailer.vue'
+
 import 'vue-toast-notification/dist/theme-sugar.css';
 
 // Create a new store instance.
