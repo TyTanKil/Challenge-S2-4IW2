@@ -38,7 +38,7 @@ import FormInput from '../formComponents/admin/FormInput.vue';
 import FormTextarea from '../formComponents/admin/FormTextarea.vue';
 import FormFileInput from '../formComponents/admin/FormFileInput.vue';
 import FormSelect from '../formComponents/admin/FormSelect.vue';
-import { useToast } from 'vue-toastification';
+import { useToast } from 'vue-toast-notification';
 const toast = useToast();
 
 const router = useRouter();

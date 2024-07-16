@@ -1,11 +1,6 @@
 <script setup lang='ts'>
-  import AppButtonPrimary from '../components/formComponents/AppButtonPrimary.vue'
-  import AppButtonSecondary from '../components/formComponents/AppButtonSecondary.vue';
-  import AppInputText from '../components/formComponents/AppInputText.vue';
-  import AppInputCheckbox from '../components/formComponents/AppInputCheckbox.vue';
-  import AppInputSelect from '../components/formComponents/AppInputSelect.vue';
+  import AppCreateAccount from './AppCreateAccount.vue';
   import AppLogin from '../components/view-parts/AppLogin.vue';
-  import AppNewAccount from '../components/view-parts/AppNewAccount.vue';
 
   import { ref } from 'vue';
   
@@ -13,11 +8,6 @@
   
   const selectTab = (tab: string) => {
     isReturningClient.value = (tab === 'returning');
-  };
-  
-  const createAccount = () => {
-    // Logique pour créer un compte
-    console.log('Création de compte');
   };
 </script>
 
@@ -52,7 +42,7 @@
                 </div>
                 <div v-else>
                     <!-- Contenu pour les nouveaux clients -->
-                    <AppNewAccount></AppNewAccount>
+                    <AppCreateAccount></AppCreateAccount>
                 </div>
             </div>
         </div>
@@ -80,7 +70,7 @@
     flex-direction: column;
     align-items: center;
     .content{
-        width: 80%;
+        width: 100%;
     }
 }
   .tabs {
@@ -117,7 +107,7 @@
     height: 2px;
     background-color: #000;
     margin-top: 5px;
-    position: relative;
+    position: static;
   }
   
   .underline {
@@ -129,6 +119,7 @@
   
   .underline.active {
     transform: translateX(100%);
+    
   }
 
   @media (prefers-color-scheme: dark) {

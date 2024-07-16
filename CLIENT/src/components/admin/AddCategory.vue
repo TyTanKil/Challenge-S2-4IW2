@@ -21,7 +21,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from '../../axios';
 import FormInput from '../formComponents/admin/FormInput.vue';
-import { useToast } from 'vue-toastification';
+import { useToast } from 'vue-toast-notification';
 
 const router = useRouter();
 const category = ref({

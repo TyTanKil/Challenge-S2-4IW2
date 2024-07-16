@@ -24,7 +24,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from '../../axios';
-import { useToast } from 'vue-toastification';
+import { useToast } from 'vue-toast-notification';
 import FormInput from '../formComponents/admin/FormInput.vue';
 
 const router = useRouter();

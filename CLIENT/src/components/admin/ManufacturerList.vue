@@ -54,7 +54,7 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from '../../axios';
 import { useRouter } from 'vue-router';
-import { useToast } from 'vue-toastification';
+import { useToast } from 'vue-toast-notification';
 const manufacturers = ref([]);
 const searchQuery = ref('');
 const router = useRouter();
