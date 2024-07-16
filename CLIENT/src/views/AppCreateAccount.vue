@@ -22,7 +22,7 @@ const lastNameError = ref('');
 const firstNameError = ref('');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/;
 const phoneRegex = /^(?:(?:\+33|0)\s*[1-9](?:[\s.-]*\d{2}){4}|\d{10})$/;
 
 const toast = useToast();
@@ -38,7 +38,7 @@ const validateEmail = () => {
 
 const validatePassword = () => {
   if (!passwordRegex.test(password.value)) {
-    passwordError.value = "Le mot de passe doit contenir des lettres majuscules, minuscules, des chiffres et des symboles.";
+    passwordError.value = "Le mot de passe doit contenir au moins 12 caractères et des lettres majuscules, minuscules, des chiffres et des symboles.";
     return false;
   }
   passwordError.value = '';
@@ -116,7 +116,7 @@ const handleCreate = async () => {
         <span v-if="emailError" class="error">{{ emailError }}</span>
         <AppInputText v-model="password" label="Mot de passe" isNeeded hideContent placeholder="Password123"></AppInputText>
         <span v-if="passwordError" class="error">{{ passwordError }}</span>
-        <AppInputText v-model="phone" label="Numéro de telephone" hideContent placeholder="0344252525"></AppInputText>
+        <AppInputText v-model="phone" label="Numéro de telephone" placeholder="0344252525"></AppInputText>
         <span v-if="phoneError" class="error">{{ phoneError }}</span>
       </div>
       <div class="personal_info">
