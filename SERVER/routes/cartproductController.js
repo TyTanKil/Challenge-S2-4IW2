@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const CartProduct = require("../models/cartproduct");
+const Product = require("../models/product");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
@@ -82,6 +83,39 @@ router.put("/:id", async (req, res, next) => {
     res.status(nbDeleted ? 200 : 201).json(cartProduct);
   } catch (e) {
     next(e);
+  }
+});
+
+router.post('/addProduct', async (req, res, next) => {
+  try {
+    const { id_cart, id_product, quantity } = req.body;
+
+    const cartProduct = await CartProduct.create({
+      id_cart,
+      id_product,
+      quantity: quantity || 1 // Défaut à 1 si non spécifié
+    });
+
+    res.status(201).json(cartProduct);
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    next(error);
+  }
+});
+
+router.get('/:id_cart/products', async (req, res, next) => {
+  try {
+    const { id_cart } = req.params;
+
+    const cartProducts = await CartProduct.findAll({
+      where: { id_cart },
+      include: [{ model: Product, as: 'product' }]
+    });
+
+    res.status(200).json(cartProducts);
+  } catch (error) {
+    console.error('Error fetching products from cart:', error);
+    next(error);
   }
 });
 

@@ -7,6 +7,7 @@ const app = express();
 const AccountRouter = require("./routes/accountController");
 const ProductRouter = require("./routes/productController");
 const CartRouter = require("./routes/cartController");
+const CartProductRouter = require("./routes/cartproductController");
 const SecurityRouter = require("./routes/securityController");
 
 // Import email templates
@@ -92,9 +93,10 @@ app.use((err, req, res, next) => {
   res.status(502).redirect("/server-error");
 });
 
-app.use("/users", AccountRouter);
+app.use("/user", AccountRouter);
 app.use("/cart", CartRouter);
-app.use("/products", ProductRouter);
+app.use("/cartproduct", CartProductRouter);
+app.use("/product", ProductRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {

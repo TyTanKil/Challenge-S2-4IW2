@@ -7,6 +7,14 @@
 
     const store = useStore();
 
+    if(store.state.user_id == null){
+      account_button_route.value = "/login";
+      account_name.value = "Compte";
+    }else{
+      account_button_route.value = "";
+      account_name.value = store.state.user_name;
+    }
+
     export default {
     name: 'App',
     components: {
@@ -15,6 +23,8 @@
     data() {
         return {
         products: [],
+        loading: true,
+        error: null
         };
     },
     computed: {
@@ -22,38 +32,60 @@
         return this.products.reduce((sum, product) => sum + product.price * product.quantity, 0);
         },
     },
-    methods: {
-        fetchProducts() {
-        axios.get('http://localhost:3000/products')
-            .then(response => {
-            this.products = response.data;
-            });
-        },
-        removeProduct(productId) {
-        this.products = this.products.filter(product => product.id !== productId);
-        },
-        placeOrder() {
-        alert('Commande passée!');
-        },
-    },
-    mounted() {
-        this.fetchProducts();
-    },
+    methods : {
+      async created() {
+        try {
+          let response = await ApiClient.get('/cartProduct/1/products');
+          this.products = response.data;
+        } catch (error) {
+          console.error('Error fetching products from cart:', error);
+          this.error = 'Erreur lors de la récupération des produits.';
+        } finally {
+          this.loading = false;
+        }
+      },
+      async test() {
+        try {
+          const id_user = 3;
+          const id_product = 1;
+
+        // Appelez l'API pour créer un nouveau panier
+        let response = await ApiClient.post('/cart/add-product', { id_user: id_user,id_product: id_product });
+          console.log(response.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      },
+    }
     };
 </script>
 
 <template>
   <div id="app">
+    <div v-if="loading">Chargement...</div>
+    <div v-else>
+      <ul v-if="products.length">
+        <li v-for="product in products" :key="product.id">
+          <h3>{{ product.Product.label }}</h3>
+          <p>{{ product.Product.description }}</p>
+          <p>Quantité: {{ product.quantity }}</p>
+          <p>Prix: {{ product.Product.unit_price }}€</p>
+        </li>
+      </ul>
+      <p v-else>Aucun produit dans le panier.</p>
+      <div class="total">
+      <p>Total TTC: {{ total }}€</p>
+      <button @click="placeOrder">Passer commande</button>
+    </div>
+    </div>
     <ProductItem
       v-for="product in products"
       :key="product.id"
       :product="product"
       @remove="removeProduct"
     />
-    <div class="total">
-      <p>Total TTC: {{ total }}€</p>
-      <button @click="placeOrder">Passer commande</button>
-    </div>
+    
+    <button @click="test">test</button>
   </div>
 </template>
 

@@ -29,7 +29,8 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 const addToCart = async () => {
     //Ajouter au panier
     try {
-      let response = await ApiClient.get();
+      const id_user = store.state.user_id;
+      let response = await ApiClient.post('/cart/add-product', { id_user: id_user,id_product: props.id });
 
       toast.success(`Produit ajouté au panier : ${props.label}`);
     } catch (error) {
