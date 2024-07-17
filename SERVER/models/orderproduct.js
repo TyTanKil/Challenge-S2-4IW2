@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     unit_price: DataTypes.FLOAT
   }, {
     sequelize,
-    modelName: 'orderProduct',
+    modelName: 'order_product',
   });
   return orderProduct;
 };

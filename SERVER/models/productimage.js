@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     order: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'productImage',
+    modelName: 'product_images',
   });
   return productImage;
 };
