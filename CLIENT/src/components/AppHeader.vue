@@ -1,5 +1,20 @@
 <script lang="ts" setup>
-import { defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
+import { useStore } from 'vuex';
+
+const store = useStore(); // Accéder au store Vuex
+
+const account_button_route = ref('');
+const account_name = ref('');
+
+if(store.state.user_id == null){
+  account_button_route.value = "/login";
+  account_name.value = "Compte";
+}else{
+  //TODO : /account
+  account_button_route.value = "";
+  account_name.value = store.state.user_name;
+}
 
 const props = defineProps({
   route: Boolean,
@@ -16,10 +31,10 @@ const props = defineProps({
       <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
     </div>
     <div v-if="!props.route" class="actions_btn">
-      <a href="">
+      <a :href="account_button_route">
         <div class="account_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\account-user.svg" alt="">
-          <p>Compte</p>
+          <p>{{ account_name }}</p>
         </div>
       </a>
       <a href="">
