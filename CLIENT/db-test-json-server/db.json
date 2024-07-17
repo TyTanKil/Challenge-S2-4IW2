@@ -1,0 +1,90 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Produit Exemple",
+      "description": "Ceci est un produit exemple",
+      "price": 100,
+      "stock": 10,
+      "category": "Accessoires",
+      "image": null,
+      "status": "inactive"
+    },
+    {
+      "id": "babe",
+      "name": "ff",
+      "description": "fff",
+      "price": "0.90",
+      "stock": 0,
+      "category": "Composants",
+      "image": null,
+      "status": "inactive"
+    },
+    {
+      "id": "028f",
+      "name": "j",
+      "description": "kjj",
+      "price": 0,
+      "stock": 0,
+      "category": "Accessoires",
+      "image": "",
+      "status": "inactive"
+    },
+    {
+      "id": "f8d4",
+      "name": "ddc",
+      "description": "ddc",
+      "price": "0.10",
+      "stock": 0,
+      "category": "Réseaux",
+      "image": "",
+      "status": "active"
+    },
+    {
+      "id": "2cbd",
+      "name": "eefrer",
+      "description": "effe",
+      "price": 0,
+      "stock": 0,
+      "category": "Périphériques",
+      "image": "",
+      "status": "active"
+    },
+    {
+      "id": "708a",
+      "name": "dd",
+      "description": "f",
+      "price": "0.10",
+      "stock": 0,
+      "category": "Périphériques",
+      "image": "",
+      "status": "active"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "name": "Ordinateurs"
+    },
+    {
+      "id": "2",
+      "name": "Périphériques"
+    },
+    {
+      "id": "3",
+      "name": "Accessoires"
+    },
+    {
+      "id": "4",
+      "name": "Composants"
+    },
+    {
+      "id": "5",
+      "name": "Réseaux"
+    },
+    {
+      "id": "6",
+      "name": "Logiciels"
+    }
+  ]
+}

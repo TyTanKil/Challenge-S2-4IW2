@@ -3,7 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
-import store from './store/index'; 
+import store from './store/index'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
@@ -13,33 +13,50 @@ import Product from './views/AppProduct.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 
-import Cart from "./views/AppCart.vue"
-import Success from "./views/Payment/AppSuccess.vue"
-import Cancel from "./views/Payment/AppCancel.vue"
-import Payment from "./views/Payment/AppTestPayment.vue"
+import Cart from './views/AppCart.vue'
+import Success from './views/Payment/AppSuccess.vue'
+import Cancel from './views/Payment/AppCancel.vue'
+import Payment from './views/Payment/AppTestPayment.vue'
 
-import {jwtDecode} from 'jwt-decode';
-import VueToast from 'vue-toast-notification';
+import { jwtDecode } from 'jwt-decode'
+import VueToast from 'vue-toast-notification'
 
 import Test from './views/AppTest.vue'
+import Admin from './views/AppAdminDashboard.vue'
+import Users from './views/AppAdminUsers.vue'
+import ProductList from './views/AppAdminProducts.vue'
+import NewProduct from './views/admin/AppAddProduct.vue'
+import EditProduct from './views/admin/AppEditProduct.vue'
+
+import CategoryList from './views/admin/AppCategoryList.vue'
+import NewCategory from './views/admin/AppAddCategory.vue'
+import EditCategory from './views/admin/AppEditCategory.vue'
+
+import ManufacturerList from './views/admin/AppManufacturerList.vue'
+import NewManufacturer from './views/admin/AppAddManufacturer.vue'
+import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 import Mailer from './views/AppTestMailer.vue'
 
-import 'vue-toast-notification/dist/theme-sugar.css';
+import 'vue-toast-notification/dist/theme-sugar.css'
 
 // Create a new store instance.
 const store = createStore({
-  state () {
+  state() {
     return {
-      user_id: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).id : null,
-      user_name: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).name : null,
+      user_id: localStorage.getItem('jwtToken')
+        ? jwtDecode(localStorage.getItem('jwtToken')).id
+        : null,
+      user_name: localStorage.getItem('jwtToken')
+        ? jwtDecode(localStorage.getItem('jwtToken')).name
+        : null
     }
   },
   mutations: {
     updateUser(state) {
-      const token = localStorage.getItem('jwtToken');
-      if(token) {
-        state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id;
-        state.user_name = jwtDecode(localStorage.getItem('jwtToken')).name;
+      const token = localStorage.getItem('jwtToken')
+      if (token) {
+        state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id
+        state.user_name = jwtDecode(localStorage.getItem('jwtToken')).name
       }
     }
   }
@@ -48,7 +65,8 @@ const store = createStore({
 const routes = [
   { path: '/' },
   { path: '/login', component: Identify, meta: { requiresNoAuth: true } },
-  { path: '/validate/:hash',
+  {
+    path: '/validate/:hash',
     component: Validate,
     meta: { requiresNoAuth: true },
     props: (route) => ({
@@ -56,6 +74,25 @@ const routes = [
     })
   },
   { path: '/create', component: Create },
+  { path: '/test', component: Test },
+  { path: '/admin', component: Admin },
+  { path: '/admin/users', component: Users },
+  { path: '/admin/products', name: 'ProductList', component: ProductList },
+  { path: '/admin/product/new', name: 'AddProduct', component: NewProduct },
+  { path: '/admin/product/edit/:id', name: 'EditProduct', component: EditProduct, props: true },
+  { path: '/admin/category/new', name: 'AddCategory', component: NewCategory },
+  { path: '/admin/category', name: 'CategoryList', component: CategoryList },
+  { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
+  { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
+  { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
+  {
+    path: '/admin/manufacturer/edit/:id',
+    name: 'EditManufacturer',
+    component: EditManufacturer,
+    props: true
+  },
+
+  // autres routes
   { path: '/test', component: Test, meta: { requiresAuth: true } },
   { path: '/mailer', component: Mailer },
   {
@@ -72,10 +109,10 @@ const routes = [
   { path: '/server-error', name: 'ServerError', component: ServerError },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
   //Stripe
-  { path: "/payment", name: "Payment", component: Payment },
-  { path: "/cart", name: "Cart", component: Cart },
-  { path: "/success", name: "Success", component: Success },
-  { path: "/cancel", name: "Cancel", component: Cancel },
+  { path: '/payment', name: 'Payment', component: Payment },
+  { path: '/cart', name: 'Cart', component: Cart },
+  { path: '/success', name: 'Success', component: Success },
+  { path: '/cancel', name: 'Cancel', component: Cancel }
 ]
 
 const router = createRouter({
@@ -87,22 +124,22 @@ router.beforeEach((to, from) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
     return {
       path: '/login',
-      query: {redirect: to.fullPath},
+      query: { redirect: to.fullPath }
     }
   }
 
-  if(to.meta.requiresNoAuth && store.state.user_id != null){
+  if (to.meta.requiresNoAuth && store.state.user_id != null) {
     return {
-      path: "/",
+      path: '/'
     }
   }
-});
+})
 
 const app = createApp(App)
-app.use(store);
+app.use(store)
 app.use(router)
 app.use(VueToast, {
   position: 'top-right'
-});
-app.use(store);
+})
+app.use(store)
 app.mount('#app')
