@@ -34,7 +34,7 @@ const toast = useToast();
 const submitForm = async () => {
     try {
         await ApiClient.post('/category', category.value);
-        router.push({ name: 'CategoryList' }); // Assurez-vous que cette route existe
+        router.push({ name: 'CategoryList' }); 
         toast.success('Catégorie ajouté avec succès');
 
     } catch (error) {
