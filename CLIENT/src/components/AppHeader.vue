@@ -5,14 +5,17 @@ import { useStore } from 'vuex';
 const store = useStore(); // Accéder au store Vuex
 
 const account_button_route = ref('');
+const cart_button_route = ref('');
 const account_name = ref('');
 
 if(store.state.user_id == null){
   account_button_route.value = "/login";
+  cart_button_route.value = "/login";
   account_name.value = "Compte";
 }else{
   //TODO : /account
-  account_button_route.value = "";
+  account_button_route.value = "/account";
+  cart_button_route.value = "/cart";
   account_name.value = store.state.user_name;
 }
 
@@ -31,13 +34,13 @@ const props = defineProps({
       <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
     </div>
     <div v-if="!props.route" class="actions_btn">
-      <router-link to="/account">
+      <router-link :to="account_button_route">
         <div class="account_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\account-user.svg" alt="">
           <p>{{ account_name }}</p>
         </div>
       </router-link>
-      <router-link to="cart">
+      <router-link :to="cart_button_route">
         <div class="cart_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\cart1.svg" alt="">
           <p>Panier</p>
