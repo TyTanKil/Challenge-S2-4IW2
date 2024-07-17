@@ -12,7 +12,10 @@ import Create from './views/AppCreateAccount.vue'
 import Product from './views/AppProduct.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
-import MyAccount from './views/AppMyAccount.vue';
+import Cart from "./views/AppCart.vue"
+import Success from "./views/Payment/AppSuccess.vue"
+import Cancel from "./views/Payment/AppCancel.vue"
+import Payment from "./views/Payment/AppTestPayment.vue"
 
 import {jwtDecode} from 'jwt-decode';
 import VueToast from 'vue-toast-notification';
@@ -40,10 +43,6 @@ const store = createStore({
     }
   }
 })
-import Cart from "./views/AppCart.vue"
-import Success from "./views/Payment/AppSuccess.vue"
-import Cancel from "./views/Payment/AppCancel.vue"
-import Payment from "./views/Payment/AppTestPayment.vue"
 
 const routes = [
   { path: '/' },
@@ -55,8 +54,6 @@ const routes = [
       hash: route.params.hash
     })
   },
-  { path: '/', name: 'Home' },
-  { path: '/identify', component: Identify },
   { path: '/create', component: Create },
   { path: '/test', component: Test, meta: { requiresAuth: true } },
   { path: '/mailer', component: Mailer },
@@ -74,7 +71,6 @@ const routes = [
   { path: '/server-error', name: 'ServerError', component: ServerError },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
   { path: '/account', component: MyAccount },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
   //Stripe
   { path: "/payment", name: "Payment", component: Payment },
   { path: "/cart", name: "Cart", component: Cart },

@@ -8,6 +8,7 @@ import AppMainView from './views/AppMainView.vue'
 
 const route = useRoute();
 
+
 const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.fullPath === '/create' );
 const isAccountRoute = computed(() => route.fullPath === '/identify' || route.fullPath === '/create' || route.fullPath === '/account' );
 const isMainRoute = computed(() => route.fullPath === '/');
@@ -16,6 +17,7 @@ const isMainRoute = computed(() => route.fullPath === '/');
 <template>
   <header>
     <AppHeader :route="isIdentifyRoute" />
+    <AppNavbarCategories :route="isAccountRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
     <AppNavbarCategories :route="isAccountRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
 
     
