@@ -1,5 +1,3 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
@@ -121,23 +119,30 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
-    return {
+    next({
       path: '/login',
       query: { redirect: to.fullPath }
-    }
+    })
+    return
   }
 
   if (to.meta.requiresNoAuth && store.state.user_id != null) {
-    return {
-      path: '/'
-    }
+    next('/')
+    return
   }
-})
+
+  if (to.path.startsWith('/admin')) {
+    await import('./assets/admin.css')
+  } else {
+    await import('./assets/main.css')
+  }
+
+  next()
+})  
 
 const app = createApp(App)
-app.use(store)
 app.use(router)
 app.use(VueToast, {
   position: 'top-right'

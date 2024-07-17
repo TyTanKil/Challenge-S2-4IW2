@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "watch": "npx tailwindcss -i ./src/assets/css/app.css -o ./src/assets/main.css --watch"
+    "watch": "npx tailwindcss -i ./src/assets/css/app.css -o ./src/assets/main.css -o ./src/assets/admin.css --watch"
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.1.0",
