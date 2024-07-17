@@ -32,7 +32,7 @@ const routes = [
   },
   { path: '/server-error', name: 'ServerError', component: ServerError },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
-  { path: '/MyAccount', component: MyAccount },
+  { path: '/account', component: MyAccount },
 ]
 
 const router = createRouter({
