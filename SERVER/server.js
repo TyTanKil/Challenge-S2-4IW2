@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
+const paymentRoutes = require("./payment"); // Importation du fichier de paiement
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const SecurityRouter = require("./routes/securityController");
@@ -24,6 +25,9 @@ app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(cors());
 app.use(bodyParser.json());
+
+// Utilisation des routes de paiement
+app.use(paymentRoutes);
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
@@ -81,7 +85,7 @@ app.post("/send-email", async (req, res) => {
   }
 });
 
-//Middleware pour gérer les erreurs 502
+// Middleware pour gérer les erreurs 502
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
