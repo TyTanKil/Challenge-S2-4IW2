@@ -33,7 +33,7 @@ cartProduct.init({
   }
 }, {
   sequelize: connection,
-  modelName: 'cartProducts',
+  modelName: 'cart_products',
 });
 
 module.exports = cartProduct;

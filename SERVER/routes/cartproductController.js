@@ -90,22 +90,42 @@ router.post('/addProduct', async (req, res, next) => {
   try {
     const { id_cart, id_product, quantity } = req.body;
 
-    const cartProduct = await CartProduct.create({
-      id_cart,
-      id_product,
-      quantity: quantity || 1 // Défaut à 1 si non spécifié
+    // Check if the cart product already exists
+    const existingCartProduct = await CartProduct.findOne({
+      where: {
+        id_cart,
+        id_product
+      }
     });
 
-    res.status(201).json(cartProduct);
+    if (existingCartProduct) {
+      // If it exists, update the quantity
+      existingCartProduct.quantity += quantity || 1; // Increment by the provided quantity or by 1 if not provided
+      await existingCartProduct.save();
+      res.status(200).json(existingCartProduct);
+    } else {
+      // If it does not exist, create a new cart product
+      const newCartProduct = await CartProduct.create({
+        id_cart,
+        id_product,
+        quantity: quantity || 1 // Default to 1 if not specified
+      });
+      res.status(201).json(newCartProduct);
+    }
   } catch (error) {
     console.error('Error adding product to cart:', error);
     next(error);
   }
 });
 
-router.get('/:id_cart/products', async (req, res, next) => {
+router.post('/products', async (req, res, next) => {
   try {
-    const { id_cart } = req.params;
+    const { id_cart } = req.body;
+
+    // Vérifiez si `id_cart` est fourni
+    if (!id_cart) {
+      return res.status(400).json({ error: 'id_cart is required' });
+    }
 
     const cartProducts = await CartProduct.findAll({
       where: { id_cart },
