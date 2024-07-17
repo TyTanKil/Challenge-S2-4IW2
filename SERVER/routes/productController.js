@@ -12,11 +12,10 @@ const {
   Stock,
   ProductImage,
   DataTypes,
-} = db; //KRL
+} = db; //asso
 
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
-const syncProductWithMongo = require("../service/denormalizations/productService");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, "../uploads");
@@ -51,41 +50,13 @@ router.get("", async (req, res, next) => {
   }
 });
 
-// router.post("", upload.array("images", 10), async (req, res, next) => {
-//   const t = await sequelize.transaction();
-//   try {
-//     const product = await Product.create(req.body, { transaction: t });
-
-//     if (req.files) {
-//       const imagePromises = req.files.map((file, index) =>
-//         ProductImage.create(
-//           {
-//             id_product: product.id,
-//             content: file.buffer,
-//             order: index,
-//           },
-//           { transaction: t }
-//         )
-//       );
-//       await Promise.all(imagePromises);
-//     }
-
-//     await t.commit();
-//     res.status(201).json(product);
-//   } catch (e) {
-//     await t.rollback();
-//     next(e);
-//   }
-// });
-
-// Route pour créer un produit avec upload d'image
-
 router.post("/", upload.single("image"), async (req, res, next) => {
   const t = await sequelize.transaction();
   try {
     const {
       label,
       description,
+      ref,
       unit_price,
       stock,
       id_category,
@@ -96,6 +67,7 @@ router.post("/", upload.single("image"), async (req, res, next) => {
       {
         label,
         description,
+        ref,
         unit_price,
         stock,
         id_category,
@@ -151,6 +123,7 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
     const {
       label,
       description,
+      ref,
       unit_price,
       stock,
       id_category,
@@ -158,7 +131,6 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       status,
     } = req.body;
 
-    // Find the existing product to get the current image URL
     const existingProduct = await Product.findByPk(req.params.id, {
       include: [ProductImage],
     });
@@ -172,6 +144,7 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       {
         label,
         description,
+        ref,
         unit_price,
         stock,
         id_category,

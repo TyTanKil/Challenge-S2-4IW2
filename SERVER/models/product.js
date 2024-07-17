@@ -10,9 +10,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Product.belongsTo(models.Category, {
         foreignKey: "id_category",
-        // as: "category",
+        allowNull: true, // Permettre les valeurs nulles
       });
-      Product.belongsTo(models.Manufacturer, { foreignKey: "id_manufacturer" });
+      Product.belongsTo(models.Manufacturer, {
+        foreignKey: "id_manufacturer",
+        allowNull: true, // Permettre les valeurs nulles
+      });
       Product.hasOne(models.Stock, { foreignKey: "id_product" });
       Product.hasMany(models.ProductImage, {
         foreignKey: "id_product",
