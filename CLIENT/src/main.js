@@ -3,7 +3,6 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
-import store from './store/index'
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
@@ -12,6 +11,7 @@ import Create from './views/AppCreateAccount.vue'
 import Product from './views/AppProduct.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
+import MyAccount from './views/AppMyAccount.vue'
 
 import Cart from './views/AppCart.vue'
 import Success from './views/Payment/AppSuccess.vue'
@@ -85,6 +85,7 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
+  { path: '/account', name: 'Account', component: MyAccount },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',
