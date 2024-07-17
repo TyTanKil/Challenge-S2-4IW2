@@ -31,13 +31,13 @@ const props = defineProps({
       <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
     </div>
     <div v-if="!props.route" class="actions_btn">
-      <router-link to="/">
+      <router-link to="/account">
         <div class="account_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\account-user.svg" alt="">
           <p>{{ account_name }}</p>
         </div>
       </router-link>
-      <router-link to="Cart">
+      <router-link to="cart">
         <div class="cart_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\cart1.svg" alt="">
           <p>Panier</p>
