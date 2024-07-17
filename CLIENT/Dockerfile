@@ -16,4 +16,4 @@ COPY . .
 # Compile l'application pour la production
 RUN npm run build
 
-EXPOSE 5173
+EXPOSE 8080
