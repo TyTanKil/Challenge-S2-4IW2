@@ -6,7 +6,7 @@ module.exports = (data) => ({
     <html>
       <body style="font-family: "Exo", sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
         <h2 style="color: #A0DB10;">Modification de vos informations de compte</h2>
-        <p style="color: #575757;">Bonjour,</p>
+        <p style="color: #575757;">Bonjour, ${data.name}</p>
         <p style="color: #575757;">Les informations suivantes de votre compte ont été modifiées :</p>
         <h3 style="color: #A0DB10;">
           ${data.modifiedFields}

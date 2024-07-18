@@ -44,6 +44,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Utilisation des routes de paiement
 app.use(paymentRoutes);
 
+require('./middlewares/birthdayEmailScheduler');
+
+
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
   const { type, to, data } = req.body;

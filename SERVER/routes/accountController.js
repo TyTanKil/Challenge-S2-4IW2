@@ -102,7 +102,7 @@ router.patch("/:id", async (req, res, next) => {
       const modifiedFields = updatedFields.join(", ");
       const mailOptions = accountChangeDataTemplate({
         to: accounts[0].email,
-        name: `${req.body.firstName} ${req.body.lastName}`,
+        name: accounts[0].firstName,
         modifiedFields: modifiedFields,
       });
 
