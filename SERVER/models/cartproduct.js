@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     quantity: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'cartProduct',
+    modelName: 'cart_products',
   });
   return cartProduct;
 };
