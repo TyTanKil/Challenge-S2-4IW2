@@ -32,7 +32,7 @@ module.exports = {
         phone:'0344526455',
         login:'handre',
         password:password,
-        birth_date: new Date('2000-05-10'),
+        birth_date: new Date('2000-07-19'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
       },

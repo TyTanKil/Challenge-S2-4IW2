@@ -11,7 +11,7 @@ const path = require("path");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
-const resetPasswordTemplate = require("./templates-mail/reset-password");
+const accountChangeDataTemplate = require("./templates-mail/account-change-data");
 const shippingNotificationTemplate = require("./templates-mail/shipping-notification");
 const birthdayTemplate = require("./templates-mail/birthday");
 const accountConfirmationTemplate = require("./templates-mail/account-confirmation");
@@ -44,6 +44,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Utilisation des routes de paiement
 app.use(paymentRoutes);
 
+require('./middlewares/birthdayEmailScheduler');
+
+
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
   const { type, to, data } = req.body;
@@ -54,8 +57,8 @@ app.post("/send-email", async (req, res) => {
     case "confirmation":
       mailOptions = confirmationTemplate({ to, ...data });
       break;
-    case "reset-password":
-      mailOptions = resetPasswordTemplate({ to, ...data });
+    case "account-change-data":
+      mailOptions = accountChangeDataTemplate({ to, ...data });
       break;
     case "shipping-notification":
       mailOptions = shippingNotificationTemplate({ to, ...data });
@@ -100,7 +103,6 @@ app.post("/send-email", async (req, res) => {
   }
 });
 
-// Middleware pour gérer les erreurs 502
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);

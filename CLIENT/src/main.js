@@ -9,6 +9,7 @@ import Create from './views/AppCreateAccount.vue'
 import Product from './views/AppProduct.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
+import MyAccount from './views/AppMyAccount.vue'
 
 import Cart from './views/AppCart.vue'
 import Success from './views/Payment/AppSuccess.vue'
@@ -55,6 +56,16 @@ const store = createStore({
         state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id
         state.user_name = jwtDecode(localStorage.getItem('jwtToken')).name
       }
+    },
+    clearUser(state) {
+      state.user_id = null;
+      state.user_name = null;
+    }
+  },
+  actions: {
+    logout({ commit }) {
+      localStorage.removeItem('jwtToken');
+      commit('clearUser');
     }
   }
 })
@@ -82,6 +93,7 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
+  { path: '/account', name: 'Account', component: MyAccount },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',

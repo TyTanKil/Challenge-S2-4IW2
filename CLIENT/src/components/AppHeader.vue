@@ -13,7 +13,6 @@ if(store.state.user_id == null){
   cart_button_route.value = "/login";
   account_name.value = "Compte";
 }else{
-  //TODO : /account
   account_button_route.value = "/account";
   cart_button_route.value = "/cart";
   account_name.value = store.state.user_name;
