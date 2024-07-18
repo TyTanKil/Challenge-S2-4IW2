@@ -16,20 +16,23 @@ module.exports = {
         type: Sequelize.STRING
       },
       type: {
-        type: Sequelize.ENUM({
-          values: ['number', 'text', 'boolean']
-        }),
+        type: Sequelize.STRING,
         allowNull: false
       },
+        unit: {
+          type: Sequelize.STRING,
+          allowNull: true
+        },
       group: {
         type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
+        defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE
       }
     });

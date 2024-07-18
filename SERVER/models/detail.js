@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
   detail.init({
     id_category: DataTypes.INTEGER,
     label: DataTypes.STRING,
-    type: DataTypes.ENUM['number', 'text', 'boolean'],
+    type: DataTypes.STRING,
+    unit: DataTypes.STRING,
     group: DataTypes.STRING
   }, {
     sequelize,

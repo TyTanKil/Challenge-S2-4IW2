@@ -1,9 +1,10 @@
 const { Router } = require("express");
-const ProductImage = require("../models/productimage");
+const { sequelize, DataTypes } = require("../db");
+const ProductImage = require("../models/productimage")(sequelize, DataTypes);
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
-router.get("/", checkAuth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   const productsImage = await ProductImage.findAll({
     where: req.query,
   });

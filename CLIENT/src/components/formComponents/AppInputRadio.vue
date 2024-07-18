@@ -4,7 +4,7 @@ import { defineProps, defineEmits } from 'vue';
 const props = defineProps({
   label: String,
   isNeeded: Boolean,
-  options: Array,
+  options: Array(Object),
   modelValue: String,
 });
 
@@ -18,16 +18,16 @@ const emit = defineEmits(['update:modelValue']);
       <span v-if="props.isNeeded">*</span>
     </label>
     <div class="radio-group">
-      <div class="radio-option" v-for="option in props.options" :key="option">
+      <div class="radio-option" v-for="option in props.options" :key="option.value">
         <input
           type="radio"
-          :id="props.label + '-' + option"
-          :value="option"
-          :name="props.label"
-          :checked="props.modelValue === option"
-          @change="$emit('update:modelValue', option)"
+          :id="props.label + '-' + option.value"
+          :value="option.value"
+          :name="option.label"
+          :checked="props.modelValue === option.value"
+          @change="$emit('update:modelValue', option.value)"
         />
-        <label :for="props.label + '-' + option">{{ option }}</label>
+        <label :for="props.label + '-' + option.value">{{ option.label }}</label>
       </div>
     </div>
   </div>

@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('categoriy', [
+    return queryInterface.bulkInsert('category', [
       {
         id:1,
         label:'Carte Graphique',
