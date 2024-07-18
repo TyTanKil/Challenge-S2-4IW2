@@ -121,11 +121,24 @@ export default {
       }
     };
 
-    const changePassword = () => {
-      let newPassword = prompt(`Entrez le nouveau mot de passe:`);
-      if (newPassword !== null) {
-        // Logique pour changer le mot de passe (à implémenter)
-        console.log('Nouveau mot de passe:', newPassword);
+    const changePassword = async () => {
+      let oldPassword = prompt('Entrez votre ancien mot de passe:');
+      let newPassword = prompt('Entrez votre nouveau mot de passe:');
+      let newPasswordConfirmation = prompt('Confirmez votre nouveau mot de passe:');
+      if (oldPassword !== null && newPassword !== null && newPasswordConfirmation !== null) {
+        if (newPassword === newPasswordConfirmation) {
+          try {
+            await axios.patch(`http://localhost:3000/user/${user.value.id}`, { password:newPassword });
+            // Mettre à jour l'utilisateur après modification
+            await fetchUserData();
+            alert(`Le mot de passe a été modifié avec succès.`);
+          } catch (error) {
+              console.error(`Erreur lors de la modification du mot de passe:`, error);
+              alert(`Erreur lors de la modification du mot de passe. Veuillez réessayer.`);
+            }
+        } else {
+            alert('Les mots de passe ne correspondent pas. Veuillez réessayer.');
+          }
       }
     };
 

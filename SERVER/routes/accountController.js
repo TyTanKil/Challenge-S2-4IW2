@@ -6,6 +6,7 @@ const router = new Router();
 const { Op } = require("sequelize");
 const { v4: uuidv4, validate: isUUID } = require('uuid'); // Importez `validate` de `uuid`
 const accountConfirmationTemplate = require("../templates-mail/account-confirmation");
+const accountChangeDataTemplate = require("../templates-mail/account-change-data");
 const { sendEmail } = require("../mailer");
 
 router.get("/", checkAuth, async (req, res, next) => {
@@ -79,15 +80,34 @@ router.get("/:id", async (req, res, next) => {
 
 router.patch("/:id", async (req, res, next) => {
   try {
+    const accountId = req.params.id.trim();
+    const existingAccount = await Account.findOne({ where: { id: accountId } });
+
+    if (!existingAccount) {
+      return res.status(404).json({ error: "Account not found" });
+    }
+
+    const updatedFields = Object.keys(req.body);
+
     const [nbUpdated, accounts] = await Account.update(req.body, {
       where: {
-        id: req.params.id, // Assurez-vous que l'ID est traité comme une chaîne
+        id: accountId,
       },
       returning: true,
       individualHooks: true,
     });
+
     if (accounts[0]) {
-      res.json(accounts[0]);
+      // Envoyer un email avec les champs modifiés
+      const modifiedFields = updatedFields.join(", ");
+      const mailOptions = accountChangeDataTemplate({
+        to: accounts[0].email,
+        name: `${req.body.firstName} ${req.body.lastName}`,
+        modifiedFields: modifiedFields,
+      });
+
+      await sendEmail(mailOptions);
+      res.sendStatus(201);
     } else {
       res.sendStatus(404);
     }
@@ -95,6 +115,7 @@ router.patch("/:id", async (req, res, next) => {
     next(e);
   }
 });
+
 
 router.delete("/:id", async (req, res, next) => {
   try {

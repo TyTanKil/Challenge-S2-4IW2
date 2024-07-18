@@ -11,7 +11,7 @@ const path = require("path");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
-const resetPasswordTemplate = require("./templates-mail/reset-password");
+const accountChangeDataTemplate = require("./templates-mail/account-change-data");
 const shippingNotificationTemplate = require("./templates-mail/shipping-notification");
 const birthdayTemplate = require("./templates-mail/birthday");
 const accountConfirmationTemplate = require("./templates-mail/account-confirmation");
@@ -54,8 +54,8 @@ app.post("/send-email", async (req, res) => {
     case "confirmation":
       mailOptions = confirmationTemplate({ to, ...data });
       break;
-    case "reset-password":
-      mailOptions = resetPasswordTemplate({ to, ...data });
+    case "account-change-data":
+      mailOptions = accountChangeDataTemplate({ to, ...data });
       break;
     case "shipping-notification":
       mailOptions = shippingNotificationTemplate({ to, ...data });
