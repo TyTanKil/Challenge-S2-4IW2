@@ -53,11 +53,11 @@
                             const productData = responseProduct.data;
 
                             return {
-                                ...productData,
-                                id_cart: product.id_cart,
-                                quantity: product.quantity,
-                                createdAt: product.createdAt,
-                                updatedAt: product.updatedAt
+                              ...productData,
+                              id_cart: cartProduct.id_cart,
+                              quantity: cartProduct.quantity,
+                              createdAt: cartProduct.createdAt,
+                              updatedAt: cartProduct.updatedAt
                             };
                         } catch (error) {
                             console.error(`Error fetching product ${id_product}:`, error);
@@ -117,8 +117,6 @@
       :product="product"
       @remove="removeProduct"
     />
-    
-    <button @click="test">test</button>
   </div>
 </template>
 
