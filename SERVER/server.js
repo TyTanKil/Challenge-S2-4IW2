@@ -100,7 +100,6 @@ app.post("/send-email", async (req, res) => {
   }
 });
 
-// Middleware pour gérer les erreurs 502
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);

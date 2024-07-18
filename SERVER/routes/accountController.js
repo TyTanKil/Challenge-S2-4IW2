@@ -3,10 +3,10 @@ const Account = require("../models/account");
 const checkAuth = require("../middlewares/checkAuth");
 const sequelize = require("sequelize");
 const router = new Router();
-const {Op} = require("sequelize");
-const { v4: uuidv4 } = require('uuid');
+const { Op } = require("sequelize");
+const { v4: uuidv4, validate: isUUID } = require('uuid'); // Importez `validate` de `uuid`
 const accountConfirmationTemplate = require("../templates-mail/account-confirmation");
-const {sendEmail} = require("../mailer");
+const { sendEmail } = require("../mailer");
 
 router.get("/", checkAuth, async (req, res, next) => {
   const accounts = await Account.findAll({
@@ -25,7 +25,7 @@ router.post("/", async (req, res, next) => {
         }
       }
     });
-    if(nbExisting > 0){
+    if (nbExisting > 0) {
       req.body.login += nbExisting + 1;
     }
 
@@ -48,8 +48,8 @@ router.post("/", async (req, res, next) => {
     await sendEmail(mailOptions);
     res.sendStatus(201);
   } catch (e) {
-    if(e.errors[0].type === "unique violation"){
-        return res.status(409).json({field: e.errors[0].path});
+    if (e.errors[0] && e.errors[0].type === "unique violation") {
+      return res.status(409).json({ field: e.errors[0].path });
     }
     res.status(400).json(e);
   }
@@ -57,13 +57,22 @@ router.post("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const account = await Account.findByPk(parseInt(req.params.id));
+    const accountId = req.params.id.trim(); // Supprimez les espaces blancs
+    if (!isUUID(accountId)) {
+      return res.status(400).json({ error: "Invalid account ID" });
+    }
+
+    const account = await Account.findOne({
+      where: { id: accountId }
+    });
+
     if (account) {
       res.json(account);
     } else {
-      res.sendStatus(404);
+      res.status(404).json({ error: "Account not found" });
     }
   } catch (e) {
+    console.error("Error in finding account by ID:", e); // Logging for debugging
     next(e);
   }
 });
@@ -72,7 +81,7 @@ router.patch("/:id", async (req, res, next) => {
   try {
     const [nbUpdated, accounts] = await Account.update(req.body, {
       where: {
-        id: parseInt(req.params.id),
+        id: req.params.id, // Assurez-vous que l'ID est traité comme une chaîne
       },
       returning: true,
       individualHooks: true,
@@ -91,7 +100,7 @@ router.delete("/:id", async (req, res, next) => {
   try {
     const nbDeleted = await Account.destroy({
       where: {
-        id: parseInt(req.params.id),
+        id: req.params.id, // Assurez-vous que l'ID est traité comme une chaîne
       },
     });
     if (nbDeleted === 1) {
@@ -108,12 +117,12 @@ router.put("/:id", async (req, res, next) => {
   try {
     const nbDeleted = await Account.destroy({
       where: {
-        id: parseInt(req.params.id),
+        id: req.params.id, // Assurez-vous que l'ID est traité comme une chaîne
       },
     });
     const account = await Account.create({
       ...req.body,
-      id: parseInt(req.params.id),
+      id: req.params.id, // Assurez-vous que l'ID est traité comme une chaîne
     });
     res.status(nbDeleted ? 200 : 201).json(account);
   } catch (e) {

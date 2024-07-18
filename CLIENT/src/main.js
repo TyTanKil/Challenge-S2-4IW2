@@ -56,6 +56,16 @@ const store = createStore({
         state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id
         state.user_name = jwtDecode(localStorage.getItem('jwtToken')).name
       }
+    },
+    clearUser(state) {
+      state.user_id = null;
+      state.user_name = null;
+    }
+  },
+  actions: {
+    logout({ commit }) {
+      localStorage.removeItem('jwtToken');
+      commit('clearUser');
     }
   }
 })
