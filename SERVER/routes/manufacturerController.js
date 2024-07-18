@@ -1,16 +1,17 @@
 const { Router } = require("express");
-const Manufacturer = require("../models/manufacturer");
+const { sequelize, DataTypes } = require("../db");
+const Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
-router.get("/", checkAuth, async (req, res, next) => {
+router.get("", async (req, res, next) => {
   const manufacturers = await Manufacturer.findAll({
     where: req.query,
   });
   res.json(manufacturers);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("", async (req, res, next) => {
   try {
     const manufacturer = await Manufacturer.create(req.body);
     res.status(201).json(manufacturer);

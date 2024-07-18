@@ -1,16 +1,17 @@
 const { Router } = require("express");
-const Category = require("../models/category");
+const { sequelize, DataTypes } = require("../db");
+const Category = require("../models/category")(sequelize, DataTypes);
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
-router.get("/", checkAuth, async (req, res, next) => {
+router.get("", async (req, res, next) => {
   const categories = await Category.findAll({
     where: req.query,
   });
   res.json(categories);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("", async (req, res, next) => {
   try {
     const category = await Category.create(req.body);
     res.status(201).json(category);

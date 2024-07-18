@@ -8,20 +8,20 @@ import AppMainView from './views/AppMainView.vue'
 
 const route = useRoute();
 
-const isIdentifyRoute = computed(() => route.fullPath === '/identify' || route.fullPath === '/create' );
+const isIdentifyRoute = computed(() => route.fullPath === '/login' || route.fullPath === '/create' );
+const isAccountRoute = computed(() => route.fullPath === '/login' || route.fullPath === '/create' || route.fullPath === '/account' );
 const isMainRoute = computed(() => route.fullPath === '/');
+const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
+
 </script>
 
 <template>
-  <header>
-    <AppHeader :route="isIdentifyRoute" />
-    <AppNavbarCategories :route="isIdentifyRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>
-
-    
+    <header v-if="!isAdminRoute">
+      <AppHeader :route="isIdentifyRoute" />
+    <AppNavbarCategories :route="isAccountRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>    
   </header>
-  <main>
-    <AppMainView :route="isMainRoute"></AppMainView>
-
+    <main :class="{ 'admin-route': isAdminRoute, 'default-route': !isAdminRoute }">
+      <AppMainView :route="isMainRoute"></AppMainView>
     <RouterView />
   </main>
 </template>
@@ -31,16 +31,21 @@ const isMainRoute = computed(() => route.fullPath === '/');
 body {
   background-color: white;
   color: #575757;
+  height: 100vh;
 }
 header{
   position: sticky;
   top: 0;
 }
-main{
+main.default-route {
   width: 80%;
   margin: 0 auto;
 }
 
+main.admin-route {
+  width: 100%; 
+  margin: 0;
+}
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #575757;
