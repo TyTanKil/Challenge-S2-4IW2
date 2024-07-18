@@ -28,13 +28,31 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
 
 const addToCart = async () => {
     //Ajouter au panier
-    try {
-      const id_user = store.state.user_id;
-      let response = await ApiClient.post('/cart/add-product', { id_user: id_user,id_product: props.id });
+    const id_user = store.state.user_id;
+    const productId = props.id;
 
-      toast.success(`Produit ajouté au panier : ${props.label}`);
+    if (id_user == null) {
+        toast.error('Vous devez être connecté pour ajouter un produit au panier');
+        return;
+    }
+
+    try {
+        let responseCart = await ApiClient.get(`/cart/${id_user}`);
+        if (responseCart.status === 200) {
+            const cartId = responseCart.data.id;
+            console.log('Cart ID:', cartId);
+            let responseAddCart = await ApiClient.post(`/cartProduct/addProduct` , { id_cart: cartId ,id_product: productId });
+            if (responseAddCart.status === 200) {
+                toast.success('Produit ajouté au panier');
+            } else {
+                toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
+            }
+        } else {
+            toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
+        }
     } catch (error) {
-      console.error('Error fetching data:', error);
+        console.error('Error adding product to cart:', error);
+        toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
     }
 }
 
@@ -55,7 +73,7 @@ function selectCard() {
     <div class="card_vertical">
         <img @click="selectCard" class="card_vertical_img" :src="props.link_img" :alt="props.label">
         <div class="infos">
-            <h3>{{ props.label }}(ID: {{ props.id }})</h3>
+            <h3>{{ props.label }}</h3>
             <h4>{{ props.description }}</h4>
         </div>
         <div class="buy_div_container">

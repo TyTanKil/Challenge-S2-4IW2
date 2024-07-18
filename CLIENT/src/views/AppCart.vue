@@ -7,14 +7,6 @@
 
     const store = useStore();
 
-    if(store.state.user_id == null){
-      account_button_route.value = "/login";
-      account_name.value = "Compte";
-    }else{
-      account_button_route.value = "";
-      account_name.value = store.state.user_name;
-    }
-
     export default {
     name: 'App',
     components: {
@@ -33,30 +25,71 @@
         },
     },
     methods : {
-      async created() {
+      async fetchCartProducts() {
         try {
-          let response = await ApiClient.get('/cartProduct/1/products');
-          this.products = response.data;
-        } catch (error) {
-          console.error('Error fetching products from cart:', error);
-          this.error = 'Erreur lors de la récupération des produits.';
-        } finally {
-          this.loading = false;
-        }
-      },
-      async test() {
-        try {
-          const id_user = 3;
-          const id_product = 1;
+            const id_user = store.state.user_id;
+            
+            if (id_user == null) {
+                toast.error('Vous devez être connecté pour ajouter un produit au panier');
+                this.loading = false;
+                return;
+            }
 
-        // Appelez l'API pour créer un nouveau panier
-        let response = await ApiClient.post('/cart/add-product', { id_user: id_user,id_product: id_product });
-          console.log(response.data);
+            let responseCart = await ApiClient.get(`/cart/${id_user}`);
+            if (responseCart.status === 200) {
+                const cartId = responseCart.data.id;
+                console.log('Cart ID:', cartId);
+                let responseCartProducts = await ApiClient.get(`/cartProduct/products`,  { id_cart: cartId } );
+                
+                if (responseCartProducts.status === 200) {
+                    const DataCartProducts = responseCartProducts.data;
+
+                    // Fetch product details for each product in the cart
+                    const productDetailsPromises = DataCartProducts.map(async product => {
+                        const { id_product, quantity } = product;
+
+                        try {
+                            let responseProduct = await ApiClient.get(`/product/${id_product}`);
+                            const productData = responseProduct.data;
+
+                            return {
+                                ...productData,
+                                id_cart: product.id_cart,
+                                quantity: product.quantity,
+                                createdAt: product.createdAt,
+                                updatedAt: product.updatedAt
+                            };
+                        } catch (error) {
+                            console.error(`Error fetching product ${id_product}:`, error);
+                            return null;
+                        }
+                    });
+
+                    // Wait for all product details to be fetched
+                    const products = await Promise.all(productDetailsPromises);
+
+                    // Filter out any null values (in case of errors)
+                    this.products = products.filter(product => product !== null);
+
+                    console.log('Updated products in state:', this.products);
+                    toast.success('Produits ajoutés au panier avec succès');
+                } else {
+                    console.error('Error fetching products from cart:', responseCartProducts.statusText);
+                }
+            } else {
+                console.error('Error fetching cart:', responseCart.statusText);
+            }
         } catch (error) {
-          console.error('Error fetching data:', error);
+            console.error('Error fetching products from cart:', error);
+            this.error = 'Erreur lors de la récupération des produits.';
+        } finally {
+            this.loading = false;
         }
       },
-    }
+      created() {
+        this.fetchCartProducts();
+      }
+    },
     };
 </script>
 

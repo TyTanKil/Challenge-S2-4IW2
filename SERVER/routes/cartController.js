@@ -92,11 +92,8 @@ router.put("/", async (req, res, next) => {
       },
     });
 
-    // Créez un nouveau panier pour cet utilisateur
-    const expire_date = new Date(Date.now() + 15 * 60 * 1000);
     const cart = await Cart.create({
       id_user,
-      expire_date,
     });
 
     // Répondez avec le nouveau panier

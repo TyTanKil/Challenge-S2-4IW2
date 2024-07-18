@@ -128,8 +128,7 @@ router.post('/products', async (req, res, next) => {
     }
 
     const cartProducts = await CartProduct.findAll({
-      where: { id_cart },
-      include: [{ model: Product, as: 'product' }]
+      where: { id_cart }
     });
 
     res.status(200).json(cartProducts);
