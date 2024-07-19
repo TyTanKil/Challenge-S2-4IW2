@@ -26,24 +26,6 @@ import Mailer from './views/AppTestMailer.vue'
 
 import 'vue-toast-notification/dist/theme-sugar.css';
 
-// Create a new store instance.
-const store = createStore({
-  state () {
-    return {
-      user_id: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).id : null,
-      user_name: localStorage.getItem('jwtToken') ? jwtDecode(localStorage.getItem('jwtToken')).name : null,
-    }
-  },
-  mutations: {
-    updateUser(state) {
-      const token = localStorage.getItem('jwtToken');
-      if(token) {
-        state.user_id = jwtDecode(localStorage.getItem('jwtToken')).id;
-        state.user_name = jwtDecode(localStorage.getItem('jwtToken')).name;
-      }
-    }
-  }
-})
 
 const routes = [
   { path: '/' },
