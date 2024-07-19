@@ -21,6 +21,7 @@
       <div class="tabs">
         <div class="tab" :class="{ active: selectedTab === 'infos' }" @click="selectedTab = 'infos'">Mes infos</div>
         <div class="tab" :class="{ active: selectedTab === 'commandes' }" @click="selectedTab = 'commandes'">Mes commandes</div>
+        <div class="tab" :class="{ active: selectedTab === 'parameters' }" @click="selectedTab = 'parameters'">Mes paramètres</div>
       </div>
       <div class="content">
         <div v-if="selectedTab === 'infos'" class="infos">
@@ -49,13 +50,30 @@
           <div class="info-item">
             <span>Membre depuis: {{ formatDate(user.createdAt) }}</span>
           </div>
-          <div class="info-item">
-            <button class="change-password-button" @click="changePassword">Modifier le mot de passe</button>
-          </div>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
           <!-- Contenu pour Mes commandes -->
           <p>Contenu des commandes de l'utilisateur...</p>
+        </div>
+        <div v-if="selectedTab === 'parameters'" class="parameters">
+          <h4 class="parameters-item">Gérer mes notifications mails</h4>
+          <div class="parameters-item mails-item">
+            <div class="switch-container">
+              <span>Tout désactiver</span>
+              <label class="switch">
+                <input type="checkbox" v-model="isActivated" @change="toggleActivation">
+                <span class="slider"></span>
+              </label>
+              <span>Tout activer</span>
+            </div>         
+          </div>
+          <div class="parameters-item">
+            <button class="change-password-button" @click="changePassword">Modifier le mot de passe</button>
+          </div>
+          <div class="parameters-item">
+            <button class="delete-account-button" @click="deleteAccount">Supprimer mon compte</button>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -74,7 +92,8 @@ export default {
     return {
       selectedTab: 'infos',
       userProfilePhoto: '', 
-      user: {}
+      user: {},
+      isActivated: false, // Pour le switch
     };
   },
   setup() {
@@ -142,16 +161,84 @@ export default {
       }
     };
 
+    const deleteAccount = async () => {
+      const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');
+      if (confirmDelete) {
+        try {
+          await axios.delete(`http://localhost:3000/user/${user.value.id}`);
+          alert('Votre compte a été anonymisé avec succès.');
+          logout();
+        } catch (error) {
+          console.error('Erreur lors de la suppression du compte:', error);
+          alert('Erreur lors de la suppression du compte. Veuillez réessayer.');
+        }
+      }
+    };
+
+
     onMounted(() => {
       fetchUserData();
     });
 
-    return { logout, user, formatDate, editField, changePassword };
-  }
+    return { logout, user, formatDate, editField, changePassword, deleteAccount };
+  },
 };
 </script>
 
 <style scoped>
+/* Slider */
+.switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
 .my-account {
   display: flex;
   height: 70vh;
@@ -190,12 +277,17 @@ export default {
 }
 
 .logout-button {
-  background: none;
+  background-color: #d9d9d9;
   border: none;
   color: #e63946;
   font-size: 16px;
   cursor: pointer;
   margin-top: 20px;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  &:hover{
+    background-color: #c7c7c7;
+  }
 }
 
 .main-content {
@@ -209,7 +301,7 @@ export default {
       align-items: center;
       width: 50%;
       color: #000;
-      margin: 1.5rem;
+      margin: 1.7rem 1.5rem;
       button{
         background-color: #007bff;
         color: white;
@@ -222,7 +314,21 @@ export default {
           background-color: #0056b3;
         }
       }
-      .change-password-button {
+    }
+    p{
+      margin: 2rem 1rem;
+      color: black;
+    }
+  }
+  .parameters{
+    .parameters-item{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 50%;
+      color: #000;
+      margin: 1.5rem;
+      button{
         background-color: #e63946;
         color: white;
         border: none;
@@ -235,10 +341,6 @@ export default {
         }
       }
     }
-    p{
-    margin: 2rem 1rem;
-    color: black;
-  }
   }
 }
 
