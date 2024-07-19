@@ -55,7 +55,10 @@ account.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    birth_date: DataTypes.DATE,
+    birth_date:{
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     roles: {
         type: DataTypes.ARRAY(DataTypes.ENUM({
             values: ['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']
@@ -65,7 +68,11 @@ account.init({
     validate_hash: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    deleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
 }, {
     sequelize: connection,
     indexes: [
