@@ -95,7 +95,7 @@ const fetchManufacturers = async () => {
 onMounted(async () => {
     const productId = route.params.id;
     try {
-        const response = await ApiClient.get(`/products/${productId}`);
+        const response = await ApiClient.get(`/products/show/${productId}`);
         product.value = response;
         product.value.stock = response.Stock ? response.Stock.quantity : 0;
         if (response.ProductImages && response.ProductImages.length > 0) {
