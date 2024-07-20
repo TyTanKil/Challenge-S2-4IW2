@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-
-</script>
-
 <template>
   <div class="declaration_cookies">
     <h1>DECLARATION RELATIVES AUX COOKIES</h1>

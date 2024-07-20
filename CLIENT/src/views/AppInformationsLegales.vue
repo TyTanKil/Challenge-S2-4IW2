@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-
-</script>
-
 <template>
   <div class="infos_legales">
     <h1>INFORMATIONS LEGALES</h1>

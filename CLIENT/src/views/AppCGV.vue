@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-
-</script>
-
 <template>
   <div class="CGV">
     <h1>NOS CONDITIONS GENERALES DE VENTE</h1>
