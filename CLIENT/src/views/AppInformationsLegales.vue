@@ -262,6 +262,7 @@
       <p>Signature du (des) consommateur(s) (uniquement en cas de notification du présent formulaire sur papier) :</p>
 
       <p>Date :</p>
+      <br>
 
       <p>(*) Rayez la mention inutile.</p>
   </div>
