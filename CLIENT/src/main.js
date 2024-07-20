@@ -35,6 +35,9 @@ import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 import Mailer from './views/AppTestMailer.vue'
 
+/* Footer */
+import InfosLegales from './views/AppInformationsLegales.vue'
+
 import 'vue-toast-notification/dist/theme-sugar.css'
 
 // Create a new store instance.
@@ -121,7 +124,8 @@ const routes = [
   { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
-  { path: '/cancel', name: 'Cancel', component: Cancel }
+  { path: '/cancel', name: 'Cancel', component: Cancel },
+  { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales }
 ]
 
 const router = createRouter({
