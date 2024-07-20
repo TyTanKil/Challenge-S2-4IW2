@@ -117,7 +117,7 @@ const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par l'url 
 
 const fetchProducts = async () => {
     try {
-        const response = await ApiClient.get('/products');
+        const response = await ApiClient.get('/products/list-products');
         products.value = response;
     } catch (error) {
         console.error('Error fetching products:', error);

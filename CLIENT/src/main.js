@@ -93,7 +93,7 @@ const routes = [
   { path: '/test', component: Test, meta: { requiresAuth: true } },
   { path: '/mailer', component: Mailer },
   {
-    path: '/product/:name:description:price:link_img',
+    path: '/product/:id',
     name: 'Product',
     component: Product,
     props: (route) => ({
@@ -138,7 +138,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   next()
-})  
+})
 
 const app = createApp(App)
 app.use(router)
