@@ -4,7 +4,7 @@
 
 <template>
   <div class="infos_legales">
-    <h1>Informations légales</h1>
+    <h1>INFORMATIONS LEGALES</h1>
 
     <div>
       <p>Forme de la société : Société par Actions Simplifiée (SAS)</p>
@@ -270,11 +270,10 @@
 <style scoped>
 .infos_legales {
   width: 85%;
-  margin: auto;
+  margin: auto auto 30px;
   color: black;
   background-color: #d5d5d5;
   padding: 25px;
-  margin-bottom: 25px;
 
   .sub_title {
     margin: 10px 0 5px 0;

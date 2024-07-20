@@ -25,7 +25,7 @@
       <div>
         <h2>Notre histoire</h2>
         <ul>
-          <li><router-link to="">Conditions générales de vente</router-link></li>
+          <li><router-link to="/cgv">Conditions générales de vente</router-link></li>
           <li><router-link to="/informations_legales">Informations légales</router-link></li>
           <li><router-link to="">Données personnelles</router-link> et <router-link to="">cookies</router-link></li>
       </ul>

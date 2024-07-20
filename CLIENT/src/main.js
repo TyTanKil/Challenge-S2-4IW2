@@ -37,6 +37,7 @@ import Mailer from './views/AppTestMailer.vue'
 
 /* Footer */
 import InfosLegales from './views/AppInformationsLegales.vue'
+import AppCGV from './views/AppCGV.vue'
 
 import 'vue-toast-notification/dist/theme-sugar.css'
 
@@ -125,7 +126,8 @@ const routes = [
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
   { path: '/cancel', name: 'Cancel', component: Cancel },
-  { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales }
+  { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
+  { path: '/cgv', name: 'AppCGV', component: AppCGV }
 ]
 
 const router = createRouter({
