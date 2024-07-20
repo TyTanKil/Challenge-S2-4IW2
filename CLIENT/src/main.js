@@ -38,6 +38,7 @@ import Mailer from './views/AppTestMailer.vue'
 /* Footer */
 import InfosLegales from './views/AppInformationsLegales.vue'
 import AppCGV from './views/AppCGV.vue'
+import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
 
 import 'vue-toast-notification/dist/theme-sugar.css'
 
@@ -127,7 +128,8 @@ const routes = [
   { path: '/success', name: 'Success', component: Success },
   { path: '/cancel', name: 'Cancel', component: Cancel },
   { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
-  { path: '/cgv', name: 'AppCGV', component: AppCGV }
+  { path: '/cgv', name: 'AppCGV', component: AppCGV },
+  { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies }
 ]
 
 const router = createRouter({
