@@ -27,7 +27,7 @@
         <ul>
           <li><router-link to="/cgv">Conditions générales de vente</router-link></li>
           <li><router-link to="/informations_legales">Informations légales</router-link></li>
-          <li><router-link to="">Données personnelles</router-link> et <router-link to="/declaration_cookies">cookies</router-link></li>
+          <li><router-link to="/donnees_personnelles">Données personnelles</router-link> et <router-link to="/declaration_cookies">cookies</router-link></li>
       </ul>
       </div>
     </div>

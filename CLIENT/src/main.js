@@ -39,6 +39,7 @@ import Mailer from './views/AppTestMailer.vue'
 import InfosLegales from './views/AppInformationsLegales.vue'
 import AppCGV from './views/AppCGV.vue'
 import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
+import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
 
 import 'vue-toast-notification/dist/theme-sugar.css'
 
@@ -129,12 +130,17 @@ const routes = [
   { path: '/cancel', name: 'Cancel', component: Cancel },
   { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
   { path: '/cgv', name: 'AppCGV', component: AppCGV },
-  { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies }
+  { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
+  { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(){
+    // always scroll to top
+    return { top: 0 }
+  },
 })
 
 router.beforeEach(async (to, from, next) => {
