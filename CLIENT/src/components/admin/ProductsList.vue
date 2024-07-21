@@ -33,8 +33,8 @@
                     <tr v-else v-for="product in paginatedProducts" :key="product.id"
                         class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">
-                            <img v-if="product.ProductImages && product.ProductImages.length"
-                                :src="urlServerImg + product.ProductImages[0].url" alt="Product Image"
+                            <img v-if="product.Product_images && product.Product_images.length"
+                                :src="urlServerImg + product.Product_images[0].url" alt="Product Image"
                                 class="w-10 h-10 object-cover rounded" />
                             <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />
                         </td>
@@ -117,7 +117,7 @@ const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par l'url 
 
 const fetchProducts = async () => {
     try {
-        const response = await ApiClient.get('/products');
+        const response = await ApiClient.get('/products/list-products');
         products.value = response;
     } catch (error) {
         console.error('Error fetching products:', error);

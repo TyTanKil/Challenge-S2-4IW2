@@ -1,5 +1,9 @@
 "use strict";
 const { Model, DataTypes } = require("sequelize");
+// const {
+//   syncroDeleteProduct,
+// } = require("../services/denormalizations/productService");
+
 module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
     /**
@@ -17,11 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true, // Permettre les valeurs nulles
       });
       Product.hasOne(models.Stock, { foreignKey: "id_product" });
-      Product.hasMany(models.ProductImage, {
+      Product.hasMany(models.Product_image, {
         foreignKey: "id_product",
       });
     }
   }
+
   Product.init(
     {
       id: {
@@ -55,32 +60,50 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Product",
-      tableName: "products",
+      tableName: "product",
       hooks: {
         afterCreate: async (product, options) => {
-          const Stock = sequelize.models.Stock;
-          console.log(product);
           try {
-            await Stock.create({
-              id_product: product.id,
-              quantity: product.stock,
-            });
+            const {
+              syncProductWithMongo,
+            } = require("../services/denormalizations/productService");
+            if (options.transaction) {
+              options.transaction.afterCommit(() =>
+                syncProductWithMongo(product.id)
+              );
+            } else {
+              await syncProductWithMongo(product.id);
+            }
           } catch (error) {
-            console.error("Error creating stock:", error);
+            console.error("Syncro:", error);
           }
         },
-      },
-      afterUpdate: async (product, options) => {
-        const Stock = sequelize.models.Stock;
-        try {
-          console.log(product);
-          await Stock.update(
-            { quantity: product.stock },
-            { where: { id_product: product.id } }
-          );
-        } catch (error) {
-          console.error("Error updating stock:", error);
-        }
+        afterUpdate: async (product, options) => {
+          try {
+            const {
+              syncProductWithMongo,
+            } = require("../services/denormalizations/productService");
+            if (options.transaction) {
+              options.transaction.afterCommit(() =>
+                syncProductWithMongo(product.id)
+              );
+            } else {
+              await syncProductWithMongo(product.id);
+            }
+          } catch (error) {
+            console.error(
+              "Erreur lors de la synchronisation après mise à jour:",
+              error
+            );
+          }
+        },
+        afterDestroy: async (product, options) => {
+          try {
+            console.log("Produit supprimé:", product.dataValues.id);
+          } catch (error) {
+            console.error("Erreur lors de la suppression:", error);
+          }
+        },
       },
     }
   );

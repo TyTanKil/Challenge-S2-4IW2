@@ -1,18 +1,26 @@
 const { Router } = require("express");
-const db = require("../db");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-// console.log(db);
+const {
+  deleteProductFromMongo,
+  syncProductWithMongo,
+} = require("../services/denormalizations/productService");
+
+const { Products } = require("../mongo/ProductSchema"); // Remplacez par le chemin correct
+
+const db = require("../db");
+console.log(db);
+
 const {
   sequelize,
   Product,
   Category,
   Manufacturer,
   Stock,
-  ProductImage,
+  Product_image,
   DataTypes,
-} = db; //asso
+} = db; //pour asso
 
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
@@ -32,7 +40,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("", async (req, res, next) => {
+//ROUTE ADMIN PRODUCT
+router.get("/list-products", async (req, res, next) => {
   try {
     const products = await Product.findAll({
       where: req.query,
@@ -40,11 +49,35 @@ router.get("", async (req, res, next) => {
         { model: Category },
         { model: Manufacturer },
         { model: Stock },
-        { model: ProductImage },
+        { model: Product_image },
       ],
       order: [["createdAt", "DESC"]],
     });
     res.json(products);
+  } catch (e) {
+    next(e);
+  }
+});
+
+//MONGO ROUTE
+router.get("", async (req, res, next) => {
+  try {
+    const filter = req.query || {};
+    const products = await Products.find(filter).sort({ createdAt: -1 });
+    res.json(products);
+  } catch (e) {
+    next(e);
+  }
+});
+
+//POSTGRES ROUTE
+router.get("/:id", async (req, res, next) => {
+  try {
+    const product = await Products.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Produit non trouvé" });
+    }
+    res.json(product);
   } catch (e) {
     next(e);
   }
@@ -78,7 +111,7 @@ router.post("/", upload.single("image"), async (req, res, next) => {
 
     if (req.file) {
       const imagePath = req.file.filename;
-      await ProductImage.create(
+      await Product_image.create(
         {
           id_product: product.id,
           url: imagePath,
@@ -87,7 +120,23 @@ router.post("/", upload.single("image"), async (req, res, next) => {
       );
     }
 
+    // Mise à jour des stocks
+    const quantity = req.body.stock;
+    await Stock.create(
+      {
+        id_product: product.id,
+        quantity: quantity,
+      },
+      { transaction: t }
+    );
+
     await t.commit();
+
+    // try {
+    //   syncProductWithMongo(product.id);
+    // } catch (error) {
+    //   console.error(error);
+    // }
 
     res.status(201).json({ product });
   } catch (error) {
@@ -96,14 +145,14 @@ router.post("/", upload.single("image"), async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/show/:id", async (req, res, next) => {
   try {
     const product = await Product.findByPk(parseInt(req.params.id), {
       include: [
         { model: Category },
         { model: Manufacturer },
         { model: Stock },
-        { model: ProductImage },
+        { model: Product_image },
       ],
     });
 
@@ -128,11 +177,10 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       stock,
       id_category,
       id_manufacturer,
-      status,
     } = req.body;
 
     const existingProduct = await Product.findByPk(req.params.id, {
-      include: [ProductImage],
+      include: [Product_image],
     });
 
     if (!existingProduct) {
@@ -149,7 +197,6 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         stock,
         id_category,
         id_manufacturer,
-        status,
       },
       { where: { id: req.params.id }, transaction: t }
     );
@@ -168,16 +215,16 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
 
     if (req.file) {
       const imagePath = req.file.filename;
-      const existingImage = await ProductImage.findOne({
+      const existingImage = await Product_image.findOne({
         where: { id_product: req.params.id },
         transaction: t,
       });
 
-      if (existingProduct.ProductImages.length > 0) {
+      if (existingProduct.Product_images.length > 0) {
         const oldImagePath = path.join(
           __dirname,
           "../uploads",
-          existingProduct.ProductImages[0].url
+          existingProduct.Product_images[0].url
         );
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);
@@ -188,7 +235,7 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         existingImage.url = imagePath;
         await existingImage.save({ transaction: t });
       } else {
-        await ProductImage.create(
+        await Product_image.create(
           {
             id_product: req.params.id,
             url: imagePath,
@@ -199,9 +246,17 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
     }
 
     await t.commit();
+
     const product = await Product.findByPk(req.params.id, {
-      include: [Category, Manufacturer, Stock, ProductImage],
+      include: [Category, Manufacturer, Stock, Product_image],
     });
+
+    try {
+      syncProductWithMongo(product.id);
+    } catch (error) {
+      console.error(error);
+    }
+
     res.json(product);
   } catch (error) {
     await t.rollback();
@@ -210,6 +265,11 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
 });
 
 router.delete("/:id", async (req, res, next) => {
+  try {
+    deleteProductFromMongo(req.params.id);
+  } catch (error) {
+    console.error(error);
+  }
   try {
     const nbDeleted = await Product.destroy({
       where: {

@@ -19,6 +19,8 @@ function addToCart() {
     //Ajouter au panier
 }
 
+console.log(props);
+
 
 const emits = defineEmits(['select']);
 
