@@ -17,6 +17,7 @@ import Cart from "./views/AppCart.vue"
 import Success from "./views/Payment/AppSuccess.vue"
 import Cancel from "./views/Payment/AppCancel.vue"
 import Payment from "./views/Payment/AppTestPayment.vue"
+import Suivi from "./views/AppTestShippment.vue"
 
 import {jwtDecode} from 'jwt-decode';
 import VueToast from 'vue-toast-notification';
@@ -58,6 +59,9 @@ const routes = [
   { path: "/cart", name: "Cart", component: Cart },
   { path: "/success", name: "Success", component: Success },
   { path: "/cancel", name: "Cancel", component: Cancel },
+  //Suivi 
+  { path: "/suivi", name: "Suivi", component: Suivi },
+
 ]
 
 const router = createRouter({

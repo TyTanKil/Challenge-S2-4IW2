@@ -3,11 +3,13 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
-const paymentRoutes = require("./payment"); // Importation du fichier de paiement
+const paymentRoutes = require("./payment");
+const shippment = require("./shippment");
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const SecurityRouter = require("./routes/securityController");
 
+shippment.run();
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
 const resetPasswordTemplate = require("./templates-mail/reset-password");
@@ -100,6 +102,27 @@ app.use(SecurityRouter);
 app.get("/", (req, res, next) => {
   res.send("Coucou " + JSON.stringify(req.query));
 });
+
+//Suivi colis 
+app.post('/create-shipment', async (req, res) => {
+  try {
+    const shipment = await shippo.shipment.create(req.body);
+    res.json(shipment);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/track-shipment/:carrier/:trackingNumber', async (req, res) => {
+  const { carrier, trackingNumber } = req.params;
+  try {
+    const trackingInfo = await shippo.track.get_status(carrier, trackingNumber);
+    res.json(trackingInfo);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 app.listen(3000, () => {
   console.log("Serveur démarré sur le port 3000");
