@@ -1,5 +1,5 @@
 'use strict';
-const { Model, DataTypes } = require("sequelize");
+const { Model, DataTypes} = require("sequelize");
 const bcrypt = require("bcryptjs");
 const connection = require("./db");
 
@@ -12,6 +12,12 @@ class account extends Model {
 }
 
 account.init({
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        primaryKey: true
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false
@@ -27,8 +33,8 @@ account.init({
     },
     status: {
         type: DataTypes.STRING,
-        enum: ['a', 'd', 's'], 
-        default: 'd'
+        enum: ['a', 'd', 's', 'c'],
+        default: 's'
     },
     email: {
         type: DataTypes.STRING,
@@ -37,7 +43,7 @@ account.init({
     },
     phone: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true
     },
     login: {
@@ -49,15 +55,36 @@ account.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    birth_date: DataTypes.DATE,
+    birth_date:{
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     roles: {
         type: DataTypes.ARRAY(DataTypes.ENUM({
             values: ['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']
         })),
         allowNull: false
     },
+    validate_hash: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    deleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    notification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
 }, {
-    sequelize: connection
+    sequelize: connection,
+    indexes: [
+        {
+            unique: true,
+            fields: ['id', 'email', 'phone', 'login']
+        }
+    ],
 });
 
 account.addHook("beforeCreate", async (account) => {

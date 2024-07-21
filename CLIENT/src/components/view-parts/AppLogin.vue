@@ -8,12 +8,15 @@
 
   import { useStore } from 'vuex';
   import { useRouter } from 'vue-router';
+  import { useToast } from 'vue-toast-notification';
 
   const store = useStore(); // Accéder au store Vuex
   const router = useRouter(); // Accéder au router
 
   const email = ref('');
   const password = ref('');
+
+  const toast = useToast();
 
   const handleLogin = async () => {
     try {
@@ -22,14 +25,26 @@
       localStorage.setItem('jwtToken', response.data);
       store.commit('updateUser')
 
-      if(false){
-        //TODO : pas de redirect
-        console.log("pas de redirect");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get('redirect');
+
+      if(redirect){
+        window.location.href = redirect;
       }else{
-        await router.push({path: '/'});
+        window.location.href = '/';
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      switch ( error.response.status ) {
+        case 401:
+          toast.error( `Informations de connexion incorrectes` );
+          break;
+        case 409:
+          toast.error( `Veuillez valider votre compte avant de vous connecter` );
+          break;
+        default:
+          toast.error( 'Impossible de vous connecter - veuillez contacter l\'assistance' );
+          break;
+      }
     }
   };
 </script>

@@ -3,16 +3,18 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
+const paymentRoutes = require("./payment"); // Importation du fichier de paiement
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const ProductRouter = require("./routes/productController");
 const CartRouter = require("./routes/cartController");
 const CartProductRouter = require("./routes/cartproductController");
 const SecurityRouter = require("./routes/securityController");
+const path = require("path");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
-const resetPasswordTemplate = require("./templates-mail/reset-password");
+const accountChangeDataTemplate = require("./templates-mail/account-change-data");
 const shippingNotificationTemplate = require("./templates-mail/shipping-notification");
 const birthdayTemplate = require("./templates-mail/birthday");
 const accountConfirmationTemplate = require("./templates-mail/account-confirmation");
@@ -23,10 +25,30 @@ const restockTemplate = require("./templates-mail/restock");
 const priceChangeTemplate = require("./templates-mail/price-change");
 const newsletterSignupTemplate = require("./templates-mail/newsletter-signup");
 
+const productController = require("./routes/productController");
+const categoryController = require("./routes/categoryController");
+const manufacturerController = require("./routes/manufacturerController");
+const uploadController = require("./routes/uploadController");
+const stockController = require("./routes/stockController");
+const productimageController = require("./routes/productimageController");
+
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(cors());
 app.use(bodyParser.json());
+app.use("/products", productController);
+app.use("/category", categoryController);
+app.use("/manufacturer", manufacturerController);
+app.use("/stocks", stockController);
+app.use("/productimage", productimageController);
+// app.use("/upload", uploadController);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Utilisation des routes de paiement
+app.use(paymentRoutes);
+
+require('./middlewares/birthdayEmailScheduler');
+
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
@@ -38,8 +60,8 @@ app.post("/send-email", async (req, res) => {
     case "confirmation":
       mailOptions = confirmationTemplate({ to, ...data });
       break;
-    case "reset-password":
-      mailOptions = resetPasswordTemplate({ to, ...data });
+    case "account-change-data":
+      mailOptions = accountChangeDataTemplate({ to, ...data });
       break;
     case "shipping-notification":
       mailOptions = shippingNotificationTemplate({ to, ...data });
@@ -84,7 +106,6 @@ app.post("/send-email", async (req, res) => {
   }
 });
 
-//Middleware pour gérer les erreurs 502
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);

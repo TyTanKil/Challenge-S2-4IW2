@@ -56,6 +56,8 @@ const addToCart = async () => {
     }
 }
 
+console.log(props);
+
 
 const emits = defineEmits(['select']);
 

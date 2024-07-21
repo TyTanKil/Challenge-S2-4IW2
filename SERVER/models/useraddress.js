@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     lng: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'userAddress',
+    modelName: 'user_addresses',
   });
   return userAddress;
 };

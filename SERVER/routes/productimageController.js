@@ -1,10 +1,11 @@
 const { Router } = require("express");
-const ProductImage = require("../models/productimage");
+const { sequelize, DataTypes } = require("../db");
+const Product_image = require("../models/productimage")(sequelize, DataTypes);
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
-router.get("/", checkAuth, async (req, res, next) => {
-  const productsImage = await ProductImage.findAll({
+router.get("/", async (req, res, next) => {
+  const productsImage = await Product_image.findAll({
     where: req.query,
   });
   res.json(productsImage);
@@ -12,7 +13,7 @@ router.get("/", checkAuth, async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const productImage = await ProductImage.create(req.body);
+    const productImage = await Product_image.create(req.body);
     res.status(201).json(productImage);
   } catch (e) {
     next(e);
@@ -21,7 +22,7 @@ router.post("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const productImage = await ProductImage.findByPk(parseInt(req.params.id));
+    const productImage = await Product_image.findByPk(parseInt(req.params.id));
     if (productImage) {
       res.json(productImage);
     } else {
@@ -34,7 +35,7 @@ router.get("/:id", async (req, res, next) => {
 
 router.patch("/:id", async (req, res, next) => {
   try {
-    const [nbUpdated, productsImage] = await ProductImage.update(req.body, {
+    const [nbUpdated, productsImage] = await Product_image.update(req.body, {
       where: {
         id: parseInt(req.params.id),
       },
@@ -53,7 +54,7 @@ router.patch("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const nbDeleted = await ProductImage.destroy({
+    const nbDeleted = await Product_image.destroy({
       where: {
         id: parseInt(req.params.id),
       },
@@ -70,12 +71,12 @@ router.delete("/:id", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const nbDeleted = await ProductImage.destroy({
+    const nbDeleted = await Product_image.destroy({
       where: {
         id: parseInt(req.params.id),
       },
     });
-    const productImage = await ProductImage.create({
+    const productImage = await Product_image.create({
       ...req.body,
       id: parseInt(req.params.id),
     });

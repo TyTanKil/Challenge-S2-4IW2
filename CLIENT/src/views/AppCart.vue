@@ -1,96 +1,121 @@
 <script>
-    import ProductItem from '../components/AppCartProduct.vue';
+  import { computed, onMounted } from 'vue';
+  import { useStore } from 'vuex';
+  import { loadStripe } from '@stripe/stripe-js';
+  import ProductItem from '../components/AppCartProduct.vue';
+  import ApiClient from '@/assets/js/apiClient';
+  import { useToast } from 'vue-toastification';
 
-    import ApiClient from '@/assets/js/apiClient';
-
-    import { useStore } from 'vuex';
-
-    const store = useStore();
-
-    export default {
+  export default {
     name: 'App',
     components: {
-        ProductItem,
+      ProductItem,
     },
-    data() {
-        return {
-        products: [],
-        loading: true,
-        error: null
-        };
-    },
-    computed: {
-        total() {
-        return this.products.reduce((sum, product) => sum + product.price * product.quantity, 0);
-        },
-    },
-    methods : {
-      async fetchCartProducts() {
+    setup() {
+      const store = useStore();
+      const toast = useToast();
+
+      onMounted(() => {
+        fetchCartProducts();
+      });
+
+      const cart = computed(() => store.state.cart);
+      const products = computed(() => store.state.products);
+
+      const productById = (id) => {
+        return products.value.find(product => product.id === id);
+      };
+
+      const cartTotal = computed(() => {
+        return cart.value.reduce((total, item) => {
+          const product = productById(item.productId);
+          return total + (product ? product.amount * item.quantity : 0);
+        }, 0);
+      });
+
+      const checkout = async () => {
         try {
-            const id_user = store.state.user_id;
-            
-            if (id_user == null) {
-                toast.error('Vous devez être connecté pour ajouter un produit au panier');
-                this.loading = false;
-                return;
-            }
+          const response = await fetch('http://localhost:3000/create-checkout-session', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cart: cart.value }),
+          });
 
-            let responseCart = await ApiClient.get(`/cart/${id_user}`);
-            if (responseCart.status === 200) {
-                const cartId = responseCart.data.id;
-                console.log('Cart ID:', cartId);
-                let responseCartProducts = await ApiClient.get(`/cartProduct/products`,  { id_cart: cartId } );
-                
-                if (responseCartProducts.status === 200) {
-                    const DataCartProducts = responseCartProducts.data;
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create checkout session');
+          }
 
-                    // Fetch product details for each product in the cart
-                    const productDetailsPromises = DataCartProducts.map(async product => {
-                        const { id_product, quantity } = product;
-
-                        try {
-                            let responseProduct = await ApiClient.get(`/product/${id_product}`);
-                            const productData = responseProduct.data;
-
-                            return {
-                              ...productData,
-                              id_cart: cartProduct.id_cart,
-                              quantity: cartProduct.quantity,
-                              createdAt: cartProduct.createdAt,
-                              updatedAt: cartProduct.updatedAt
-                            };
-                        } catch (error) {
-                            console.error(`Error fetching product ${id_product}:`, error);
-                            return null;
-                        }
-                    });
-
-                    // Wait for all product details to be fetched
-                    const products = await Promise.all(productDetailsPromises);
-
-                    // Filter out any null values (in case of errors)
-                    this.products = products.filter(product => product !== null);
-
-                    console.log('Updated products in state:', this.products);
-                    toast.success('Produits ajoutés au panier avec succès');
-                } else {
-                    console.error('Error fetching products from cart:', responseCartProducts.statusText);
-                }
-            } else {
-                console.error('Error fetching cart:', responseCart.statusText);
-            }
+          const data = await response.json();
+          if (data.id) {
+            const stripe = await loadStripe('pk_test_51Pb4ZxRplArNYE0A2N3uv8m9TYjIO1xFOgiZj2JQdJIrmyh5LRUobmcIZSkGSntrSEyb79uTGlo78C5vdBjjMj8900RnJ2Issz');
+            stripe.redirectToCheckout({ sessionId: data.id });
+          }
         } catch (error) {
-            console.error('Error fetching products from cart:', error);
-            this.error = 'Erreur lors de la récupération des produits.';
-        } finally {
-            this.loading = false;
+          console.error('Error creating checkout session:', error);
         }
-      },
-      created() {
-        this.fetchCartProducts();
-      }
+      };
+
+      const fetchCartProducts = async () => {
+        try {
+          const id_user = store.state.user_id;
+          
+          if (id_user == null) {
+            toast.error('Vous devez être connecté pour ajouter un produit au panier');
+            return;
+          }
+
+          const responseCart = await ApiClient.get(`/cart/${id_user}`);
+          if (responseCart.status === 200) {
+            const cartId = responseCart.data.id;
+            console.log('Cart ID:', cartId);
+            const responseCartProducts = await ApiClient.get(`/cartProduct/products`, { id_cart: cartId });
+            
+            if (responseCartProducts.status === 200) {
+              const DataCartProducts = responseCartProducts.data;
+
+              const productDetailsPromises = DataCartProducts.map(async (cartProduct) => {
+                const { id_product, quantity } = cartProduct;
+                try {
+                  const responseProduct = await ApiClient.get(`/product/${id_product}`);
+                  const productData = responseProduct.data;
+                  return {
+                    ...productData,
+                    id_cart: cartProduct.id_cart,
+                    quantity: cartProduct.quantity,
+                    createdAt: cartProduct.createdAt,
+                    updatedAt: cartProduct.updatedAt,
+                  };
+                } catch (error) {
+                  console.error(`Error fetching product ${id_product}:`, error);
+                  return null;
+                }
+              });
+
+              const products = await Promise.all(productDetailsPromises);
+              store.commit('setProducts', products.filter(product => product !== null));
+              toast.success('Produits ajoutés au panier avec succès');
+            } else {
+              console.error('Error fetching products from cart:', responseCartProducts.statusText);
+            }
+          } else {
+            console.error('Error fetching cart:', responseCart.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching products from cart:', error);
+        }
+      };
+
+      return {
+        cart,
+        cartTotal,
+        productById,
+        checkout,
+      };
     },
-    };
+  };
 </script>
 
 <template>
@@ -184,3 +209,80 @@
 </style>
 
 
+<template>
+    <div class="cart-page">
+      <h1>Your Cart</h1>
+      <ul>
+        <li v-for="item in cart" :key="item.productId">
+          <span v-if="productById(item.productId)">
+            {{ productById(item.productId).name }} - {{ (productById(item.productId).amount / 100).toFixed(2) }} € x {{ item.quantity }}
+          </span>
+        </li>
+      </ul>
+      <p>Total: {{ (cartTotal / 100).toFixed(2) }} €</p>
+      <button @click="checkout">Checkout</button>
+    </div>
+  </template>
+  
+  <script>
+  import { computed, onMounted } from 'vue';
+  import { useStore } from 'vuex';
+  import { loadStripe } from '@stripe/stripe-js';
+  
+  export default {
+    setup() {
+      const store = useStore();
+  
+      onMounted(() => {
+        store.dispatch('fetchProducts');
+      });
+  
+      const cart = computed(() => store.state.cart);
+      const products = computed(() => store.state.products);
+  
+      const productById = (id) => {
+        return products.value.find(product => product.id === id);
+      };
+  
+      const cartTotal = computed(() => {
+        return cart.value.reduce((total, item) => {
+          const product = productById(item.productId);
+          return total + (product ? product.amount * item.quantity : 0);
+        }, 0);
+      });
+  
+      const checkout = async () => {
+        try {
+          const response = await fetch('http://localhost:3000/create-checkout-session', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cart: cart.value }),
+          });
+  
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create checkout session');
+          }
+  
+          const data = await response.json();
+          if (data.id) {
+            const stripe = await loadStripe('pk_test_51Pb4ZxRplArNYE0A2N3uv8m9TYjIO1xFOgiZj2JQdJIrmyh5LRUobmcIZSkGSntrSEyb79uTGlo78C5vdBjjMj8900RnJ2Issz');
+            stripe.redirectToCheckout({ sessionId: data.id });
+          }
+        } catch (error) {
+          console.error('Error creating checkout session:', error);
+        }
+      };
+  
+      return {
+        cart,
+        cartTotal,
+        productById,
+        checkout,
+      };
+    },
+  };
+  </script>
+  
