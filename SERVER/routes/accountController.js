@@ -65,6 +65,24 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.post('/verify-password', async (req, res) => {
+  const { accountId, password } = req.body;
+  try {
+      const account = await Account.findOne({
+        where: { id: accountId }
+      });
+
+      if (account && bcrypt.compareSync(password, account.password)) {
+      res.json({ valid: true });
+    } else {
+      res.json({ valid: false });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la vérification du mot de passe:', error);
+    res.status(500).send('Erreur serveur');
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   try {
     const accountId = req.params.id.trim();
@@ -118,7 +136,9 @@ router.patch("/:id", async (req, res, next) => {
         modifiedFields: modifiedFields,
       });
 
-      await sendEmail(mailOptions);
+      if(accounts[0].notification){
+        await sendEmail(mailOptions);
+      }
       res.sendStatus(201);
     } else {
       res.sendStatus(404);
@@ -156,6 +176,7 @@ router.delete("/:id", async (req, res, next) => {
       birth_date: null,
       roles: sequelize.literal(`ARRAY[]::"enum_account_roles"[]`),
       deleted: true,
+      notification: false,
       validate_hash: null
     }, {
       where: { id: accountId }

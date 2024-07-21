@@ -72,7 +72,11 @@ account.init({
     deleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-      },
+    },
+    notification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
 }, {
     sequelize: connection,
     indexes: [
