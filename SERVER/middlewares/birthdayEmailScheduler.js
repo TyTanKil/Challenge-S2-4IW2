@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const Account = require('../models/account'); // Assurez-vous du chemin correct
+const account = require('../models/account');
 
 const sendBirthdayEmail = async (account) => {
   const data = {
@@ -52,6 +53,8 @@ const checkBirthdays = async () => {
 
 cron.schedule('0 10 * * *', () => {
   console.log('Running birthday email scheduler...');
-  checkBirthdays();
+  if(account.notification){
+    checkBirthdays();
+  }
 });
 

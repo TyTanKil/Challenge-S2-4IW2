@@ -11,7 +11,6 @@
       </div>
       <div class="user-info">
         <p>{{ user.firstName }} {{ user.lastName }}</p>
-        <p>{{ user.email }}</p>
       </div>
       <button class="logout-button" @click="logout">Se déconnecter</button>
     </div>
@@ -100,12 +99,15 @@ export default {
     const store = useStore();
     const router = useRouter();
     const user = ref({});
+    const isActivated = ref(false);
 
     const fetchUserData = async () => {
       const userId = store.state.user_id;
       try {
         const response = await axios.get(`http://localhost:3000/user/${userId}`);
         user.value = response.data;
+        // Initialiser l'état du switch avec la valeur de la notification de l'utilisateur
+        isActivated.value = user.value.notification;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
       }
@@ -147,17 +149,27 @@ export default {
       if (oldPassword !== null && newPassword !== null && newPasswordConfirmation !== null) {
         if (newPassword === newPasswordConfirmation) {
           try {
-            await axios.patch(`http://localhost:3000/user/${user.value.id}`, { password:newPassword });
-            // Mettre à jour l'utilisateur après modification
-            await fetchUserData();
-            alert(`Le mot de passe a été modifié avec succès.`);
-          } catch (error) {
-              console.error(`Erreur lors de la modification du mot de passe:`, error);
-              alert(`Erreur lors de la modification du mot de passe. Veuillez réessayer.`);
+            // Vérifier l'ancien mot de passe
+            const verifyResponse = await axios.post(`http://localhost:3000/user/verify-password`, {
+              accountId: user.value.id,
+              password: oldPassword
+            });
+
+            if (verifyResponse.data.valid) {
+              await axios.patch(`http://localhost:3000/user/${user.value.id}`, { password: newPassword });
+              // Mettre à jour l'utilisateur après modification
+              await fetchUserData();
+              alert(`Le mot de passe a été modifié avec succès.`);
+            } else {
+              alert('L\'ancien mot de passe est incorrect. Veuillez réessayer.');
             }
-        } else {
-            alert('Les mots de passe ne correspondent pas. Veuillez réessayer.');
+          } catch (error) {
+            console.error(`Erreur lors de la modification du mot de passe:`, error);
+            alert(`Erreur lors de la modification du mot de passe. Veuillez réessayer.`);
           }
+        } else {
+          alert('Les mots de passe ne correspondent pas. Veuillez réessayer.');
+        }
       }
     };
 
@@ -175,15 +187,25 @@ export default {
       }
     };
 
+    const toggleActivation = async () => {
+      try {
+        await axios.patch(`http://localhost:3000/user/${user.value.id}`, { notification: isActivated.value });
+        alert('L\'état des notifications a été mis à jour avec succès.');
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour des notifications:', error);
+        alert('Erreur lors de la mise à jour des notifications. Veuillez réessayer.');
+      }
+    };
 
     onMounted(() => {
       fetchUserData();
     });
 
-    return { logout, user, formatDate, editField, changePassword, deleteAccount };
+    return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated };
   },
 };
 </script>
+
 
 <style scoped>
 /* Slider */
