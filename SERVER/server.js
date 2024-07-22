@@ -4,12 +4,10 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
 const paymentRoutes = require("./payment");
-const shippment = require("./shippment");
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const SecurityRouter = require("./routes/securityController");
 
-shippment.run();
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
 const resetPasswordTemplate = require("./templates-mail/reset-password");
