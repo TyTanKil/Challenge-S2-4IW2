@@ -28,6 +28,8 @@ const manufacturerController = require("./routes/manufacturerController");
 const uploadController = require("./routes/uploadController");
 const stockController = require("./routes/stockController");
 const productimageController = require("./routes/productimageController");
+const orderController = require("./routes/orderController");
+const orderProductController = require("./routes/orderproductController");
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
@@ -38,14 +40,15 @@ app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
 app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
+app.use("/order", orderController);
+app.use("/order-product", orderProductController);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Utilisation des routes de paiement
 app.use(paymentRoutes);
 
-require('./middlewares/birthdayEmailScheduler');
-
+require("./middlewares/birthdayEmailScheduler");
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {

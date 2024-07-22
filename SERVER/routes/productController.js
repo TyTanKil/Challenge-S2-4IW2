@@ -10,7 +10,7 @@ const {
 const { Products } = require("../mongo/ProductSchema"); // Remplacez par le chemin correct
 
 const db = require("../db");
-console.log(db);
+// console.log(db);
 
 const {
   sequelize,
