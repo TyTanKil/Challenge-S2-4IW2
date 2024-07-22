@@ -38,6 +38,7 @@ import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 import Mailer from './views/AppTestMailer.vue'
 
 import 'vue-toast-notification/dist/theme-sugar.css'
+import apiClient from './assets/js/apiClient';
 
 // Create a new store instance.
 const store = createStore({
@@ -140,7 +141,7 @@ const isAdmin = ref(false);
 const fetchUserData = async () => {
   const userId = store.state.user_id;
   try {
-    const response = await axios.get(`http://localhost:3000/user/${userId}`);
+    const response = await apiClient.get(`/user/${userId}`);
     user.value = response.data;
     if (user.value.roles.includes('ROLE_ADMIN')) {
       isAdmin.value = true;
