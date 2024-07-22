@@ -1,6 +1,7 @@
-import { createApp } from 'vue'
+import { createApp, ref } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
+import axios from 'axios';
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
@@ -131,6 +132,29 @@ const router = createRouter({
   routes
 })
 
+
+
+const user = ref({});
+const isAdmin = ref(false);
+
+const fetchUserData = async () => {
+  const userId = store.state.user_id;
+  try {
+    const response = await axios.get(`http://localhost:3000/user/${userId}`);
+    user.value = response.data;
+    if (user.value.roles.includes('ROLE_ADMIN')) {
+      isAdmin.value = true;
+    } else {
+      isAdmin.value = false;
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'utilisateur');
+  }
+};
+
+
+fetchUserData();
+
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
     next({
@@ -146,13 +170,17 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.path.startsWith('/admin')) {
-    await import('./assets/admin.css')
+    if (store.state.user_id != null && isAdmin.value) {
+      await import('./assets/admin.css');
+      next();
+    } else {
+      next({ path: '/login' });
+    }
   } else {
-    await import('./assets/main.css')
+    await import('./assets/main.css');
+    next();
   }
-
-  next()
-})
+});
 
 const app = createApp(App)
 app.use(router)
