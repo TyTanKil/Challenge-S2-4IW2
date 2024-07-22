@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { defineProps, ref } from 'vue';
 import { useStore } from 'vuex';
+import axios from 'axios';
 
 const store = useStore(); // Accéder au store Vuex
 
@@ -18,6 +19,28 @@ if(store.state.user_id == null){
   account_name.value = store.state.user_name;
 }
 
+const user = ref({});
+const isAdmin = ref(false);
+const fetchUserData = async () => {
+      const userId = store.state.user_id;
+      try {
+        const response = await axios.get(`http://localhost:3000/user/${userId}`);
+        user.value = response.data;
+        if (user.value.roles.includes('ROLE_ADMIN')) {
+          console.log('L\'utilisateur a le rôle ADMIN');
+          isAdmin.value = true;
+        } else {
+          console.log('L\'utilisateur n\'a pas le rôle ADMIN');
+          isAdmin.value = false;
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données utilisateur:', error);
+      }
+    };
+
+
+fetchUserData();
+
 const props = defineProps({
   route: Boolean,
 });
@@ -33,6 +56,14 @@ const props = defineProps({
       <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
     </div>
     <div v-if="!props.route" class="actions_btn">
+      <div v-if="isAdmin">
+        <router-link to="admin">
+          <div class="account_div">
+            <img class="clear_mode" src="\src\assets\img\svg\icons\settings-wheel.svg" alt="">
+            <p>Admin</p>
+          </div>
+        </router-link>
+      </div>
       <router-link :to="account_button_route">
         <div class="account_div">
           <img class="clear_mode" src="\src\assets\img\svg\icons\account-user.svg" alt="">
