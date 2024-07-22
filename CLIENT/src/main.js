@@ -1,7 +1,6 @@
 import { createApp, ref } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
-import axios from 'axios';
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
@@ -149,7 +148,7 @@ const fetchUserData = async () => {
       isAdmin.value = false;
     }
   } catch (error) {
-    console.error('Erreur lors de la récupération de l\'utilisateur');
+    toast.error('Erreur lors de la récupération de l\'utilisateur');
   }
 };
 
