@@ -134,14 +134,16 @@ router.post("/", upload.single("image"), async (req, res, next) => {
     const categoryName = category.label;
 
     accounts.forEach(account => {
-      const mailOptions = newProductTemplate({
-        to: account.email,
-        productName : productName,
-        userName : account.firstName,
-        price : productPrice,
-        categoryName : categoryName,
-      });
-      sendEmail(mailOptions);
+      if(account.notification){
+        const mailOptions = newProductTemplate({
+          to: account.email,
+          productName : productName,
+          userName : account.firstName,
+          price : productPrice,
+          categoryName : categoryName,
+        });
+        sendEmail(mailOptions);
+      }
     });
 
     if (req.file) {
@@ -255,12 +257,14 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         const productName = existingProduct.label;
 
         accounts.forEach(account => {
-          const mailOptions = restockProductTemplate({
-            to: account.email,
-            userName : account.firstName,
-            productName : productName,
-          });
-          sendEmail(mailOptions);
+          if(account.notification){
+            const mailOptions = restockProductTemplate({
+              to: account.email,
+              userName : account.firstName,
+              productName : productName,
+            });
+            sendEmail(mailOptions);
+          }
         });
       }
 
@@ -270,12 +274,14 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         const productName = existingProduct.label;
 
         accounts.forEach(account => {
-          const mailOptions = OutOfStockTemplate({
-            to: account.email,
-            userName : account.firstName,
-            productName : productName,
-          });
-          sendEmail(mailOptions);
+          if(account.notification){
+            const mailOptions = OutOfStockTemplate({
+              to: account.email,
+              userName : account.firstName,
+              productName : productName,
+            });
+            sendEmail(mailOptions);
+          }
         });
       }
     }
