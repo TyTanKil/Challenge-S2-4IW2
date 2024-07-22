@@ -21,6 +21,7 @@ import VueToast from 'vue-toast-notification'
 
 import Test from './views/AppTest.vue'
 import Admin from './views/AppAdminDashboard.vue'
+import EditUser from './views/admin/AppEditUser.vue'
 import Users from './views/AppAdminUsers.vue'
 import ProductList from './views/AppAdminProducts.vue'
 import NewProduct from './views/admin/AppAddProduct.vue'
@@ -58,14 +59,14 @@ const store = createStore({
       }
     },
     clearUser(state) {
-      state.user_id = null;
-      state.user_name = null;
+      state.user_id = null
+      state.user_name = null
     }
   },
   actions: {
     logout({ commit }) {
-      localStorage.removeItem('jwtToken');
-      commit('clearUser');
+      localStorage.removeItem('jwtToken')
+      commit('clearUser')
     }
   }
 })
@@ -84,7 +85,7 @@ const routes = [
   { path: '/create', component: Create },
   { path: '/test', component: Test },
   { path: '/admin', component: Admin },
-  { path: '/admin/users', component: Users },
+  { path: '/admin/users', name: 'UserList', component: Users },
   { path: '/admin/products', name: 'ProductList', component: ProductList },
   { path: '/admin/product/new', name: 'AddProduct', component: NewProduct },
   { path: '/admin/product/edit/:id', name: 'EditProduct', component: EditProduct, props: true },
@@ -100,6 +101,7 @@ const routes = [
     component: EditManufacturer,
     props: true
   },
+  { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
 
   // autres routes
   { path: '/test', component: Test, meta: { requiresAuth: true } },

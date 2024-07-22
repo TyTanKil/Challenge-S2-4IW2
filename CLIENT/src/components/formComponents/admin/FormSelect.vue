@@ -1,30 +1,28 @@
 <template>
     <div>
-            <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
-            <select :id="id" :required="required" :value="modelValue" @change="updateValue($event.target.value)"
-            class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen">
+        <label :for="id" class="block text-sm font-medium text-gray-700">{{ label }}</label>
+        <select :id="id" v-model="internalModelValue" @change="$emit('update:modelValue', internalModelValue)"
+            :required="required" :multiple="multiple" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
             <option v-for="option in options" :key="option.value" :value="option.value">{{ option.text }}</option>
         </select>
     </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     id: String,
     label: String,
     options: Array,
-    modelValue: String
+    modelValue: [String, Array],
+    required: { type: Boolean, default: false },
+    multiple: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const internalModelValue = ref(props.modelValue);
 
-const updateValue = (value) => {
-    emit('update:modelValue', value);
-};
+watch(() => props.modelValue, (newValue) => {
+    internalModelValue.value = newValue;
+});
 </script>
-
-<style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
-</style>
