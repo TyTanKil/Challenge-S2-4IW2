@@ -59,7 +59,7 @@ const props = defineProps({
     </div>
     <div v-if="!props.route" class="actions_btn">
       <div v-if="isAdmin">
-        <router-link to="admin">
+        <router-link to="/admin">
           <div class="account_div">
             <img class="clear_mode" src="\src\assets\img\svg\icons\settings-wheel.svg" alt="">
             <p>Admin</p>
