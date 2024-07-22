@@ -7,6 +7,7 @@ import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
 import Product from './views/AppProduct.vue'
+import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue'
@@ -34,7 +35,6 @@ import EditCategory from './views/admin/AppEditCategory.vue'
 import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
-import Mailer from './views/AppTestMailer.vue'
 
 import EditOrder from './views/admin/AppEditOrder.vue'
 import OrderList from './views/admin/AppOrderList.vue'
@@ -126,6 +126,7 @@ const routes = [
       link_img: route.params.link_img
     })
   },
+  { path: '/cart', component: Cart },
   { path: '/server-error', name: 'ServerError', component: ServerError },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
   //Stripe

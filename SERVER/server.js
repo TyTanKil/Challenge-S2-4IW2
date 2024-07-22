@@ -6,7 +6,12 @@ const { sendEmail } = require("./mailer");
 const paymentRoutes = require("./payment"); // Importation du fichier de paiement
 const app = express();
 const AccountRouter = require("./routes/accountController");
+const ProductRouter = require("./routes/productController");
+const CartRouter = require("./routes/cartController");
+const CartProductRouter = require("./routes/cartproductController");
+const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
+const PayementRouter = require("./payment");
 const path = require("path");
 
 // Import email templates
@@ -20,7 +25,6 @@ const paymentConfirmationTemplate = require("./templates-mail/payment-confirmati
 const newProductTemplate = require("./templates-mail/new-product");
 const restockTemplate = require("./templates-mail/restock");
 const priceChangeTemplate = require("./templates-mail/price-change");
-const newsletterSignupTemplate = require("./templates-mail/newsletter-signup");
 
 const productController = require("./routes/productController");
 const categoryController = require("./routes/categoryController");
@@ -42,6 +46,8 @@ app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
 app.use("/order", orderController);
 app.use("/order-product", orderProductController);
+app.use("/payment", PayementRouter);
+app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -115,6 +121,9 @@ app.use((err, req, res, next) => {
 });
 
 app.use("/user", AccountRouter);
+app.use("/cart", CartRouter);
+app.use("/cartproduct", CartProductRouter);
+app.use("/product", ProductRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {

@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const CartProduct = require("../models/cartproduct");
+const Product = require("../models/product");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
@@ -82,6 +83,58 @@ router.put("/:id", async (req, res, next) => {
     res.status(nbDeleted ? 200 : 201).json(cartProduct);
   } catch (e) {
     next(e);
+  }
+});
+
+router.post('/addProduct', async (req, res, next) => {
+  try {
+    const { id_cart, id_product, quantity } = req.body;
+
+    // Check if the cart product already exists
+    const existingCartProduct = await CartProduct.findOne({
+      where: {
+        id_cart,
+        id_product
+      }
+    });
+
+    if (existingCartProduct) {
+      // If it exists, update the quantity
+      existingCartProduct.quantity += quantity || 1; // Increment by the provided quantity or by 1 if not provided
+      await existingCartProduct.save();
+      res.status(200).json(existingCartProduct);
+    } else {
+      // If it does not exist, create a new cart product
+      const newCartProduct = await CartProduct.create({
+        id_cart,
+        id_product,
+        quantity: quantity || 1 // Default to 1 if not specified
+      });
+      res.status(201).json(newCartProduct);
+    }
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    next(error);
+  }
+});
+
+router.post('/products', async (req, res, next) => {
+  try {
+    const { id_cart } = req.body;
+
+    // Vérifiez si `id_cart` est fourni
+    if (!id_cart) {
+      return res.status(400).json({ error: 'id_cart is required' });
+    }
+
+    const cartProducts = await CartProduct.findAll({
+      where: { id_cart }
+    });
+
+    res.status(200).json(cartProducts);
+  } catch (error) {
+    console.error('Error fetching products from cart:', error);
+    next(error);
   }
 });
 
