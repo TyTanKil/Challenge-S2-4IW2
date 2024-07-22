@@ -2,15 +2,21 @@ const { Router } = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const newProductTemplate = require("../templates-mail/new-product");
+const restockProductTemplate = require("../templates-mail/restock");
+const OutOfStockTemplate = require("../templates-mail/no-stock");
+
+const { sendEmail } = require("../mailer");
 const {
   deleteProductFromMongo,
   syncProductWithMongo,
 } = require("../services/denormalizations/productService");
 
-const { Products } = require("../mongo/ProductSchema"); // Remplacez par le chemin correct
-
+const { Products } = require("../mongo/ProductSchema"); 
 const db = require("../db");
-console.log(db);
+const Account = require('../models/account'); 
+const Sequelize = require("sequelize"); 
+
 
 const {
   sequelize,
@@ -39,6 +45,17 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+// Fonction pour récupérer tous les utilisateurs
+const getAllStoreKeeper = async () => {
+  return await Account.findAll({
+    where: {
+      roles: {
+        [Sequelize.Op.contains]: ['ROLE_STORE_KEEPER']
+      }
+    }
+  });
+};
 
 //ROUTE ADMIN PRODUCT
 router.get("/list-products", async (req, res, next) => {
@@ -108,6 +125,24 @@ router.post("/", upload.single("image"), async (req, res, next) => {
       },
       { transaction: t }
     );
+
+    // Envoi d'email à tous les store Keeper
+    const accounts = await getAllStoreKeeper();
+    const category = await Category.findByPk(id_category);
+    const productName = label;
+    const productPrice = unit_price;
+    const categoryName = category.label;
+
+    accounts.forEach(account => {
+      const mailOptions = newProductTemplate({
+        to: account.email,
+        productName : productName,
+        userName : account.firstName,
+        price : productPrice,
+        categoryName : categoryName,
+      });
+      sendEmail(mailOptions);
+    });
 
     if (req.file) {
       const imagePath = req.file.filename;
@@ -188,6 +223,8 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       return res.sendStatus(404);
     }
 
+    const oldStock = existingProduct.Stock ? existingProduct.Stock.quantity : 0;
+
     const [nbUpdated] = await Product.update(
       {
         label,
@@ -211,7 +248,39 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         { quantity: stock },
         { where: { id_product: req.params.id }, transaction: t }
       );
+
+      // Détection du réapprovisionnement
+      if (stock > oldStock) {
+        const accounts = await getAllStoreKeeper();
+        const productName = existingProduct.label;
+
+        accounts.forEach(account => {
+          const mailOptions = restockProductTemplate({
+            to: account.email,
+            userName : account.firstName,
+            productName : productName,
+          });
+          sendEmail(mailOptions);
+        });
+      }
+
+      // Vérification si le stock tombe à 0
+      if (stock == 0) {
+        const accounts = await getAllStoreKeeper();
+        const productName = existingProduct.label;
+
+        accounts.forEach(account => {
+          const mailOptions = OutOfStockTemplate({
+            to: account.email,
+            userName : account.firstName,
+            productName : productName,
+          });
+          sendEmail(mailOptions);
+        });
+      }
     }
+
+    
 
     if (req.file) {
       const imagePath = req.file.filename;
