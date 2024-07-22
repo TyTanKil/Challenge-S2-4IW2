@@ -60,7 +60,7 @@ const store = createStore({
     clearUser(state) {
       state.user_id = null;
       state.user_name = null;
-    }
+    },
   },
   actions: {
     logout({ commit }) {

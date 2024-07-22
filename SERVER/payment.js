@@ -30,36 +30,19 @@ router.get("/products", (req, res) => {
 });
 
 router.post("/create-checkout-session", async (req, res) => {
-  const { cart } = req.body;
+  const { lineItems } = req.body;
 
-  if (!cart || !Array.isArray(cart) || cart.length === 0) {
-    return res.status(400).json({ error: "Cart is empty or invalid" });
+  if (!lineItems || !Array.isArray(lineItems) || lineItems.length === 0) {
+    return res.status(400).json({ error: "Line items are empty or invalid" });
   }
 
   try {
-    const lineItems = cart.map((item) => {
-      const product = products.find((p) => p.id === item.productId);
-      if (!product) {
-        throw new Error(`Product not found: ${item.productId}`);
-      }
-      return {
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name: product.name,
-          },
-          unit_amount: product.amount,
-        },
-        quantity: item.quantity,
-      };
-    });
-
+    // Créer une session de paiement Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url:
-        "http://localhost:8080/success?session_id={CHECKOUT_SESSION_ID}",
+      success_url: "http://localhost:8080/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "http://localhost:8080/cancel",
     });
 

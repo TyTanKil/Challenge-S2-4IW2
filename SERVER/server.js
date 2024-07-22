@@ -9,7 +9,9 @@ const AccountRouter = require("./routes/accountController");
 const ProductRouter = require("./routes/productController");
 const CartRouter = require("./routes/cartController");
 const CartProductRouter = require("./routes/cartproductController");
+const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
+const PayementRouter = require("./payment")
 const path = require("path");
 
 // Import email templates
@@ -41,6 +43,8 @@ app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
 app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
+app.use("/payment", PayementRouter);
+app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

@@ -17,7 +17,7 @@ cart.init({
     allowNull: false
   },
   id_user: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: 'accounts', // Assurez-vous que cela correspond au nom de la table `account`

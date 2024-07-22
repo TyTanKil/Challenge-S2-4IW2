@@ -3,6 +3,7 @@ const Cart = require("../models/cart");
 const CartProduct = require("../models/cartproduct");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
+const { v4: isUUID } = require('uuid');
 
 router.post("/", async (req, res, next) => {
   try {
@@ -29,6 +30,30 @@ router.post("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const cart = await Cart.findByPk(parseInt(req.params.id));
+    if (cart) {
+      res.json(cart);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/getByIDUser", async (req, res, next) => {
+  try {
+    const id_user = req.body.id_user;
+
+    // Vérifier si l'ID utilisateur est un UUID valide
+    if (!isUUID(id_user)) {
+      return res.status(400).send('Invalid user ID format');
+    }
+
+    const cart = await Cart.findOne({
+       where: {
+         id_user: id_user 
+        } 
+      });
     if (cart) {
       res.json(cart);
     } else {

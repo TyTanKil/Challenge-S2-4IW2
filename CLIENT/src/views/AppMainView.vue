@@ -44,6 +44,7 @@ const props = defineProps({
       <AppVerticalCard 
           v-for="product in products" 
           :key="product._id" 
+          :id="product.id"
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
