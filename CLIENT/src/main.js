@@ -2,6 +2,7 @@ import { createApp, ref } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
 
+
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
@@ -141,14 +142,14 @@ const fetchUserData = async () => {
   const userId = store.state.user_id;
   try {
     const response = await apiClient.get(`/user/${userId}`);
-    user.value = response.data;
+    user.value = response;
     if (user.value.roles.includes('ROLE_ADMIN')) {
       isAdmin.value = true;
     } else {
       isAdmin.value = false;
     }
   } catch (error) {
-    toast.error('Erreur lors de la récupération de l\'utilisateur');
+    console.error('Erreur lors de la récupération de l\'utilisateur');
   }
 };
 
