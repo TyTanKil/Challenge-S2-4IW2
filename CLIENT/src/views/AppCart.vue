@@ -4,6 +4,7 @@
   import { loadStripe } from '@stripe/stripe-js';
   import ProductItem from '../components/AppCartProduct.vue';
   import ApiClient from '@/assets/js/apiClient';
+  import AppHorizontalCard from '../components/AppHorizontalCard.vue';
   import { useToast } from 'vue-toast-notification';
 
   export default {
@@ -134,8 +135,19 @@
 
 <template>
   <div id="app">
-    <div v-if="!products.length">Chargement...</div>
-    <div v-else>
+    <div v-if="products.length">
+      <div class="cards_cart">
+        <AppHorizontalCard
+          v-for="product in products"
+          :key="product._id"
+          :id="product.id"
+          :label="product.label"
+          :description="product.description"
+          :price="product.unit_price"
+          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+          @select="() => handleSelect(product)"
+        />
+      </div>
       <ul v-if="products.length">
         <li v-for="product in products" :key="product.id">
           <h3>{{ product.label }}</h3>
@@ -144,11 +156,13 @@
           <p>Prix: {{ product.unit_price }}€</p>
         </li>
       </ul>
-      <p v-else>Aucun produit dans le panier.</p>
       <div class="total">
         <p>Total TTC: {{ cartTotal }}€</p>
         <button @click="checkout">Passer commande</button>
       </div>
+    </div>
+    <div v-else>
+      <p>Aucun produit dans le panier.</p>
     </div>
   </div>
 </template>
@@ -176,6 +190,12 @@
     padding: 10px;
     cursor: pointer;
     margin-top: 10px; /* Espacement entre le bouton et le texte */
+  }
+
+  .cards_cart {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
   }
 
   /* Style pour le mode clair */
