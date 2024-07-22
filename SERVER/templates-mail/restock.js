@@ -9,6 +9,7 @@ module.exports = (data) => ({
           <p style="color: #575757;">Bonjour ${data.userName},</p>
           <p style="color: #575757;">Le produit ${data.productName} est de nouveau en stock !</p>
           <p style="color: #575757;">Venez le découvrir sur notre site avant qu'il ne soit à nouveau en rupture de stock.</p>
+          <p style="color: #575757;">Cordialement,<br>L'équipe TechShop</p>
         </body>
       </html>
     `,

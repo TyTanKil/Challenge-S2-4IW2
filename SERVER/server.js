@@ -20,7 +20,6 @@ const paymentConfirmationTemplate = require("./templates-mail/payment-confirmati
 const newProductTemplate = require("./templates-mail/new-product");
 const restockTemplate = require("./templates-mail/restock");
 const priceChangeTemplate = require("./templates-mail/price-change");
-const newsletterSignupTemplate = require("./templates-mail/newsletter-signup");
 
 const productController = require("./routes/productController");
 const categoryController = require("./routes/categoryController");
