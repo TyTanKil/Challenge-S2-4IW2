@@ -2,6 +2,10 @@
 import { defineProps, ref } from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
+import { useToast } from 'vue-toast-notification';
+
+const toast = useToast();
+
 
 const store = useStore(); // Accéder au store Vuex
 
@@ -27,14 +31,12 @@ const fetchUserData = async () => {
         const response = await axios.get(`http://localhost:3000/user/${userId}`);
         user.value = response.data;
         if (user.value.roles.includes('ROLE_ADMIN')) {
-          console.log('L\'utilisateur a le rôle ADMIN');
           isAdmin.value = true;
         } else {
-          console.log('L\'utilisateur n\'a pas le rôle ADMIN');
           isAdmin.value = false;
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération des données utilisateur:', error);
+        toast.error('Erreur lors de la récupération de l\'utilisateur');
       }
     };
 
