@@ -64,6 +64,29 @@ router.post("/getByIDUser", async (req, res, next) => {
   }
 });
 
+router.get('/getByIDUser/:id', async (req, res, next) => {
+  try {
+    const id_user = req.params.id;
+
+    // Vérifier si l'ID utilisateur est un UUID valide
+    if (!isUUID(id_user)) {
+      return res.status(400).send('Invalid user ID format');
+    }
+
+    const cart = await Cart.findOne({
+      where: { id_user: id_user }
+    });
+
+    if (cart) {
+      res.json(cart);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.patch("/:id", async (req, res, next) => {
   try {
     const [nbUpdated, carts] = await Cart.update(req.body, {

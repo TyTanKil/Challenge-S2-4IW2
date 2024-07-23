@@ -1,14 +1,13 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { defineProps, ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import axios from 'axios';
 import { useToast } from 'vue-toast-notification';
 import { useRouter } from 'vue-router';
-import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
+import ApiClient from '../assets/js/apiClient';
 
 const toast = useToast();
 const router = useRouter();
-const store = useStore(); // Accéder au store Vuex
+const store = useStore();
 
 const account_button_route = ref('');
 const cart_button_route = ref('');
@@ -30,8 +29,7 @@ const fetchUserData = async () => {
   const userId = store.state.user_id;
   if(userId){
     try {
-      const response = await axios.get(`http://localhost:3000/user/${userId}`);
-      user.value = response.data;
+      user.value = await ApiClient.get(`/user/${userId}`);
       if (user.value.roles.includes('ROLE_ADMIN')) {
         isAdmin.value = true;
       } else {
@@ -49,7 +47,6 @@ const props = defineProps({
   route: Boolean,
 });
 
-// Recherche de produits
 const searchQuery = ref('');
 const products = ref([]);
 const filteredProducts = computed(() => {
@@ -59,7 +56,7 @@ const filteredProducts = computed(() => {
     product.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     (product.Category && product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
     (product.Manufacturer && product.Manufacturer.label.toLowerCase().includes(searchQuery.value.toLowerCase()))
-  ).slice(0, 8); // Afficher les 8 premiers résultats
+  ).slice(0, 8);
 });
 
 const fetchProducts = async () => {
@@ -75,13 +72,21 @@ fetchProducts();
 
 const goToProduct = (id) => {
   router.push(`/product/${id}`);
-  searchQuery.value = ('');
+  searchQuery.value = '';
   setTimeout(() => {
     location.reload();
   }, 3);
-  
 };
 
+const goToSearchResults = () => {
+  if (searchQuery.value) {
+    router.push({ name: 'SearchResults', query: { q: searchQuery.value } });
+    searchQuery.value = '';
+    setTimeout(() => {
+    location.reload();
+  }, 1);
+  }
+};
 </script>
 
 <template>
@@ -90,7 +95,14 @@ const goToProduct = (id) => {
       <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
     </a>
     <div v-if="!props.route" class="search_bar">
-      <input type="text" v-model="searchQuery" name="search" id="search" placeholder="Rechercher votre produit...">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        name="search" 
+        id="search" 
+        placeholder="Rechercher votre produit..." 
+        @keyup.enter="goToSearchResults">
+
       <ul v-if="filteredProducts.length" class="search-results">
         <li v-for="product in filteredProducts" :key="product._id" @click="goToProduct(product._id)">
           <a>{{ product.label }}</a>
@@ -127,6 +139,7 @@ const goToProduct = (id) => {
   background-color: #575757;
   display: flex;
   padding: 2rem;
+  margin-bottom: 2rem;
   align-items: center;
   height: 6rem;
   z-index: 1000;
@@ -238,5 +251,9 @@ const goToProduct = (id) => {
   .header {
     background-color: #2a2a2a;
   }
+  .search-results li {
+    color: #2a2a2a;
+  }
+
 }
 </style>

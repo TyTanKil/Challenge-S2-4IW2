@@ -128,7 +128,7 @@ app.use("/product", ProductRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {
-  res.send("Coucou " + JSON.stringify(req.query));
+  res.sendStatus(200);
 });
 
 app.listen(3000, () => {

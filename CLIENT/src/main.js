@@ -36,7 +36,7 @@ import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
-import SubCategoryPage from './views/AppSubCategoryPage.vue';
+import SearchResults from './views/AppSearchResults.vue'
 
 
 import 'vue-toast-notification/dist/theme-sugar.css'
@@ -56,6 +56,7 @@ import apiClient from './assets/js/apiClient';
 const store = createStore({
   state() {
     return {
+      api_endpoint: import.meta.env.VITE_API_ENDPOINT,
       user_id: localStorage.getItem('jwtToken')
         ? jwtDecode(localStorage.getItem('jwtToken')).id
         : null,
@@ -139,19 +140,7 @@ const routes = [
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
   { path: '/cancel', name: 'Cancel', component: Cancel },
-  {
-    path: '/category/:category/:subCategory',
-    name: 'SubCategory',
-    component: SubCategoryPage,
-    props: true
-  },
-  {
-    path: '/category/:category/all',
-    name: 'CategoryAll',
-    component: SubCategoryPage,
-    props: true
-  },
-
+  { path: '/search', name: 'SearchResults', component: SearchResults },
   { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
   { path: '/cgv', name: 'AppCGV', component: AppCGV },
   { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },

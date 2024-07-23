@@ -3,15 +3,17 @@ import { ref, onMounted } from 'vue';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
 import { useRouter } from 'vue-router';
 import ApiClient from '../assets/js/apiClient';
+import {useStore} from "vuex";
 
 const router = useRouter();
 const products = ref([]);
+
+const store = useStore(); // Accéder au store Vuex
 
 const fetchProducts = async () => {
   try {
     const response = await ApiClient.get('/products');
     products.value = response;
-    console.log(products.value);
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -50,7 +52,7 @@ const props = defineProps({
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
-          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
           @select="() => handleSelect(product)"/>
     </div>
   </div>

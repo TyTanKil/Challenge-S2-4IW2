@@ -52,7 +52,6 @@
           <button class="download-button" @click="downloadPersonalDataAsPDF">Télécharger mes données en PDF</button>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
-          <!-- Contenu pour Mes commandes -->
           <p>Contenu des commandes de l'utilisateur...</p>
         </div>
         <div v-if="selectedTab === 'parameters'" class="parameters">
@@ -85,8 +84,8 @@
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import jsPDF from 'jspdf';
+import ApiClient from "@/assets/js/apiClient.js";
 
 export default {
   name: "MyAccount",
@@ -102,17 +101,33 @@ export default {
     const store = useStore();
     const router = useRouter();
     const user = ref({});
+    const orders = ref([]);
     const isActivated = ref(false);
 
     const fetchUserData = async () => {
       const userId = store.state.user_id;
       try {
-        const response = await axios.get(`http://localhost:3000/user/${userId}`);
-        user.value = response.data;
+        user.value = await ApiClient.get(`/user/${userId}`);
         // Initialiser l'état du switch avec la valeur de la notification de l'utilisateur
         isActivated.value = user.value.notification;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
+      }
+    };
+
+    const fetchOrders = async () => {
+      const id_user = store.state.user_id;
+
+      if (!id_user) {
+        console.error('User ID is missing');
+        return;
+      }
+
+      try {
+        const response = await ApiClient.get(`/order/ByIdUser/${id_user}`);
+        orders.value = response.data;
+      } catch (error) {
+        console.error('Error fetching orders:', error);
       }
     };
 
@@ -134,7 +149,7 @@ export default {
       let newValue = prompt(`Entrez le nouveau ${field}:`);
       if (newValue !== null) {
         try {
-          await axios.patch(`http://localhost:3000/user/${user.value.id}`, { [field]: newValue });
+          await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
           // Mettre à jour l'utilisateur après modification
           await fetchUserData();
           alert(`Le champ ${field} a été modifié avec succès.`);
@@ -153,13 +168,13 @@ export default {
         if (newPassword === newPasswordConfirmation) {
           try {
             // Vérifier l'ancien mot de passe
-            const verifyResponse = await axios.post(`http://localhost:3000/user/verify-password`, {
+            const verifyResponse = await ApiClient.post(`/user/verify-password`, {
               accountId: user.value.id,
               password: oldPassword
             });
 
             if (verifyResponse.data.valid) {
-              await axios.patch(`http://localhost:3000/user/${user.value.id}`, { password: newPassword });
+              await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
               // Mettre à jour l'utilisateur après modification
               await fetchUserData();
               alert(`Le mot de passe a été modifié avec succès.`);
@@ -180,7 +195,7 @@ export default {
       const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');
       if (confirmDelete) {
         try {
-          await axios.delete(`http://localhost:3000/user/${user.value.id}`);
+          await ApiClient.delete(`/user/${user.value.id}`);
           alert('Votre compte a été anonymisé avec succès.');
           logout();
         } catch (error) {
@@ -192,7 +207,7 @@ export default {
 
     const toggleActivation = async () => {
       try {
-        await axios.patch(`http://localhost:3000/user/${user.value.id}`, { notification: isActivated.value });
+        await ApiClient.patch(`/user/${user.value.id}`, { notification: isActivated.value });
         alert('L\'état des notifications a été mis à jour avec succès.');
       } catch (error) {
         console.error('Erreur lors de la mise à jour des notifications:', error);
@@ -224,6 +239,7 @@ export default {
 
     onMounted(() => {
       fetchUserData();
+      fetchOrders();
     });
 
     return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated, downloadPersonalDataAsPDF  };
