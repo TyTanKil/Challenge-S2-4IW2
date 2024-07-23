@@ -7,7 +7,7 @@
         <li>
           <h4 class="list_title">Qui sommes-nous ?</h4>
           <div class="list_container">
-            <p>La présentation de TechShop SAS est disponible à l’adresse suivante : <a href="/presentation">https://tech-shop.tech/presentation</a></p>
+            <p>La présentation de TechShop SAS est disponible à l’adresse suivante : <a href="/qui_sommes_nous">https://tech-shop.tech/qui_sommes_nous</a></p>
             <p>L'entreprise TechShop SAS est responsable du site TechShop à l'adresse <a href="/">https://tech-shop.tech</a>.</p>
             <p>La politique de confidentialité de TechShop SAS a pour objectif :</p>
             <ul>
