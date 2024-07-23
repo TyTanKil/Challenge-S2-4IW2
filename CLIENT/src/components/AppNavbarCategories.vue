@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { defineProps } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   categories: {
@@ -11,18 +12,25 @@ const props = defineProps({
   route: Boolean,
 });
 
-// État local pour suivre la catégorie active
+const router = useRouter();
 const activeCategory = ref<string | null>(null);
 
 const setActiveCategory = (category: string) => {
   activeCategory.value = activeCategory.value === category ? null : category;
 };
 
-// Exemple de données de sous-catégories pour chaque catégorie
+const navigateToSubCategory = (category: string, subCategory: string) => {
+  router.push({ name: 'SubCategory', params: { category, subCategory } });
+};
+
+const navigateToAllProducts = (category: string) => {
+  router.push({ name: 'CategoryAll', params: { category } });
+};
+
 const subCategories = {
   'Promos et Bons plans': ['Offres du jour', 'Réductions spéciales', 'Dernières chances'],
   'PC': ['PC portables', 'PC de bureau', 'PC gaming', 'PC tout-en-un'],
-  'Composants': ['Processeurs', 'Cartes mères', 'Cartes graphiques', 'Mémoire RAM'],
+  'Composants': ['Processeur', 'Cartes mère', 'Cartes graphique', 'Mémoire RAM'],
   'Périphériques': ['Claviers', 'Souris', 'Écrans', 'Casques audio'],
 };
 </script>
@@ -38,10 +46,15 @@ const subCategories = {
       >
         {{ option }}
         <div v-if="activeCategory === option" class="sub-menu">
-          <div v-for="subCategory in subCategories[activeCategory]" :key="subCategory" class="sub-categorie">
+          <div 
+            v-for="subCategory in subCategories[activeCategory]" 
+            :key="subCategory" 
+            class="sub-categorie"
+            @click.stop="navigateToSubCategory(option, subCategory)"
+          >
             {{ subCategory }}
           </div>
-          <div class="sub-categorie">
+          <div class="sub-categorie" @click.stop="navigateToAllProducts(option)">
             Voir tout
           </div>
         </div>
@@ -64,7 +77,7 @@ nav.navbar {
   width: 100%;
   height: 2.5rem;
   display: flex;
-  position: relative; /* Ajouté pour permettre au sous-menu de se positionner par rapport à ce conteneur */
+  position: relative;
 }
 
 .categorie {
@@ -78,7 +91,7 @@ nav.navbar {
   color: black;
   font-weight: 500;
   cursor: pointer;
-  position: relative; /* Nécessaire pour positionner le sous-menu */
+  position: relative;
 }
 
 .categorie:nth-child(1) {
@@ -94,16 +107,16 @@ nav.navbar {
 }
 
 .sub-menu {
-  position: absolute; /* Permet au sous-menu de flotter */
-  top: 130%; /* Place le sous-menu juste en dessous de la catégorie */
-  left: 0; /* Aligne le sous-menu avec la catégorie */
-  width: 100%; /* Assure que la largeur du sous-menu correspond à celle de la catégorie */
+  position: absolute;
+  top: 130%;
+  left: 0;
+  width: 100%;
   background-color: #575757;
   border-radius: 5px;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  z-index: 1000; /* Assure que le sous-menu est au-dessus des autres éléments */
+  z-index: 1000;
   color: black;
   font-weight: 600;
   padding: 0.8rem 0;

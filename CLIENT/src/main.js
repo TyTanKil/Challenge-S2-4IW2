@@ -38,6 +38,11 @@ import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
+import SubCategoryPage from './views/AppSubCategoryPage.vue';
+
+
+import 'vue-toast-notification/dist/theme-sugar.css'
+import AppMainView from './views/AppMainView.vue'
 import EditOrder from './views/admin/AppEditOrder.vue'
 import OrderList from './views/admin/AppOrderList.vue'
 
@@ -84,7 +89,7 @@ const store = createStore({
 })
 
 const routes = [
-  { path: '/' },
+  { path: '/', component: AppMainView },
   { path: '/login', component: Identify, meta: { requiresNoAuth: true } },
   {
     path: '/validate/:hash',
@@ -137,16 +142,31 @@ const routes = [
   },
   { path: '/cart', component: Cart },
   { path: '/server-error', name: 'ServerError', component: ServerError },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
   //Stripe
   { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
   { path: '/cancel', name: 'Cancel', component: Cancel },
+  {
+    path: '/category/:category/:subCategory',
+    name: 'SubCategory',
+    component: SubCategoryPage,
+    props: true
+  },
+  // route pour Voir tout
+  {
+    path: '/category/:category/all',
+    name: 'CategoryAll',
+    component: SubCategoryPage,
+    props: true
+  },
+
   { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
   { path: '/cgv', name: 'AppCGV', component: AppCGV },
   { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
   { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles },
+  
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, 
 ]
 
 const router = createRouter({
@@ -209,6 +229,7 @@ router.beforeEach(async (to, from, next) => {
 
   next()
 })
+
 
 const app = createApp(App)
 app.use(router)

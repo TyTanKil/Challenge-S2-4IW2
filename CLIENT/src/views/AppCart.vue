@@ -147,7 +147,7 @@
       <p v-else>Aucun produit dans le panier.</p>
       <div class="total">
         <p>Total TTC: {{ cartTotal }}€</p>
-        <button @click="checkout">Passer commande</button>
+        <button class="checkout-btn" @click="checkout">Passer commande</button>
       </div>
     </div>
   </div>
@@ -170,7 +170,7 @@
     text-align: center;
   }
 
-  button {
+  .checkout-btn {
     border-radius: 10px;
     border: none;
     padding: 10px;

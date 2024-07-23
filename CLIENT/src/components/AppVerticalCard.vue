@@ -150,7 +150,6 @@ function selectCard() {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 .card_vertical_img {
-    height: auto;
     width: 100%;
     object-fit: contain;
 }
@@ -162,8 +161,11 @@ function selectCard() {
 }
 .infos h3 {
     font-weight: 500;
-    margin: 0;
-    font-size: x-large;
+    margin: 0 0 2rem 0;
+    font-size: larger;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 .infos h4 {
     font-weight: 300;
