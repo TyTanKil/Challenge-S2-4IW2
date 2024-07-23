@@ -8,7 +8,6 @@ import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
 import Product from './views/AppProduct.vue'
-import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue'
@@ -18,12 +17,10 @@ import AppContact from './views/AppContact.vue'
 import Cart from './views/AppCart.vue'
 import Success from './views/Payment/AppSuccess.vue'
 import Cancel from './views/Payment/AppCancel.vue'
-import Payment from './views/Payment/AppTestPayment.vue'
 
 import { jwtDecode } from 'jwt-decode'
 import VueToast from 'vue-toast-notification'
 
-import Test from './views/AppTest.vue'
 import Admin from './views/AppAdminDashboard.vue'
 import EditUser from './views/admin/AppEditUser.vue'
 import Users from './views/AppAdminUsers.vue'
@@ -56,7 +53,6 @@ import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
 import 'vue-toast-notification/dist/theme-sugar.css'
 import apiClient from './assets/js/apiClient';
 
-// Create a new store instance.
 const store = createStore({
   state() {
     return {
@@ -101,7 +97,7 @@ const routes = [
     })
   },
   { path: '/create', component: Create },
-  { path: '/test', component: Test },
+
   { path: '/qui_sommes_nous', component: AppQuiSommesNous },
   { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
@@ -125,12 +121,8 @@ const routes = [
   { path: '/admin/order', name: 'OrderList', component: OrderList },
   { path: '/admin/order/edit/:id', name: 'EditOrder', component: EditOrder },
 
-  //
   { path: '/account', name: 'Account', component: MyAccount },
 
-  // autres routes
-  { path: '/test', component: Test, meta: { requiresAuth: true } },
-  { path: '/mailer', component: Mailer },
   {
     path: '/product/:id',
     name: 'Product',
@@ -144,8 +136,6 @@ const routes = [
   },
   { path: '/cart', component: Cart },
   { path: '/server-error', name: 'ServerError', component: ServerError },
-  //Stripe
-  { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
   { path: '/cancel', name: 'Cancel', component: Cancel },
@@ -155,7 +145,6 @@ const routes = [
     component: SubCategoryPage,
     props: true
   },
-  // route pour Voir tout
   {
     path: '/category/:category/all',
     name: 'CategoryAll',
@@ -174,8 +163,7 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior(to, from, savedPosition) {
-    // always scroll to top
+  scrollBehavior() {
     return { top: 0 }
   },
 })
@@ -187,16 +175,18 @@ const isAdmin = ref(false);
 
 const fetchUserData = async () => {
   const userId = store.state.user_id;
-  try {
-    const response = await apiClient.get(`/user/${userId}`);
-    user.value = response;
-    if (user.value.roles.includes('ROLE_ADMIN')) {
-      isAdmin.value = true;
-    } else {
-      isAdmin.value = false;
+  if(userId){
+    try {
+      const response = await apiClient.get(`/user/${userId}`);
+      user.value = response;
+      if (user.value.roles.includes('ROLE_ADMIN')) {
+        isAdmin.value = true;
+      } else {
+        isAdmin.value = false;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'utilisateur');
     }
-  } catch (error) {
-    console.error('Erreur lors de la récupération de l\'utilisateur');
   }
 };
 

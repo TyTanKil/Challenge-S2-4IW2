@@ -269,7 +269,7 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
       }
 
       // Vérification si le stock tombe à 0
-      if (stock == 0) {
+      if (stock <= 3) {
         const accounts = await getAllStoreKeeper();
         const productName = existingProduct.label;
 
