@@ -39,8 +39,11 @@ const props = defineProps({
 </script>
 
 <template>
-  <img src="" alt="" class="main-img">
+  
   <div v-if="props.route">
+    <div class="img_main">
+      <img src="/src/assets/img/promo/Image_promo_2.png" alt="Image de promo" class="main-img">
+    </div>
     <div class="cards">
       <AppVerticalCard 
           v-for="product in products" 
@@ -60,5 +63,15 @@ const props = defineProps({
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  justify-content: center;
+}
+.img_main{
+  width: 100%;
+  display: flex;
+}
+img.main-img{
+  width: 70%;
+  height: auto;
+  margin: -1rem auto 1rem;
 }
 </style>

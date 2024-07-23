@@ -40,6 +40,7 @@ import SubCategoryPage from './views/AppSubCategoryPage.vue';
 
 
 import 'vue-toast-notification/dist/theme-sugar.css'
+import AppMainView from './views/AppMainView.vue'
 
 // Create a new store instance.
 const store = createStore({
@@ -75,7 +76,7 @@ const store = createStore({
 })
 
 const routes = [
-  { path: '/' },
+  { path: '/', component: AppMainView },
   { path: '/login', component: Identify, meta: { requiresNoAuth: true } },
   {
     path: '/validate/:hash',
@@ -122,7 +123,6 @@ const routes = [
   },
   { path: '/cart', component: Cart },
   { path: '/server-error', name: 'ServerError', component: ServerError },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
   //Stripe
   { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
@@ -140,7 +140,8 @@ const routes = [
     name: 'CategoryAll',
     component: SubCategoryPage,
     props: true
-  }
+  },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, 
 ]
 
 const router = createRouter({
@@ -170,6 +171,7 @@ router.beforeEach(async (to, from, next) => {
 
   next()
 })
+
 
 const app = createApp(App)
 app.use(router)
