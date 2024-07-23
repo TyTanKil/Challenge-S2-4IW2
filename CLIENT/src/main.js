@@ -36,6 +36,9 @@ import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
+import SubCategoryPage from './views/AppSubCategoryPage.vue';
+
+
 import 'vue-toast-notification/dist/theme-sugar.css'
 
 // Create a new store instance.
@@ -124,7 +127,20 @@ const routes = [
   { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
-  { path: '/cancel', name: 'Cancel', component: Cancel }
+  { path: '/cancel', name: 'Cancel', component: Cancel },
+  {
+    path: '/category/:category/:subCategory',
+    name: 'SubCategory',
+    component: SubCategoryPage,
+    props: true
+  },
+  // route pour Voir tout
+  {
+    path: '/category/:category/all',
+    name: 'CategoryAll',
+    component: SubCategoryPage,
+    props: true
+  }
 ]
 
 const router = createRouter({
