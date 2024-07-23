@@ -14,7 +14,6 @@ const fetchProducts = async () => {
   try {
     const response = await ApiClient.get('/products');
     products.value = response;
-    console.log(products.value);
   } catch (error) {
     console.error('Error fetching products:', error);
   }

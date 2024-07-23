@@ -52,7 +52,6 @@
           <button class="download-button" @click="downloadPersonalDataAsPDF">Télécharger mes données en PDF</button>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
-          <!-- Contenu pour Mes commandes -->
           <p>Contenu des commandes de l'utilisateur...</p>
         </div>
         <div v-if="selectedTab === 'parameters'" class="parameters">
