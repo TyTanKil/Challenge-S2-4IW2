@@ -13,6 +13,7 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
+module.exports = mongoose;
 // const mongoose = require("mongoose");
 
 // const mongoUrl =

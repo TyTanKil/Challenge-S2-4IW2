@@ -1,11 +1,64 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
+import ApiClient from '@/assets/js/apiClient';
 
 // Définir les données des états réactifs
-const salesData = ref<number>(10000);
-const userCount = ref<number>(1500);
-const orderCount = ref<number>(250);
+const salesData = ref<number>(0);
+const userCount = ref<number>(0);
+const orderCount = ref<number>(0);
+
+const fetchUserCount = async () => {
+    try {
+        const response = await ApiClient.get('/order/total-users');
+        const data = response.totalUsers;
+        if (isNaN(data)) {
+            throw new Error("Invalid user count data received");
+        }
+        userCount.value = data;
+
+    } catch (error) {
+        console.error('Error fetching user count:', error);
+    }
+};
+
+
+// Fonction pour récupérer les données de vente
+const fetchSalesData = async () => {
+    try {
+        const response = await ApiClient.get('/order/total-sales');
+        salesData.value = response.totalSales;
+    } catch (error) {
+        console.error('Error fetching sales data:', error);
+    }
+};
+
+// Fonction pour récupérer le nombre total de commandes
+const fetchOrderCount = async () => {
+    try {
+        const response = await ApiClient.get('/order/total-orders');
+        orderCount.value = response.totalOrders;
+    } catch (error) {
+        console.error('Error fetching order count:', error);
+    }
+};
+
+// Fonction pour récupérer les produits les plus vendus
+// const fetchTopProducts = async () => {
+//     try {
+//         const response = await ApiClient.get('/api/topProducts');
+//         topProducts.value = response.data.topProducts;
+//         initializeCharts(response.data);
+//     } catch (error) {
+//         console.error('Error fetching top products:', error);
+//     }
+// };
+
+onMounted(() => {
+    fetchUserCount(),
+        fetchSalesData(),
+        fetchOrderCount();
+});
 const topProducts = ref<Array<{ name: string; sales: number }>>([
     { name: 'Product A', sales: 100 },
     { name: 'Product B', sales: 80 },
