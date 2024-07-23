@@ -7,6 +7,10 @@ import ApiClient from '@/assets/js/apiClient';
 const salesData = ref<number>(0);
 const userCount = ref<number>(0);
 const orderCount = ref<number>(0);
+const topProducts = ref<Array<{ name: string, sales: number }>>([]);
+const recentOrders = ref<Array<{ id: string, total_price: number }>>([]);
+const salesRevenue = ref<Array<{ month: number, totalRevenue: number }>>([]);
+const salesTodayData = ref<number>(0);
 
 const fetchUserCount = async () => {
     try {
@@ -44,38 +48,58 @@ const fetchOrderCount = async () => {
 };
 
 // Fonction pour récupérer les produits les plus vendus
-// const fetchTopProducts = async () => {
+const fetchTopProducts = async () => {
+    try {
+        const response = await ApiClient.get('/order/top-products');
+        topProducts.value = response.topProducts;
+        initializeCharts(response);
+    } catch (error) {
+        console.error('Error fetching top products:', error);
+    }
+};
+
+
+const fetchRecentOrders = async () => {
+    try {
+        const response = await ApiClient.get('/order/recent-orders');
+        if (response && Array.isArray(response.recentOrders)) {
+            recentOrders.value = response.recentOrders;
+        } else {
+            throw new Error("Invalid response structure");
+        }
+    } catch (error) {
+        console.error('Error fetching recent orders:', error);
+    }
+};
+
+
+// const fetchSalesRevenue = async () => {
 //     try {
-//         const response = await ApiClient.get('/api/topProducts');
-//         topProducts.value = response.data.topProducts;
-//         initializeCharts(response.data);
+//         const response = await ApiClient.get('/order/sales-revenue');
+//         if (response && Array.isArray(response.salesRevenue)) {
+//             salesRevenue.value = response.salesRevenue.map(item => ({
+//                 month: item._id,
+//                 totalRevenue: item.totalRevenue
+//             }));
+//         } else {
+//             throw new Error("Invalid response structure");
+//         }
 //     } catch (error) {
-//         console.error('Error fetching top products:', error);
+//         console.error('Error fetching sales revenue:', error);
 //     }
 // };
 
-onMounted(() => {
-    fetchUserCount(),
-        fetchSalesData(),
-        fetchOrderCount();
-});
-const topProducts = ref<Array<{ name: string; sales: number }>>([
-    { name: 'Product A', sales: 100 },
-    { name: 'Product B', sales: 80 },
-    { name: 'Product C', sales: 60 },
-]);
-
-onMounted(() => {
+const initializeCharts = (data) => {
     // Graphique des ventes de produits
     const salesCtx = (document.getElementById('myChart') as HTMLCanvasElement).getContext('2d');
     new Chart(salesCtx, {
         type: 'bar',
         data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            labels: data.topProducts.map((product: any) => product.name),
             datasets: [
                 {
                     label: 'Product Sales',
-                    data: [150, 200, 180, 220, 170, 250],
+                    data: data.topProducts.map((product: any) => product.sales),
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -104,17 +128,54 @@ onMounted(() => {
             }
         }
     });
+}
 
-    // Graphique des revenus des ventes
+const fetchSalesRevenue = async () => {
+    try {
+        const response = await ApiClient.get('/order/sales-revenue');
+        if (response && Array.isArray(response.salesRevenue)) {
+            salesRevenue.value = response.salesRevenue.map(item => ({
+                month: item._id,
+                totalRevenue: item.totalRevenue
+            }));
+        } else {
+            throw new Error("Invalid response structure");
+        }
+    } catch (error) {
+        console.error('Error fetching sales revenue:', error);
+    }
+};
+
+const fetchTodaySales = async () => {
+    try {
+        const response = await ApiClient.get('/order/today-sales');
+        if (response && typeof response.totalTodaySales !== 'undefined') {
+            salesTodayData.value = response.totalTodaySales;
+        } else {
+            throw new Error("Invalid response structure");
+        }
+    } catch (error) {
+        console.error("Error fetching today's sales:", error);
+    }
+};
+
+const initializeRevenueChart = () => {
+    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const data = new Array(12).fill(0);
+
+    salesRevenue.value.forEach(item => {
+        data[item.month - 1] = item.totalRevenue;
+    });
+
     const revenueCtx = (document.getElementById('revenueChart') as HTMLCanvasElement).getContext('2d');
     new Chart(revenueCtx, {
         type: 'line',
         data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            labels,
             datasets: [
                 {
                     label: 'Sales Revenue',
-                    data: [5000, 7000, 6000, 8000, 7500, 9000],
+                    data,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
@@ -147,7 +208,22 @@ onMounted(() => {
             }
         }
     });
+};
+onMounted(() => {
+    fetchUserCount(),
+        fetchSalesData(),
+        fetchOrderCount()
+    fetchTopProducts(),
+        fetchRecentOrders(),
+        fetchSalesRevenue(),
+        fetchTodaySales();
 });
+
+onMounted(async () => {
+    await fetchSalesRevenue();
+    initializeRevenueChart();
+})
+
 </script>
 
 <template>
@@ -155,29 +231,29 @@ onMounted(() => {
         <div class="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
             <!-- Widgets de KPI -->
             <div class="flex flex-col bg-white text-gray-700 shadow-md rounded-lg overflow-hidden">
-                <div
-                    class="bg-gradient-to-tr from-blue-600 to-blue-400 text-white absolute -mt-4 ml-4 rounded-full p-3 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                        class="w-6 h-6">
-                        <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"></path>
-                        <path fill-rule="evenodd"
-                            d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z"
-                            clip-rule="evenodd"></path>
-                        <path
-                            d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z">
-                        </path>
-                    </svg>
-                </div>
-                <div class="p-6 text-right">
-                    <p class="text-sm font-medium text-gray-600">CA d'aujourd'hui</p>
-                    <h4 class="text-2xl font-semibold text-gray-900">{{ salesData }}</h4>
-                </div>
-                <div class="border-t border-gray-200 p-4">
-                    <p class="text-base font-normal text-gray-600">
-                        <strong class="text-green-500">+55%</strong>&nbsp;que la semaine dernière
-                    </p>
-                </div>
-            </div>
+          <div
+            class="bg-gradient-to-tr from-blue-600 to-blue-400 text-white absolute -mt-4 ml-4 rounded-full p-3 shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+              class="w-6 h-6">
+              <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"></path>
+              <path fill-rule="evenodd"
+                d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z"
+                clip-rule="evenodd"></path>
+              <path
+                d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z">
+              </path>
+            </svg>
+          </div>
+          <div class="p-6 text-right">
+            <p class="text-sm font-medium text-gray-600">CA d'aujourd'hui</p>
+            <h4 class="text-2xl font-semibold text-gray-900">{{ salesTodayData }}</h4>
+          </div>
+          <div class="border-t border-gray-200 p-4">
+            <p class="text-base font-normal text-gray-600">
+              <strong class="text-green-500">+55%</strong>&nbsp;que la semaine dernière
+            </p>
+          </div>
+        </div>
 
             <div class="flex flex-col bg-white text-gray-700 shadow-md rounded-lg overflow-hidden">
                 <div
@@ -248,39 +324,40 @@ onMounted(() => {
                 <h3 class="text-lg font-semibold mb-4">Graphique des ventes de produits</h3>
                 <canvas id="myChart"></canvas>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-lg font-semibold mb-4">Graphique des revenus des ventes</h3>
-                <canvas id="revenueChart"></canvas>
-            </div>
+           <div>
+        <!-- Graphique des revenus des ventes -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-lg font-semibold mb-4">Graphique des revenus des ventes</h3>
+          <canvas id="revenueChart"></canvas>
         </div>
-
+      </div>
+        </div>
+    <div>
         <!-- Liste des produits les plus vendus -->
         <div class="mt-12 bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4">Produits les plus vendus</h2>
-            <ul>
-                <li v-for="product in topProducts" :key="product.name" class="mb-2 flex justify-between items-center">
-                    <span>{{ product.name }}</span>
-                    <span>{{ product.sales }}</span>
-                </li>
-            </ul>
+          <h2 class="text-xl font-bold mb-4">Produits les plus vendus</h2>
+          <ul>
+            <li v-for="product in topProducts" :key="product.name" class="mb-2 flex justify-between items-center">
+              <span>{{ product.name }} </span>
+              <span>{{ product.sales }} €</span>
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <!-- Liste des commandes récentes -->
+        <div>
+
+    <!-- Liste des commandes récentes -->
         <div class="mt-12 bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4">Commandes récentes</h2>
-            <ul>
-                <!-- Exemple de commande récente -->
-                <li class="mb-2 flex justify-between items-center">
-                    <span>Commande #1234</span>
-                    <span>$150</span>
-                </li>
-                <li class="mb-2 flex justify-between items-center">
-                    <span>Commande #1235</span>
-                    <span>$200</span>
-                </li>
-                <!-- Ajoutez des commandes ici -->
-            </ul>
+          <h2 class="text-xl font-bold mb-4">Commandes récentes</h2>
+          <ul>
+            <li v-for="order in recentOrders" :key="order.id" class="mb-2 flex justify-between items-center">
+              <span>Commande #{{ order.id }}</span>
+              <span>{{ order.total_price }} €</span>
+            </li>
+          </ul>
         </div>
+  </div>
     </main>
 </template>
 
