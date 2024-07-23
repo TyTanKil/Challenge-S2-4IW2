@@ -49,6 +49,7 @@ const props = defineProps({
           :description="product.description"
           :price="product.unit_price"
           :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+          :cartProductId="product.cartProductId"
           @select="() => handleSelect(product)"/>
     </div>
   </div>

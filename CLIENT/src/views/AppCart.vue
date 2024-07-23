@@ -138,8 +138,9 @@
   <div id="app">
     <div v-if="products.length">
       <div class="cards_cart">
-        <AppHorizontalCard
+        <ProductItem
           v-for="product in products"
+          :cartProductId="cartProductId"
           :key="product._id"
           :id="product.id"
           :label="product.label"

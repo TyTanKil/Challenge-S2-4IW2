@@ -16,6 +16,7 @@
 
     const selectedQuantity = ref(1);
     const quantityOptions = ref<number[]>([]);
+    const emits = defineEmits(['select', 'productAdded']);
 
     onMounted(async () => {
     try {
@@ -84,16 +85,17 @@
         quantity: selectedQuantity.value
         });
         toast.success('Produit ajouté au panier');
+        console.log('Product added:', responseAddCart.data);
+        emits('productAdded', responseAddCart.data.id);
     } catch (error) {
         console.error('Error adding product to cart:', error);
         toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
     }
     }
 
-    const emits = defineEmits(['select']);
-
     function selectCard() {
     emits('select', {
+        id : props.id,
         name: props.label,
         description: props.description,
         price: props.price,

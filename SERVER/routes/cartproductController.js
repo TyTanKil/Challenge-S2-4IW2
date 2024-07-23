@@ -20,14 +20,24 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id_cart/:id_product", async (req, res, next) => {
   try {
-    const cartProduct = await CartProduct.findByPk(parseInt(req.params.id));
-    if (cartProduct) {
-      res.json(cartProduct);
-    } else {
-      res.sendStatus(404);
-    }
+    const { id_cart, id_product } = req.params;
+
+    res.status(201).res.json(id_cart, id_product);
+
+    // const cartProduct = await CartProduct.findOne({
+    //   where: {
+    //     id_cart: parseInt(id_cart),
+    //     id_product: parseInt(id_product),
+    //   },
+    // });
+
+    // if (cartProduct) {
+    //   res.json(cartProduct);
+    // } else {
+    //   res.sendStatus(404);
+    // }
   } catch (e) {
     next(e);
   }
