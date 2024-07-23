@@ -19,9 +19,6 @@ const props = defineProps({     //Définition des données passées par le compo
     cartProductId: Number
 });
 
-console.log(props.link_img);
-console.log('Cart Product ID:', props.cartProductId);
-
 function navigate() {         //Fonction pour naviguer sur la page grace au lien fourni
   if (props.link) {
     window.location.href = props.link;
@@ -41,8 +38,9 @@ const deleteProduct = async () => {
     try {
         const response = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
         let cartId = response.data.id;
+        let productId = props.id;
 
-        const responseDelete = await ApiClient.delete(`/cartProduct/ByIdCart`, { id_cart: cartId, id_product: props.id });
+        const responseDelete = await ApiClient.get(`/getByIds/${cartId}/${productId}`);
         
         toast.success('Produit supprimé du panier');
         emits('productDeleted', props.cartProductId);
@@ -66,7 +64,6 @@ const deleteProduct = async () => {
           <div class="price_quantity_container">
               <p>Prix : {{ props.price }} €</p>
               <p><span>Quantité : {{ props.quantity }}</span></p>
-              <p>Cart Product ID: {{ props.cartProductId }}</p>
           </div>
           <div class="action_div_container">
               <button @click="deleteProduct">

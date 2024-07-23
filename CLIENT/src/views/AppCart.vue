@@ -91,6 +91,12 @@
         return products.value.find(product => product.id === id);
       };
 
+      const cartTotal = computed(() => {
+      return products.value.reduce((total, product) => {
+        return total + (product.unit_price * product.quantity);
+      }, 0).toFixed(2); // Formatage en deux décimales
+    });
+
       const checkout = async () => {
         try {
 
@@ -127,6 +133,7 @@
       return {
         cart,
         products,
+        cartTotal,
         productById,
         checkout,
       };
