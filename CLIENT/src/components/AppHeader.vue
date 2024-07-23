@@ -28,16 +28,18 @@ const user = ref({});
 const isAdmin = ref(false);
 const fetchUserData = async () => {
   const userId = store.state.user_id;
-  try {
-    const response = await axios.get(`http://localhost:3000/user/${userId}`);
-    user.value = response.data;
-    if (user.value.roles.includes('ROLE_ADMIN')) {
-      isAdmin.value = true;
-    } else {
-      isAdmin.value = false;
+  if(userId){
+    try {
+      const response = await axios.get(`http://localhost:3000/user/${userId}`);
+      user.value = response.data;
+      if (user.value.roles.includes('ROLE_ADMIN')) {
+        isAdmin.value = true;
+      } else {
+        isAdmin.value = false;
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la récupération de l\'utilisateur');
     }
-  } catch (error) {
-    toast.error('Erreur lors de la récupération de l\'utilisateur');
   }
 };
 
