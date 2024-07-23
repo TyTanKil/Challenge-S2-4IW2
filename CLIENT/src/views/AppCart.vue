@@ -146,7 +146,7 @@
           :description="product.description"
           :price="product.unit_price"
           :quantity="product.quantity"
-          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.jpg'"
           @select="() => handleSelect(product)"
         />
       </div>
