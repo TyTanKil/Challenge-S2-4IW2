@@ -56,6 +56,7 @@ import apiClient from './assets/js/apiClient';
 const store = createStore({
   state() {
     return {
+      api_endpoint: import.meta.env.VITE_API_ENDPOINT,
       user_id: localStorage.getItem('jwtToken')
         ? jwtDecode(localStorage.getItem('jwtToken')).id
         : null,
