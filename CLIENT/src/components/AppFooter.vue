@@ -10,7 +10,7 @@
         <ul>
           <li><router-link to="">Qui sommes nous ?</router-link></li>
           <li><router-link to="">Nos services</router-link></li>
-          <li><router-link to="">Contactez nous</router-link></li>
+          <li><router-link to="/contact">Contactez nous</router-link></li>
         </ul>
       </div>
       <div>

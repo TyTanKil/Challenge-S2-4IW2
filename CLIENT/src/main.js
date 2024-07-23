@@ -10,6 +10,7 @@ import Product from './views/AppProduct.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue'
+import AppContact from './views/AppContact.vue'
 
 import Cart from './views/AppCart.vue'
 import Success from './views/Payment/AppSuccess.vue'
@@ -90,6 +91,7 @@ const routes = [
   },
   { path: '/create', component: Create },
   { path: '/test', component: Test },
+  { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
   { path: '/admin/users', name: 'UserList', component: Users },
   { path: '/admin/products', name: 'ProductList', component: ProductList },
