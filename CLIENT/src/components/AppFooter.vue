@@ -8,8 +8,7 @@
       <div>
         <h2>Notre histoire</h2>
         <ul>
-          <li><router-link to="">Qui sommes nous ?</router-link></li>
-          <li><router-link to="">Nos services</router-link></li>
+          <li><router-link to="/qui_sommes_nous">Qui sommes nous ?</router-link></li>
           <li><router-link to="/contact">Contactez nous</router-link></li>
         </ul>
       </div>

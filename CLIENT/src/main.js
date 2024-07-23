@@ -12,6 +12,7 @@ import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue'
+import AppQuiSommesNous from './views/AppQuiSommesNous.vue'
 import AppContact from './views/AppContact.vue'
 
 import Cart from './views/AppCart.vue'
@@ -101,6 +102,7 @@ const routes = [
   },
   { path: '/create', component: Create },
   { path: '/test', component: Test },
+  { path: '/qui_sommes_nous', component: AppQuiSommesNous },
   { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
   { path: '/admin/users', name: 'UserList', component: Users },
