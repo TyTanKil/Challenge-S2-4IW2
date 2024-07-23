@@ -6,7 +6,12 @@ const { sendEmail } = require("./mailer");
 const paymentRoutes = require("./payment"); // Importation du fichier de paiement
 const app = express();
 const AccountRouter = require("./routes/accountController");
+const ProductRouter = require("./routes/productController");
+const CartRouter = require("./routes/cartController");
+const CartProductRouter = require("./routes/cartproductController");
+const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
+const PayementRouter = require("./payment");
 const path = require("path");
 
 // Import email templates
@@ -28,6 +33,8 @@ const manufacturerController = require("./routes/manufacturerController");
 const uploadController = require("./routes/uploadController");
 const stockController = require("./routes/stockController");
 const productimageController = require("./routes/productimageController");
+const orderController = require("./routes/orderController");
+const orderProductController = require("./routes/orderproductController");
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
@@ -38,14 +45,17 @@ app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
 app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
+app.use("/order", orderController);
+app.use("/order-product", orderProductController);
+app.use("/payment", PayementRouter);
+app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Utilisation des routes de paiement
 app.use(paymentRoutes);
 
-require('./middlewares/birthdayEmailScheduler');
-
+require("./middlewares/birthdayEmailScheduler");
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
@@ -112,6 +122,9 @@ app.use((err, req, res, next) => {
 });
 
 app.use("/user", AccountRouter);
+app.use("/cart", CartRouter);
+app.use("/cartproduct", CartProductRouter);
+app.use("/product", ProductRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {

@@ -10,7 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       id_user: {
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID
       },
       expire_date: {
         type: Sequelize.DATE

@@ -18,7 +18,7 @@
                 <FormSelect id="manufacturer" label="Fabricant" :options="manufacturers"
                     :modelValue="product.id_manufacturer" @update:modelValue="product.id_manufacturer = $event" required
                     class="mb-4" />
-                <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
+                <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" required />
                 <div class="text-right">
                     <button type="submit"
                         class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">

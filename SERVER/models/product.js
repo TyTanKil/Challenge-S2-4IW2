@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true, // Permettre les valeurs nulles
       });
       Product.hasOne(models.Stock, { foreignKey: "id_product" });
-      Product.hasMany(models.ProductImage, {
+      Product.hasMany(models.Product_image, {
         foreignKey: "id_product",
       });
     }
@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Product",
-      tableName: "products",
+      tableName: "product",
       hooks: {
         afterCreate: async (product, options) => {
           try {
