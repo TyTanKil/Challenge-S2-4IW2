@@ -12,11 +12,11 @@ const {
   syncProductWithMongo,
 } = require("../services/denormalizations/productService");
 
-const { Products } = require("../mongo/ProductSchema"); 
+const { Products } = require("../mongo/ProductSchema");
 const db = require("../db");
-const Account = require('../models/account'); 
-const Sequelize = require("sequelize"); 
-
+// console.log(db);
+const Account = require("../models/account");
+const Sequelize = require("sequelize");
 
 const {
   sequelize,
@@ -51,9 +51,9 @@ const getAllStoreKeeper = async () => {
   return await Account.findAll({
     where: {
       roles: {
-        [Sequelize.Op.contains]: ['ROLE_STORE_KEEPER']
-      }
-    }
+        [Sequelize.Op.contains]: ["ROLE_STORE_KEEPER"],
+      },
+    },
   });
 };
 
@@ -133,14 +133,14 @@ router.post("/", upload.single("image"), async (req, res, next) => {
     const productPrice = unit_price;
     const categoryName = category.label;
 
-    accounts.forEach(account => {
-      if(account.notification){
+    accounts.forEach((account) => {
+      if (account.notification) {
         const mailOptions = newProductTemplate({
           to: account.email,
-          productName : productName,
-          userName : account.firstName,
-          price : productPrice,
-          categoryName : categoryName,
+          productName: productName,
+          userName: account.firstName,
+          price: productPrice,
+          categoryName: categoryName,
         });
         sendEmail(mailOptions);
       }
@@ -256,12 +256,12 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         const accounts = await getAllStoreKeeper();
         const productName = existingProduct.label;
 
-        accounts.forEach(account => {
-          if(account.notification){
+        accounts.forEach((account) => {
+          if (account.notification) {
             const mailOptions = restockProductTemplate({
               to: account.email,
-              userName : account.firstName,
-              productName : productName,
+              userName: account.firstName,
+              productName: productName,
             });
             sendEmail(mailOptions);
           }
@@ -273,20 +273,18 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         const accounts = await getAllStoreKeeper();
         const productName = existingProduct.label;
 
-        accounts.forEach(account => {
-          if(account.notification){
+        accounts.forEach((account) => {
+          if (account.notification) {
             const mailOptions = OutOfStockTemplate({
               to: account.email,
-              userName : account.firstName,
-              productName : productName,
+              userName: account.firstName,
+              productName: productName,
             });
             sendEmail(mailOptions);
           }
         });
       }
     }
-
-    
 
     if (req.file) {
       const imagePath = req.file.filename;

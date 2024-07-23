@@ -11,7 +11,7 @@ const CartRouter = require("./routes/cartController");
 const CartProductRouter = require("./routes/cartproductController");
 const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
-const PayementRouter = require("./payment")
+const PayementRouter = require("./payment");
 const path = require("path");
 
 // Import email templates
@@ -25,6 +25,7 @@ const paymentConfirmationTemplate = require("./templates-mail/payment-confirmati
 const newProductTemplate = require("./templates-mail/new-product");
 const restockTemplate = require("./templates-mail/restock");
 const priceChangeTemplate = require("./templates-mail/price-change");
+const contactSupportTemplate = require("./templates-mail/contact_support");
 
 const productController = require("./routes/productController");
 const categoryController = require("./routes/categoryController");
@@ -32,6 +33,8 @@ const manufacturerController = require("./routes/manufacturerController");
 const uploadController = require("./routes/uploadController");
 const stockController = require("./routes/stockController");
 const productimageController = require("./routes/productimageController");
+const orderController = require("./routes/orderController");
+const orderProductController = require("./routes/orderproductController");
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
@@ -42,6 +45,8 @@ app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
 app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
+app.use("/order", orderController);
+app.use("/order-product", orderProductController);
 app.use("/payment", PayementRouter);
 app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
@@ -50,8 +55,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Utilisation des routes de paiement
 app.use(paymentRoutes);
 
-require('./middlewares/birthdayEmailScheduler');
-
+require("./middlewares/birthdayEmailScheduler");
 
 // Endpoint pour envoyer des emails
 app.post("/send-email", async (req, res) => {
@@ -90,8 +94,8 @@ app.post("/send-email", async (req, res) => {
     case "price-change":
       mailOptions = priceChangeTemplate({ to, ...data });
       break;
-    case "newsletter-signup":
-      mailOptions = newsletterSignupTemplate({ to, ...data });
+    case "contact-support":
+      mailOptions = contactSupportTemplate({ ...data });
       break;
     default:
       return res.status(400).json({ error: "Type de mail non reconnu" });

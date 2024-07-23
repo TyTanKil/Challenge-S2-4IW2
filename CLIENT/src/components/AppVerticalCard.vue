@@ -53,18 +53,28 @@ const addToCart = async () => {
   }
 
   try {
-    let responseGetCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
-    console.log('Response Cart:', responseGetCart);
-
+    let responseGetCart;
     let cartId;
 
-    // Si un panier existe déjà
-    if (responseGetCart.status === 200) {
-      cartId = responseGetCart.data.id;
-    } else {
-      // Créer un nouveau panier
-      let responseCart = await ApiClient.put(`/cart`, { id_user: id_user });
-      cartId = responseCart.data.id;
+    // Tenter de récupérer le panier existant
+    try {
+      responseGetCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
+      console.log('Response Cart:', responseGetCart);
+
+      if (responseGetCart.status === 200) {
+        cartId = responseGetCart.data.id;
+      } else {
+        throw new Error('Unexpected response status');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        // Si le panier n'existe pas (404), en créer un nouveau
+        let responseCart = await ApiClient.put(`/cart`, { id_user: id_user });
+        cartId = responseCart.data.id;
+      } else {
+        // Si une autre erreur survient, la gérer
+        throw error;
+      }
     }
 
     // Ajouter le produit avec la quantité sélectionnée
@@ -83,6 +93,7 @@ const addToCart = async () => {
     toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
   }
 }
+
 
 const emits = defineEmits(['select']);
 
