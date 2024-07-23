@@ -12,22 +12,8 @@ const sendBirthdayEmail = async (account) => {
   };
 
   try {
-    const response = await fetch('http://localhost:3000/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    const text = await response.text();
-    let result;
-    try {
-      result = JSON.parse(text);
-      console.log('Email sent successfully:', result);
-    } catch (error) {
-      console.error('Error:', text);
-    }
+    await ApiClient.post('/send-email', JSON.stringify(data));
+    console.log('Email sent successfully:', result);
   } catch (error) {
     console.error('Error sending email:', error);
   }

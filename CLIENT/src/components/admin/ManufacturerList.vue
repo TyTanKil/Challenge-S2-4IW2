@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-bold">Liste des Fabricants</h1>
             <button @click="addManufacturer"
                 class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <a href="/admin/manufacturers/new">Ajouter un fabricant</a>
+                <router-link to="/admin/manufacturers/new">Ajouter un fabricant</router-link>
             </button>
         </div>
         <div class="mb-4">
@@ -77,9 +77,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import axios from '../../axios';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
+import ApiClient from "@/assets/js/apiClient.js";
 
 const manufacturers = ref([]);
 const searchQuery = ref('');
@@ -91,8 +91,7 @@ const toast = useToast();
 
 const fetchManufacturers = async () => {
     try {
-        const response = await axios.get('/manufacturer');
-        manufacturers.value = response.data;
+        manufacturers.value = await ApiClient.get('/manufacturer');
     } catch (error) {
         console.error('Error fetching manufacturers:', error);
     }
@@ -146,7 +145,7 @@ const confirmDelete = (id) => {
 
 const deleteManufacturer = async (id) => {
     try {
-        await axios.delete(`/manufacturer/${id}`);
+        await ApiClient.delete(`/manufacturer/${id}`);
         manufacturers.value = manufacturers.value.filter(manufacturer => manufacturer.id !== id);
         toast.success('Fabricant supprimé avec succès');
     } catch (error) {

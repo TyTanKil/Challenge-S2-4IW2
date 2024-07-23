@@ -1,10 +1,10 @@
 const { Router } = require("express");
-const OrderProduct = require("../models/orderproduct");
+const Order_product = require("../models/orderproduct");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 
-router.get("/", checkAuth, async (req, res, next) => {
-  const ordersProduct = await OrderProduct.findAll({
+router.get("/", async (req, res, next) => {
+  const ordersProduct = await Order_product.findAll({
     where: req.query,
   });
   res.json(ordersProduct);
@@ -12,7 +12,7 @@ router.get("/", checkAuth, async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const orderProduct = await OrderProduct.create(req.body);
+    const orderProduct = await Order_product.create(req.body);
     res.status(201).json(orderProduct);
   } catch (e) {
     next(e);
@@ -21,7 +21,7 @@ router.post("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    const orderProduct = await OrderProduct.findByPk(parseInt(req.params.id));
+    const orderProduct = await Order_product.findByPk(parseInt(req.params.id));
     if (orderProduct) {
       res.json(orderProduct);
     } else {
@@ -34,7 +34,7 @@ router.get("/:id", async (req, res, next) => {
 
 router.patch("/:id", async (req, res, next) => {
   try {
-    const [nbUpdated, ordersProduct] = await OrderProduct.update(req.body, {
+    const [nbUpdated, ordersProduct] = await Order_product.update(req.body, {
       where: {
         id: parseInt(req.params.id),
       },
@@ -53,7 +53,7 @@ router.patch("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const nbDeleted = await OrderProduct.destroy({
+    const nbDeleted = await Order_product.destroy({
       where: {
         id: parseInt(req.params.id),
       },
@@ -70,12 +70,12 @@ router.delete("/:id", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const nbDeleted = await OrderProduct.destroy({
+    const nbDeleted = await Order_product.destroy({
       where: {
         id: parseInt(req.params.id),
       },
     });
-    const orderProduct = await OrderProduct.create({
+    const orderProduct = await Order_product.create({
       ...req.body,
       id: parseInt(req.params.id),
     });

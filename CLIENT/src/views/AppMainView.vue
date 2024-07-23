@@ -2,16 +2,18 @@
 import { ref, onMounted } from 'vue';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
 import { useRouter } from 'vue-router';
-import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
+import ApiClient from '../assets/js/apiClient';
+import {useStore} from "vuex";
 
 const router = useRouter();
 const products = ref([]);
+
+const store = useStore(); // Accéder au store Vuex
 
 const fetchProducts = async () => {
   try {
     const response = await ApiClient.get('/products');
     products.value = response;
-    console.log(products.value);
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -32,7 +34,6 @@ function handleSelect(product) {
   });
 }
 
-
 const props = defineProps({
   route: Boolean,
 });
@@ -40,6 +41,9 @@ const props = defineProps({
 
 <template>
   <div v-if="props.route">
+    <div class="img_main">
+      <img src="/src/assets/img/promo/Image_promo_2.png" alt="Image de promo" class="main-img">
+    </div>
     <div class="cards">
       <AppVerticalCard 
           v-for="product in products" 
@@ -48,8 +52,7 @@ const props = defineProps({
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
-          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-          :cartProductId="product.cartProductId"
+          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
           @select="() => handleSelect(product)"/>
     </div>
   </div>
@@ -60,5 +63,16 @@ const props = defineProps({
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  justify-content: center;
+}
+.img_main{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: -1.5rem auto 1rem;
+}
+img.main-img{
+  width: 70%;
+  height: auto;
 }
 </style>

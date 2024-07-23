@@ -175,7 +175,7 @@ router.delete("/:id", async (req, res, next) => {
         password: new_pwd,
         birth_date: null,
         roles: sequelize.literal(`ARRAY[]::"enum_account_roles"[]`),
-        deleted: true,
+        status: 'd',
         notification: false,
         validate_hash: null,
       },
@@ -196,7 +196,7 @@ router.get("/show/alluser", async (req, res, next) => {
   try {
     const users = await Account.findAll({
       where: {
-        deleted: false,
+        status: 'a',
       },
       attributes: { exclude: ["password"] }, // Optionnel, pour exclure le mot de passe des résultats
     });
@@ -264,7 +264,7 @@ router.put("/:id", async (req, res, next) => {
         phone: null,
         login: `deleted-${accountId}`,
         password: null,
-        status: "deleted",
+        status: "d",
         validate_hash: null,
       },
       {

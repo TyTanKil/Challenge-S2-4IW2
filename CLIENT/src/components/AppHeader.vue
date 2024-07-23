@@ -1,23 +1,23 @@
-<script lang="ts" setup>
-import { defineProps, ref } from 'vue';
+<script setup lang="ts">
+import { defineProps, ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import axios from 'axios';
 import { useToast } from 'vue-toast-notification';
+import { useRouter } from 'vue-router';
+import ApiClient from '../assets/js/apiClient';
 
 const toast = useToast();
-
-
-const store = useStore(); // Accéder au store Vuex
+const router = useRouter();
+const store = useStore();
 
 const account_button_route = ref('');
 const cart_button_route = ref('');
 const account_name = ref('');
 
-if(store.state.user_id == null){
+if (store.state.user_id == null) {
   account_button_route.value = "/login";
   cart_button_route.value = "/login";
   account_name.value = "Compte";
-}else{
+} else {
   account_button_route.value = "/account";
   cart_button_route.value = "/cart";
   account_name.value = store.state.user_name;
@@ -26,26 +26,67 @@ if(store.state.user_id == null){
 const user = ref({});
 const isAdmin = ref(false);
 const fetchUserData = async () => {
-      const userId = store.state.user_id;
-      try {
-        const response = await axios.get(`http://localhost:3000/user/${userId}`);
-        user.value = response.data;
-        if (user.value.roles.includes('ROLE_ADMIN')) {
-          isAdmin.value = true;
-        } else {
-          isAdmin.value = false;
-        }
-      } catch (error) {
-        toast.error('Erreur lors de la récupération de l\'utilisateur');
+  const userId = store.state.user_id;
+  if(userId){
+    try {
+      user.value = await ApiClient.get(`/user/${userId}`);
+      if (user.value.roles.includes('ROLE_ADMIN')) {
+        isAdmin.value = true;
+      } else {
+        isAdmin.value = false;
       }
-    };
-
+    } catch (error) {
+      toast.error('Erreur lors de la récupération de l\'utilisateur');
+    }
+  }
+};
 
 fetchUserData();
 
 const props = defineProps({
   route: Boolean,
 });
+
+const searchQuery = ref('');
+const products = ref([]);
+const filteredProducts = computed(() => {
+  if (!searchQuery.value) return [];
+  return products.value.filter(product =>
+    product.label.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    product.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    (product.Category && product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+    (product.Manufacturer && product.Manufacturer.label.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  ).slice(0, 8);
+});
+
+const fetchProducts = async () => {
+  try {
+    const response = await ApiClient.get('/products');
+    products.value = response;
+  } catch (error) {
+    toast.error('Erreur lors de la récupération des produits');
+  }
+};
+
+fetchProducts();
+
+const goToProduct = (id) => {
+  router.push(`/product/${id}`);
+  searchQuery.value = '';
+  setTimeout(() => {
+    location.reload();
+  }, 3);
+};
+
+const goToSearchResults = () => {
+  if (searchQuery.value) {
+    router.push({ name: 'SearchResults', query: { q: searchQuery.value } });
+    searchQuery.value = '';
+    setTimeout(() => {
+    location.reload();
+  }, 1);
+  }
+};
 </script>
 
 <template>
@@ -54,8 +95,19 @@ const props = defineProps({
       <img class="logo clear_mode" src="\src\assets\img\svg\TechShop_-_Brand_Logo\svg\logo-no-background.svg" alt="">
     </a>
     <div v-if="!props.route" class="search_bar">
-      <input type="text" name="search" id="search" placeholder="Rechercher votre produit...">
-      <button><img src="\src\assets\img\svg\icons\loupe-search.svg" alt=""></button>
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        name="search" 
+        id="search" 
+        placeholder="Rechercher votre produit..." 
+        @keyup.enter="goToSearchResults">
+
+      <ul v-if="filteredProducts.length" class="search-results">
+        <li v-for="product in filteredProducts" :key="product._id" @click="goToProduct(product._id)">
+          <a>{{ product.label }}</a>
+        </li>
+      </ul>
     </div>
     <div v-if="!props.route" class="actions_btn">
       <div v-if="isAdmin">
@@ -87,6 +139,7 @@ const props = defineProps({
   background-color: #575757;
   display: flex;
   padding: 2rem;
+  margin-bottom: 2rem;
   align-items: center;
   height: 6rem;
   z-index: 1000;
@@ -103,25 +156,27 @@ const props = defineProps({
 
 .search_bar {
   display: flex;
+  flex-direction: row;
   width: 50%;
   align-items: center;
+  position: relative;
 }
 
 .search_bar input {
   border: none;
   background-color: #d9d9d9;
-  border-radius: 5px 0 0 5px;
+  border-radius: 5px;
   min-width: 15rem;
-  width: 80%;
-  height: 2.5rem; /* Assurez-vous que l'input a la même hauteur que le bouton */
+  width: 90%;
+  height: 2.5rem;
   padding: 0 0.8rem;
-  font-size: 1rem; /* Ajustez la taille de la police selon les besoins */
+  font-size: 1rem;
 }
 
 .search_bar button {
-  height: 2.5rem; /* Même hauteur que l'input */
+  height: 2.5rem;
   border: none;
-  background-color: #d9d9d9; /* Même couleur que l'input pour une transition en douceur */
+  background-color: #d9d9d9;
   border-radius: 0 5px 5px 0;
   padding: 0.5rem 0.8rem;
   display: flex;
@@ -131,11 +186,38 @@ const props = defineProps({
 }
 
 .search_bar button img {
-  height: 1.5rem; /* Ajustez la taille de l'image de la loupe selon les besoins */
+  height: 1.5rem;
 }
 
 .search_bar button:hover {
   background-color: #b2b2b2;
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 0.1rem;
+  width: 95%; 
+  background-color: white;
+  border: 1px solid #d9d9d9;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  border-radius: 0 0 5px 5px;
+}
+
+.search-results li {
+  padding: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+.search-results li:hover {
+  background-color: #f0f0f0;
 }
 
 .actions_btn {
@@ -157,7 +239,7 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; /* Centrer le texte sous l'icône */
+  align-items: center;
 }
 
 .actions_btn img {
@@ -169,5 +251,9 @@ const props = defineProps({
   .header {
     background-color: #2a2a2a;
   }
+  .search-results li {
+    color: #2a2a2a;
+  }
+
 }
 </style>

@@ -72,10 +72,6 @@ module.exports = {
         allowNull: true,
         type: Sequelize.DATE
       },
-      deleted: {
-        allowNull:false,
-        type: Sequelize.BOOLEAN
-      },
       notification: {
         allowNull:false,
         type: Sequelize.BOOLEAN

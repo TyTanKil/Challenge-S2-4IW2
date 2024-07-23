@@ -1,21 +1,15 @@
 <script setup lang='ts'>
-import { defineProps } from 'vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
+import ApiClient from '../assets/js/apiClient';
+import {useStore} from "vuex"; // Assurez-vous que le chemin est correct
 
-// const props = defineProps({
-//     id: String,
-//     name: String,
-//     description: String,
-//     price: String,
-//     link_img: String
-// });
 const route = useRoute();
 const product = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
 
+const store = useStore(); // Accéder au store Vuex
 
 const fetchProduct = async () => {
   try {
@@ -41,23 +35,23 @@ onMounted(fetchProduct);
         <div class="all_images">
           <div class="img1">
             <img
-              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
               alt="">
           </div>
           <div class="img2">
             <img
-              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
               alt="">
           </div>
           <div class="img3">
             <img
-              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
               alt="">
           </div>
         </div>
         <div class="main_img">
           <img
-            :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+            :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
             alt="">
         </div>
       </div>
@@ -80,7 +74,6 @@ onMounted(fetchProduct);
       <div class="nav_description">
         <ul>
           <li><a href="#description">Description</a></li>
-          <li><a href="#caracteristiques">Caractéristiques</a></li>
           <li><a href="#autres-produits">Autres produits</a></li>
         </ul>
       </div>
@@ -88,13 +81,8 @@ onMounted(fetchProduct);
         <h2>Description</h2>
         {{ product.description }}
       </div>
-      <div id="caracteristiques" class="section">
-        <h2>Caractéristiques</h2>
-        <!-- Contenu des caractéristiques -->
-      </div>
       <div id="autres-produits" class="section">
         <h2>Produits Similaires</h2>
-        <!-- Contenu des autres produits -->
       </div>
     </div>
   </div>

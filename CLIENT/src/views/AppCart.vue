@@ -161,7 +161,7 @@
       
       <div class="total">
         <p>Total TTC: {{ cartTotal }}€</p>
-        <button @click="checkout">Passer commande</button>
+        <button class="checkout-btn" @click="checkout">Passer commande</button>
       </div>
     </div>
     <div v-else>

@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-bold">Liste des Produits</h1>
             <button @click="addProduct"
                 class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <a href="/admin/product/new">Ajouter un produit</a>
+                <router-link to="/admin/product/new">Ajouter un produit</router-link>
             </button>
         </div>
         <div class="mb-4">
@@ -113,7 +113,7 @@ const itemsPerPage = 10;
 const router = useRouter();
 const toast = useToast();
 
-const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par l'url du server
+const urlServerImg = import.meta.env.VITE_API_ENDPOINT + '/uploads/';
 
 const fetchProducts = async () => {
     try {

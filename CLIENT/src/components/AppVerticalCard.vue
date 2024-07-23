@@ -131,91 +131,93 @@
 </template>
 
 <style scoped>
+.card_vertical {
+    background-color: #575757;
+    color: #fff;
+    max-width: 25%;
+    min-width: 12rem;
+    height: auto;
+    margin: 1rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 0.7px #C4F649 solid;
+    transition: box-shadow 0.3s ease;
+}
+.card_vertical:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.card_vertical_img {
+    width: 100%;
+    object-fit: contain;
+}
+.card_vertical_img:hover {
+    cursor: pointer;
+}
+.infos {
+    margin: 0.5rem 0;
+}
+.infos h3 {
+    font-weight: 500;
+    margin: 0 0 2rem 0;
+    font-size: larger;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+.infos h4 {
+    font-weight: 300;
+    margin: 0;
+    font-size: medium;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.buy_div_container {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.buy_div_container p {
+    font-size: large;
+    font-weight: 500;
+}
+.cart_img_container {
+    margin-right: 1rem;
+}
+.cart_img_container button {
+    border: none;
+    min-width: 4rem;
+    height: 3.2rem;
+    background-color: #C4F649;
+    border-radius: 8px;
+    box-shadow: 1px 2px #3838385d;
+    padding: 0.4rem;
+}
+.cart_img_container button:hover {
+    cursor: pointer;
+    background-color: #A0DB10;
+}
+.cart_card {
+    width: 100%;
+    height: 100%;
+}
+.quantity_selector {
+    margin: 10px 0;
+}
+.quantity_selector label {
+    margin-right: 10px;
+}
+.quantity_selector select {
+    padding: 5px;
+}
+@media (prefers-color-scheme: dark) {
     .card_vertical {
-        background-color: #575757;
-        color: #fff;
-        max-width: 25%;
-        min-width: 12rem;
-        height: auto;
-        margin: 1rem;
-        padding: 0.8rem;
-        border-radius: 8px;
-        border: 0.7px #C4F649 solid;
-        transition: box-shadow 0.3s ease;
+        background-color: #fff;
+        color: black;
     }
-    .card_vertical:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    .card_vertical_img {
-        height: auto;
-        width: 100%;
-        object-fit: contain;
-    }
-    .card_vertical_img:hover {
-        cursor: pointer;
-    }
-    .infos {
-        margin: 0.5rem 0;
-    }
-    .infos h3 {
-        font-weight: 500;
-        margin: 0;
-        font-size: x-large;
-    }
-    .infos h4 {
-        font-weight: 300;
-        margin: 0;
-        font-size: medium;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        max-height: 60px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .buy_div_container {
-        margin: 1rem 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .buy_div_container p {
-        font-size: large;
-        font-weight: 500;
-    }
-    .cart_img_container {
-        margin-right: 1rem;
-    }
-    .cart_img_container button {
-        border: none;
-        min-width: 4rem;
-        height: 3.2rem;
-        background-color: #C4F649;
-        border-radius: 8px;
-        box-shadow: 1px 2px #3838385d;
-        padding: 0.4rem;
-    }
-    .cart_img_container button:hover {
-        cursor: pointer;
-        background-color: #A0DB10;
-    }
-    .cart_card {
-        width: 100%;
-        height: 100%;
-    }
-    .quantity_selector {
-        margin: 10px 0;
-    }
-    .quantity_selector label {
-        margin-right: 10px;
-    }
-    .quantity_selector select {
-        padding: 5px;
-    }
-    @media (prefers-color-scheme: dark) {
-        .card_vertical {
-            background-color: #fff;
-            color: black;
-        }
-    }
+}
 </style>

@@ -27,13 +27,14 @@
           <!-- Contenu pour Mes infos -->
           <div class="info-item">
             <span>Email: {{ user.email }}</span>
-            <button @click="editField('email')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Prénom: {{ user.firstName }}</span>
+            <button @click="editField('firstName')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Nom: {{ user.lastName }}</span>
+            <button @click="editField('LastName')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Date de naissance: {{ formatDate(user.birth_date) }}</span>
@@ -44,14 +45,13 @@
           </div>
           <div class="info-item">
             <span>Login: {{ user.login }}</span>
-            <button @click="editField('login')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Membre depuis: {{ formatDate(user.createdAt) }}</span>
           </div>
+          <button class="download-button" @click="downloadPersonalDataAsPDF">Télécharger mes données en PDF</button>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
-          <!-- Contenu pour Mes commandes -->
           <p>Contenu des commandes de l'utilisateur...</p>
         </div>
         <div v-if="selectedTab === 'parameters'" class="parameters">
@@ -79,11 +79,13 @@
   </div>
 </template>
 
+
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import jsPDF from 'jspdf';
+import ApiClient from "@/assets/js/apiClient.js";
 
 export default {
   name: "MyAccount",
@@ -92,24 +94,40 @@ export default {
       selectedTab: 'infos',
       userProfilePhoto: '', 
       user: {},
-      isActivated: false, // Pour le switch
+      isActivated: false,
     };
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const user = ref({});
+    const orders = ref([]);
     const isActivated = ref(false);
 
     const fetchUserData = async () => {
       const userId = store.state.user_id;
       try {
-        const response = await axios.get(`http://localhost:3000/user/${userId}`);
-        user.value = response.data;
+        user.value = await ApiClient.get(`/user/${userId}`);
         // Initialiser l'état du switch avec la valeur de la notification de l'utilisateur
         isActivated.value = user.value.notification;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
+      }
+    };
+
+    const fetchOrders = async () => {
+      const id_user = store.state.user_id;
+
+      if (!id_user) {
+        console.error('User ID is missing');
+        return;
+      }
+
+      try {
+        const response = await ApiClient.get(`/order/ByIdUser/${id_user}`);
+        orders.value = response.data;
+      } catch (error) {
+        console.error('Error fetching orders:', error);
       }
     };
 
@@ -131,7 +149,7 @@ export default {
       let newValue = prompt(`Entrez le nouveau ${field}:`);
       if (newValue !== null) {
         try {
-          await axios.patch(`http://localhost:3000/user/${user.value.id}`, { [field]: newValue });
+          await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
           // Mettre à jour l'utilisateur après modification
           await fetchUserData();
           alert(`Le champ ${field} a été modifié avec succès.`);
@@ -150,13 +168,13 @@ export default {
         if (newPassword === newPasswordConfirmation) {
           try {
             // Vérifier l'ancien mot de passe
-            const verifyResponse = await axios.post(`http://localhost:3000/user/verify-password`, {
+            const verifyResponse = await ApiClient.post(`/user/verify-password`, {
               accountId: user.value.id,
               password: oldPassword
             });
 
             if (verifyResponse.data.valid) {
-              await axios.patch(`http://localhost:3000/user/${user.value.id}`, { password: newPassword });
+              await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
               // Mettre à jour l'utilisateur après modification
               await fetchUserData();
               alert(`Le mot de passe a été modifié avec succès.`);
@@ -177,7 +195,7 @@ export default {
       const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');
       if (confirmDelete) {
         try {
-          await axios.delete(`http://localhost:3000/user/${user.value.id}`);
+          await ApiClient.delete(`/user/${user.value.id}`);
           alert('Votre compte a été anonymisé avec succès.');
           logout();
         } catch (error) {
@@ -189,7 +207,7 @@ export default {
 
     const toggleActivation = async () => {
       try {
-        await axios.patch(`http://localhost:3000/user/${user.value.id}`, { notification: isActivated.value });
+        await ApiClient.patch(`/user/${user.value.id}`, { notification: isActivated.value });
         alert('L\'état des notifications a été mis à jour avec succès.');
       } catch (error) {
         console.error('Erreur lors de la mise à jour des notifications:', error);
@@ -197,11 +215,34 @@ export default {
       }
     };
 
+    const downloadPersonalDataAsPDF = () => {
+      const doc = new jsPDF();
+      const data = {
+        "Prénom": user.value.firstName,
+        "Nom": user.value.lastName,
+        "Email": user.value.email,
+        "Date de naissance": formatDate(user.value.birth_date),
+        "Téléphone": user.value.phone,
+        "Login": user.value.login,
+        "Membre depuis": formatDate(user.value.createdAt),
+      };
+      
+      doc.text("Données personnelles de l'utilisateur", 10, 10);
+      let y = 20;
+      for (const [key, value] of Object.entries(data)) {
+        doc.text(`${key}: ${value}`, 10, y);
+        y += 10;
+      }
+      
+      doc.save(`user_data_${user.value.firstName}_${user.value.lastName}.pdf`);
+    };
+
     onMounted(() => {
       fetchUserData();
+      fetchOrders();
     });
 
-    return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated };
+    return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated, downloadPersonalDataAsPDF  };
   },
 };
 </script>
@@ -340,6 +381,17 @@ input:checked + .slider:before {
     p{
       margin: 2rem 1rem;
       color: black;
+    }
+    .download-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      &:hover {
+        background-color: #45a049;
+      }
     }
   }
   .parameters{
