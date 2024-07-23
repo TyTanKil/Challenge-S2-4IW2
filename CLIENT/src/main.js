@@ -36,6 +36,9 @@ import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
+import EditOrder from './views/admin/AppEditOrder.vue'
+import OrderList from './views/admin/AppOrderList.vue'
+
 import 'vue-toast-notification/dist/theme-sugar.css'
 
 // Create a new store instance.
@@ -85,6 +88,8 @@ const routes = [
   { path: '/create', component: Create },
   { path: '/test', component: Test },
   { path: '/admin', component: Admin },
+
+  //ADMIN
   { path: '/admin/users', name: 'UserList', component: Users },
   { path: '/admin/products', name: 'ProductList', component: ProductList },
   { path: '/admin/product/new', name: 'AddProduct', component: NewProduct },
@@ -94,7 +99,6 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
-  { path: '/account', name: 'Account', component: MyAccount },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',
@@ -102,6 +106,11 @@ const routes = [
     props: true
   },
   { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
+  { path: '/admin/order', name: 'OrderList', component: OrderList },
+  { path: '/admin/order/edit/:id', name: 'EditOrder', component: EditOrder },
+
+  //
+  { path: '/account', name: 'Account', component: MyAccount },
 
   // autres routes
   { path: '/test', component: Test, meta: { requiresAuth: true } },
