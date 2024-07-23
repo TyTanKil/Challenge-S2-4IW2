@@ -27,13 +27,14 @@
           <!-- Contenu pour Mes infos -->
           <div class="info-item">
             <span>Email: {{ user.email }}</span>
-            <button @click="editField('email')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Prénom: {{ user.firstName }}</span>
+            <button @click="editField('firstName')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Nom: {{ user.lastName }}</span>
+            <button @click="editField('LastName')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Date de naissance: {{ formatDate(user.birth_date) }}</span>
@@ -44,7 +45,6 @@
           </div>
           <div class="info-item">
             <span>Login: {{ user.login }}</span>
-            <button @click="editField('login')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Membre depuis: {{ formatDate(user.createdAt) }}</span>
