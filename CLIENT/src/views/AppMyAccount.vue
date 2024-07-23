@@ -49,6 +49,7 @@
           <div class="info-item">
             <span>Membre depuis: {{ formatDate(user.createdAt) }}</span>
           </div>
+          <button class="download-button" @click="downloadPersonalDataAsPDF">Télécharger mes données en PDF</button>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
           <!-- Contenu pour Mes commandes -->
@@ -79,11 +80,13 @@
   </div>
 </template>
 
+
 <script>
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import jsPDF from 'jspdf';
 
 export default {
   name: "MyAccount",
@@ -92,7 +95,7 @@ export default {
       selectedTab: 'infos',
       userProfilePhoto: '', 
       user: {},
-      isActivated: false, // Pour le switch
+      isActivated: false,
     };
   },
   setup() {
@@ -197,11 +200,33 @@ export default {
       }
     };
 
+    const downloadPersonalDataAsPDF = () => {
+      const doc = new jsPDF();
+      const data = {
+        "Prénom": user.value.firstName,
+        "Nom": user.value.lastName,
+        "Email": user.value.email,
+        "Date de naissance": formatDate(user.value.birth_date),
+        "Téléphone": user.value.phone,
+        "Login": user.value.login,
+        "Membre depuis": formatDate(user.value.createdAt),
+      };
+      
+      doc.text("Données personnelles de l'utilisateur", 10, 10);
+      let y = 20;
+      for (const [key, value] of Object.entries(data)) {
+        doc.text(`${key}: ${value}`, 10, y);
+        y += 10;
+      }
+      
+      doc.save(`user_data_${user.value.firstName}_${user.value.lastName}.pdf`);
+    };
+
     onMounted(() => {
       fetchUserData();
     });
 
-    return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated };
+    return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated, downloadPersonalDataAsPDF  };
   },
 };
 </script>
@@ -340,6 +365,17 @@ input:checked + .slider:before {
     p{
       margin: 2rem 1rem;
       color: black;
+    }
+    .download-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      &:hover {
+        background-color: #45a049;
+      }
     }
   }
   .parameters{
