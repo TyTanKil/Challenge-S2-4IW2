@@ -38,7 +38,7 @@
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
-          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
           @select="handleSelect(product)"
         />
       </div>

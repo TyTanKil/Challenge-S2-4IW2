@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineProps, ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import axios from 'axios';
 import { useToast } from 'vue-toast-notification';
 import { useRouter } from 'vue-router';
 import ApiClient from '../assets/js/apiClient';
@@ -30,8 +29,7 @@ const fetchUserData = async () => {
   const userId = store.state.user_id;
   if(userId){
     try {
-      const response = await axios.get(`http://localhost:3000/user/${userId}`);
-      user.value = response.data;
+      user.value = await ApiClient.get(`/user/${userId}`);
       if (user.value.roles.includes('ROLE_ADMIN')) {
         isAdmin.value = true;
       } else {

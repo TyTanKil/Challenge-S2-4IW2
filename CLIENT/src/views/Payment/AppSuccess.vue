@@ -12,7 +12,6 @@
   import { ref, onMounted, computed } from 'vue';
   import { useStore } from 'vuex';
   import ApiClient from '@/assets/js/apiClient';
-  import axios from 'axios';
 
   export default {
     setup() {
@@ -31,7 +30,7 @@
         }
 
         try {
-          const response = await axios.get(`http://localhost:3000/orders/${sessionId}`);
+          const response = await ApiClient.get(`/orders/${sessionId}`);
           orderDetails.value = response.data;
         } catch (error) {
           errorMessage.value = "Erreur lors de la récupération des détails de la commande.";

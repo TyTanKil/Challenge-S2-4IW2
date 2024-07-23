@@ -55,7 +55,7 @@ const route = useRoute();
 const toast = useToast();
 const categories = ref([]);
 const manufacturers = ref([]);
-const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par le lien du serveur
+const urlServerImg = import.meta.env.VITE_API_ENDPOINT + '/uploads/';
 const product = ref({
     label: '',
     description: '',
