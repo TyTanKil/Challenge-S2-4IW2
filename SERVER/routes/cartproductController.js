@@ -138,4 +138,22 @@ router.post('/products', async (req, res, next) => {
   }
 });
 
+router.get('/products/:id', async (req, res, next) => {
+  try {
+    const id_cart = req.params.id;
+
+    const cartProducts = await CartProduct.findAll({
+      where: { id_cart }
+    });
+
+    if (cartProducts) {
+      res.json(cartProducts);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;
