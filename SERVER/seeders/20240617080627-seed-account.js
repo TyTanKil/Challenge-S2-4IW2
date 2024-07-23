@@ -21,7 +21,6 @@ module.exports = {
         birth_date: new Date('2003-03-11'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -37,7 +36,6 @@ module.exports = {
         birth_date: new Date('2000-07-19'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -53,7 +51,6 @@ module.exports = {
         birth_date: new Date('2001-02-05'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -69,7 +66,6 @@ module.exports = {
         birth_date: new Date('2002-03-25'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER', 'ROLE_STORE_KEEPER', 'ROLE_ADMIN']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -85,7 +81,6 @@ module.exports = {
         birth_date: new Date('1990-05-20'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -101,7 +96,6 @@ module.exports = {
         birth_date: new Date('1985-09-15'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -117,7 +111,6 @@ module.exports = {
         birth_date: new Date('1995-12-01'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -133,7 +126,6 @@ module.exports = {
         birth_date: new Date('2000-04-22'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
       {
@@ -149,7 +141,6 @@ module.exports = {
         birth_date: new Date('1988-07-11'),
         createdAt: new Date(),
         roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
-        deleted: false,
         notification: true,
       },
     ]);
