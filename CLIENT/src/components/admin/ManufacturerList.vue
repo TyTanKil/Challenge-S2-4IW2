@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-bold">Liste des Fabricants</h1>
             <button @click="addManufacturer"
                 class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <a href="/admin/manufacturers/new">Ajouter un fabricant</a>
+                <router-link to="/admin/manufacturers/new">Ajouter un fabricant</router-link>
             </button>
         </div>
         <div class="mb-4">

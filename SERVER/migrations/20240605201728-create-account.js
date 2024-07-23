@@ -71,6 +71,10 @@ module.exports = {
       updatedAt: {
         allowNull: true,
         type: Sequelize.DATE
+      },
+      notification: {
+        allowNull:false,
+        type: Sequelize.BOOLEAN
       }
     });
   },

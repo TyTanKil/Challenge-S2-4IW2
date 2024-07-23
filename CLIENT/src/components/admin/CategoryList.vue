@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-bold">Liste des Catégories</h1>
             <button @click="addCategory"
                 class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <a href="/admin/category/new">Ajouter une catégorie</a>
+              <router-link to="/admin/category/new">Ajouter une catégorie</router-link>
             </button>
         </div>
         <div class="mb-4">

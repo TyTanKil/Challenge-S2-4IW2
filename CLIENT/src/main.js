@@ -1,6 +1,7 @@
-import { createApp } from 'vue'
+import { createApp, ref } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
+
 
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
@@ -10,17 +11,18 @@ import Product from './views/AppProduct.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue'
+import AppQuiSommesNous from './views/AppQuiSommesNous.vue'
+import AppContact from './views/AppContact.vue'
 
 import Cart from './views/AppCart.vue'
 import Success from './views/Payment/AppSuccess.vue'
 import Cancel from './views/Payment/AppCancel.vue'
-import Payment from './views/Payment/AppTestPayment.vue'
 
 import { jwtDecode } from 'jwt-decode'
 import VueToast from 'vue-toast-notification'
 
-import Test from './views/AppTest.vue'
 import Admin from './views/AppAdminDashboard.vue'
+import EditUser from './views/admin/AppEditUser.vue'
 import Users from './views/AppAdminUsers.vue'
 import ProductList from './views/AppAdminProducts.vue'
 import NewProduct from './views/admin/AppAddProduct.vue'
@@ -33,11 +35,24 @@ import EditCategory from './views/admin/AppEditCategory.vue'
 import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
-import Mailer from './views/AppTestMailer.vue'
+
+import SubCategoryPage from './views/AppSubCategoryPage.vue';
+
 
 import 'vue-toast-notification/dist/theme-sugar.css'
+import AppMainView from './views/AppMainView.vue'
+import EditOrder from './views/admin/AppEditOrder.vue'
+import OrderList from './views/admin/AppOrderList.vue'
 
-// Create a new store instance.
+/* Footer */
+import InfosLegales from './views/AppInformationsLegales.vue'
+import AppCGV from './views/AppCGV.vue'
+import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
+import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
+
+import 'vue-toast-notification/dist/theme-sugar.css'
+import apiClient from './assets/js/apiClient';
+
 const store = createStore({
   state() {
     return {
@@ -58,20 +73,20 @@ const store = createStore({
       }
     },
     clearUser(state) {
-      state.user_id = null;
-      state.user_name = null;
+      state.user_id = null
+      state.user_name = null
     }
   },
   actions: {
     logout({ commit }) {
-      localStorage.removeItem('jwtToken');
-      commit('clearUser');
+      localStorage.removeItem('jwtToken')
+      commit('clearUser')
     }
   }
 })
 
 const routes = [
-  { path: '/' },
+  { path: '/', component: AppMainView },
   { path: '/login', component: Identify, meta: { requiresNoAuth: true } },
   {
     path: '/validate/:hash',
@@ -82,9 +97,11 @@ const routes = [
     })
   },
   { path: '/create', component: Create },
-  { path: '/test', component: Test },
+
+  { path: '/qui_sommes_nous', component: AppQuiSommesNous },
+  { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
-  { path: '/admin/users', component: Users },
+  { path: '/admin/users', name: 'UserList', component: Users },
   { path: '/admin/products', name: 'ProductList', component: ProductList },
   { path: '/admin/product/new', name: 'AddProduct', component: NewProduct },
   { path: '/admin/product/edit/:id', name: 'EditProduct', component: EditProduct, props: true },
@@ -93,19 +110,21 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
-  { path: '/account', name: 'Account', component: MyAccount },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',
     component: EditManufacturer,
     props: true
   },
+  { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
+  { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
+  { path: '/admin/order', name: 'OrderList', component: OrderList },
+  { path: '/admin/order/edit/:id', name: 'EditOrder', component: EditOrder },
 
-  // autres routes
-  { path: '/test', component: Test, meta: { requiresAuth: true } },
-  { path: '/mailer', component: Mailer },
+  { path: '/account', name: 'Account', component: MyAccount },
+
   {
-    path: '/product/:name:description:price:link_img',
+    path: '/product/:id',
     name: 'Product',
     component: Product,
     props: (route) => ({
@@ -115,19 +134,64 @@ const routes = [
       link_img: route.params.link_img
     })
   },
+  { path: '/cart', component: Cart },
   { path: '/server-error', name: 'ServerError', component: ServerError },
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, // Catch-all route for 404
-  //Stripe
-  { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
-  { path: '/cancel', name: 'Cancel', component: Cancel }
+  { path: '/cancel', name: 'Cancel', component: Cancel },
+  {
+    path: '/category/:category/:subCategory',
+    name: 'SubCategory',
+    component: SubCategoryPage,
+    props: true
+  },
+  {
+    path: '/category/:category/all',
+    name: 'CategoryAll',
+    component: SubCategoryPage,
+    props: true
+  },
+
+  { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
+  { path: '/cgv', name: 'AppCGV', component: AppCGV },
+  { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
+  { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles },
+  
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, 
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  },
 })
+
+
+
+const user = ref({});
+const isAdmin = ref(false);
+
+const fetchUserData = async () => {
+  const userId = store.state.user_id;
+  if(userId){
+    try {
+      const response = await apiClient.get(`/user/${userId}`);
+      user.value = response;
+      if (user.value.roles.includes('ROLE_ADMIN')) {
+        isAdmin.value = true;
+      } else {
+        isAdmin.value = false;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'utilisateur');
+    }
+  }
+};
+
+
+fetchUserData();
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
@@ -144,13 +208,20 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.path.startsWith('/admin')) {
-    await import('./assets/admin.css')
+    if (store.state.user_id != null && isAdmin.value) {
+      await import('./assets/admin.css');
+      next();
+    } else {
+      next({ path: '/login' });
+    }
   } else {
-    await import('./assets/main.css')
+    await import('./assets/main.css');
+    next();
   }
 
   next()
-})  
+})
+
 
 const app = createApp(App)
 app.use(router)

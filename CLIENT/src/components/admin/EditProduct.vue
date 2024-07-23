@@ -9,7 +9,7 @@
                     @update:modelValue="product.description = $event" required class="mb-4" />
                 <FormTextarea id="ref" label="Ref" :modelValue="product.ref" @update:modelValue="product.ref = $event"
                     required class="mb-4" />
-                <FormInput id="unit_price" label="Prix" type="number" step="0.01" :modelValue="product.unit_price"
+                <FormInput id="unit_price" label="Prix" type="double" step="0.01" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
                     @update:modelValue="product.stock = $event" required class="mb-4" />
@@ -19,10 +19,10 @@
                     :modelValue="product.id_manufacturer" @update:modelValue="product.id_manufacturer = $event" required
                     class="mb-4" />
                 <div v-if="product.currentImage" class="mb-4">
-                    <img v-if="product.ProductImages && product.ProductImages.length"
-                        :src="urlServerImg + product.ProductImages[0].url" alt="Product Image"
-                        class="w-10 h-10 object-cover rounded" />
-                    <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />
+                    <img v-if="product.Product_images && product.Product_images.length"
+                                :src="urlServerImg + product.Product_images[0].url" alt="Product Image"
+                                class="w-10 h-10 object-cover rounded" />
+                            <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />
                 </div>
                 <FormFileInput id="image" label="Image" @update:modelValue="handleFileUpload" class="mb-4" />
                 <div class="flex justify-between items-center">
@@ -95,11 +95,12 @@ const fetchManufacturers = async () => {
 onMounted(async () => {
     const productId = route.params.id;
     try {
-        const response = await ApiClient.get(`/products/${productId}`);
+        const response = await ApiClient.get(`/products/show/${productId}`);
         product.value = response;
+        console.log(response);
         product.value.stock = response.Stock ? response.Stock.quantity : 0;
-        if (response.ProductImages && response.ProductImages.length > 0) {
-            product.value.currentImage = `/uploads/${response.ProductImages[0].url}`;
+        if (response.Product_images && response.Product_images.length > 0) {
+            product.value.currentImage = `/uploads/${response.Product_images[0].url}`;
         }
     } catch (error) {
         console.error('Error fetching product:', error);

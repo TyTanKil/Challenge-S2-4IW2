@@ -1,71 +1,96 @@
 <script setup lang='ts'>
-  import { defineProps } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
+
+const route = useRoute();
+const product = ref(null);
+const isLoading = ref(true);
+const error = ref(null);
+
+
+const fetchProduct = async () => {
+  try {
+    const response = await ApiClient.get(`/products/${route.params.id}`);
+    product.value = response;
+    console.log(product.value);
+  } catch (err) {
+    error.value = 'Erreur lors du chargement du produit.';
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(fetchProduct);
+
   
-  const props = defineProps({
-    name: String,
-    description: String,
-    price: String,
-    link_img: String
-  });
 </script>
 
 <template>
-  <div class="content">
+  <div class="content" v-if="!isLoading && product">
     <div class="main_infos">
       <div class="images">
         <div class="all_images">
           <div class="img1">
-            <img :src="link_img" alt="">
+            <img
+              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              alt="">
           </div>
           <div class="img2">
-            <img :src="link_img" alt="">
+            <img
+              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              alt="">
           </div>
           <div class="img3">
-            <img :src="link_img" alt="">
+            <img
+              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              alt="">
           </div>
         </div>
         <div class="main_img">
-          <img :src="link_img" alt="">
+          <img
+            :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+            alt="">
         </div>
       </div>
       <div class="text_description">
         <div class="title">
-          <h2>{{ props.name }}</h2>
+          <h2>{{ product.label }}</h2>
         </div>
         <div class="description">
-          <h3>{{ props.description }}</h3>
+          <h3>{{ product.description }}</h3>
         </div>
         <div class="price">
-          <h3>{{ price }} €</h3>
+          <h3>{{ product.unit_price }} €</h3>
         </div>
         <div class="cart">
           <!-- Vous pouvez ajouter un bouton "Ajouter au panier" ici -->
         </div>
-      </div>    
+      </div>
     </div>
     <div class="detailed_description">
       <div class="nav_description">
         <ul>
           <li><a href="#description">Description</a></li>
-          <li><a href="#caracteristiques">Caractéristiques</a></li>
           <li><a href="#autres-produits">Autres produits</a></li>
         </ul>
       </div>
       <div id="description" class="section">
         <h2>Description</h2>
-        {{props.description}}
-      </div>
-      <div id="caracteristiques" class="section">
-        <h2>Caractéristiques</h2>
-        <!-- Contenu des caractéristiques -->
+        {{ product.description }}
       </div>
       <div id="autres-produits" class="section">
         <h2>Produits Similaires</h2>
-        <!-- Contenu des autres produits -->
       </div>
     </div>
   </div>
-</template>
+  <div v-else-if="isLoading">
+  <p>Loading...</p>
+</div>
+<div v-else>
+  <p>{{ error }}</p>
+</div></template>
+
 
 <style scoped>
 .content{

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AppHeader from './components/AppHeader.vue';
+import AppFooter from './components/AppFooter.vue';
 import AppNavbarCategories from './components/AppNavbarCategories.vue';
 
 import AppMainView from './views/AppMainView.vue'
@@ -24,6 +25,7 @@ const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
       <AppMainView :route="isMainRoute"></AppMainView>
     <RouterView />
   </main>
+  <AppFooter/>
 </template>
 
 

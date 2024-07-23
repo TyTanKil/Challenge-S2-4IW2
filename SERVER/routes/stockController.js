@@ -33,6 +33,30 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.post("/ByIdProduct", async (req, res, next) => {
+  try {
+
+    const { id_product } = req.body;
+
+    if (!id_product) {
+      return res.status(400).json({ error: "id_product is required" });
+    }
+
+    const stock = await Stock.findAll({
+      where: { id_product }
+    });
+
+    if (stock.length > 0) {
+      res.json(stock);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (e) {
+    console.error('Error fetching stock:', e);
+    next(e);
+  }
+});
+
 // router.patch("/:id", async (req, res, next) => {
 //   const transaction = await sequelize.transaction();
 //   try {
