@@ -101,6 +101,7 @@ export default {
     const store = useStore();
     const router = useRouter();
     const user = ref({});
+    const orders = ref([]);
     const isActivated = ref(false);
 
     const fetchUserData = async () => {
@@ -111,6 +112,22 @@ export default {
         isActivated.value = user.value.notification;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
+      }
+    };
+
+    const fetchOrders = async () => {
+      const id_user = store.state.user_id;
+
+      if (!id_user) {
+        console.error('User ID is missing');
+        return;
+      }
+
+      try {
+        const response = await ApiClient.get(`/order/ByIdUser/${id_user}`);
+        orders.value = response.data;
+      } catch (error) {
+        console.error('Error fetching orders:', error);
       }
     };
 
@@ -222,6 +239,7 @@ export default {
 
     onMounted(() => {
       fetchUserData();
+      fetchOrders();
     });
 
     return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated, downloadPersonalDataAsPDF  };
