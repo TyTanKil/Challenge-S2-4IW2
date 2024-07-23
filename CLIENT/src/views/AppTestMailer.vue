@@ -25,6 +25,8 @@
   </template>
   
   <script>
+  import ApiClient from "@/assets/js/apiClient.js";
+
   export default {
     data() {
       return {
@@ -133,26 +135,7 @@
         };
   
         try {
-          const response = await fetch('http://localhost:3000/send-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data[type])
-          });
-  
-          // Vérifier si la réponse est du JSON
-          const text = await response.text();
-          let result;
-          try {
-            result = JSON.parse(text);
-          } catch (error) {
-            // La réponse n'est pas du JSON
-            console.error('Error:', text);
-            return;
-          }
-  
-          console.log('Success:', result);
+          await ApiClient.post('/send-email', JSON.stringify(data));
         } catch (error) {
           console.error('Error:', error);
         }
