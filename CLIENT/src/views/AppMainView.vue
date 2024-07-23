@@ -39,6 +39,7 @@ const props = defineProps({
 </script>
 
 <template>
+  <img src="" alt="" class="main-img">
   <div v-if="props.route">
     <div class="cards">
       <AppVerticalCard 
