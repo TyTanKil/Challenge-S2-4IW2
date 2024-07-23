@@ -52,6 +52,37 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
+router.post("/webhook", bodyParser.raw({ type: 'application/json' }), (request, response) => {
+  const sig = request.headers['stripe-signature'];
+  const endpointSecret = 'whsec_JLkMX6qG99VVOPFV7aFg9xRNjhoTaEk8'; // Remplacez par votre secret de webhook
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+  } catch (err) {
+    console.log(`⚠️  Webhook signature verification failed.`, err.message);
+    return response.sendStatus(400);
+  }
+
+  // Gérer les différents types d'événements
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    console.log(`Payment succeeded for session ${session.id}`);
+    
+    // Ajouter la logique pour sauvegarder la commande dans la base de données ici
+    orders.push({
+      paymentIntentId: session.id,
+      amount: session.amount_total,
+      currency: session.currency,
+      customer: session.customer,
+    });
+  }
+
+  // Répondre à Stripe pour accuser réception de l'événement
+  response.json({ received: true });
+});
+
 router.get("/orders/:sessionId", (req, res) => {
   const { sessionId } = req.params;
   const order = orders.find((o) => o.paymentIntentId === sessionId);
