@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const { Orders } = require("../mongo/OrderSchema");
 // const Order = require("../models/order");
 const checkAuth = require("../middlewares/checkAuth");
 // const Order_product = require("../models/orderproduct");
@@ -25,6 +26,227 @@ router.get("/", async (req, res, next) => {
     ],
   });
   res.json(orders);
+});
+
+//MONGO ROUTE
+router.get("/show", async (req, res, next) => {
+  try {
+    const filter = req.query || {};
+    const orders = await Orders.find(filter).sort({ createdAt: -1 });
+    res.json(orders);
+    console.log("MONGO");
+  } catch (e) {
+    next(e);
+  }
+});
+
+//MONGO ROUTE POUR REVUPERER LE TOTAL DES CLIENTS
+router.get("/total-users", async (req, res, next) => {
+  try {
+    const totalUsers = await Orders.aggregate([
+      {
+        $group: {
+          _id: "$account.id",
+        },
+      },
+      {
+        $count: "totalUsers",
+      },
+    ]);
+    res.json({ totalUsers: totalUsers[0]?.totalUsers || 0 });
+  } catch (error) {
+    console.error("Error fetching total users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//MONGO POUR OBTENIR LE TOTAL DES VENTES
+router.get("/total-sales", async (req, res, next) => {
+  try {
+    // Total des ventes
+    const totalSales = await Orders.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$total_price" },
+        },
+      },
+    ]);
+    res.json({ totalSales: totalSales[0]?.totalSales || 0 });
+  } catch (error) {
+    console.error("Error fetching total sales:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//MONGO GET TOTAL COMMANDE
+router.get("/total-orders", async (req, res, next) => {
+  try {
+    // Nombre total de commandes
+    const totalOrders = await Orders.countDocuments();
+    res.json({ totalOrders });
+  } catch (error) {
+    console.error("Error fetching total orders:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//MONGO GET TOP PRODUCT
+router.get("/top-products", async (req, res, next) => {
+  try {
+    // Produits les plus vendus
+    const topProducts = await Orders.aggregate([
+      { $unwind: "$Order_products" },
+      {
+        $group: {
+          _id: "$Order_products.label",
+          totalSales: {
+            $sum: {
+              $multiply: [
+                "$Order_products.unit_price",
+                "$Order_products.quantity",
+              ],
+            },
+          },
+          totalQuantity: { $sum: "$Order_products.quantity" },
+        },
+      },
+      { $sort: { totalSales: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id",
+          sales: "$totalSales",
+          quantity: "$totalQuantity",
+        },
+      },
+    ]);
+    res.json({ topProducts });
+  } catch (error) {
+    console.error("Error fetching top products:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Route pour récupérer les 5 dernières commandes
+router.get("/recent-orders", async (req, res, next) => {
+  try {
+    const recentOrders = await Orders.find().sort({ createdAt: -1 }).limit(5);
+    res.json({ recentOrders });
+  } catch (error) {
+    console.error("Error fetching recent orders:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Route pour récupérer les revenus des ventes par mois
+// router.get("/sales-revenue", async (req, res, next) => {
+//   try {
+//     const salesRevenue = await Orders.aggregate([
+//       {
+//         $group: {
+//           _id: { $month: "$order_date" },
+//           totalRevenue: { $sum: "$total_price" },
+//         },
+//       },
+//       { $sort: { _id: 1 } },
+//     ]);
+
+//     res.json({ salesRevenue });
+//   } catch (error) {
+//     console.error("Error fetching sales revenue:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+// router.get("/sales-revenue", async (req, res, next) => {
+//   try {
+//     const currentYear = new Date().getFullYear();
+//     const salesRevenue = await Orders.aggregate([
+//       {
+//         $match: {
+//           order_date: {
+//             $gte: new Date(`${currentYear}-01-01`),
+//             $lt: new Date(`${currentYear + 1}-01-01`),
+//           },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: { $month: "$order_date" },
+//           totalRevenue: { $sum: "$total_price" },
+//         },
+//       },
+//       { $sort: { _id: 1 } },
+//     ]);
+
+//     res.json({ salesRevenue });
+//   } catch (error) {
+//     console.error("Error fetching sales revenue:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+router.get("/sales-revenue", async (req, res, next) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const salesRevenue = await Orders.aggregate([
+      {
+        $match: {
+          order_date: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lt: new Date(`${currentYear + 1}-01-01`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$order_date" },
+          totalRevenue: { $sum: "$total_price" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    res.json({ salesRevenue });
+  } catch (error) {
+    console.error("Error fetching sales revenue:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//Get ventes d'aujourd'hui
+router.get("/today-sales", async (req, res, next) => {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const todaySales = await Orders.aggregate([
+      {
+        $match: {
+          order_date: {
+            $gte: startOfDay,
+            $lt: endOfDay,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalTodaySales: { $sum: "$total_price" },
+        },
+      },
+    ]);
+
+    res.json({ totalTodaySales: todaySales[0]?.totalTodaySales || 0 });
+  } catch (error) {
+    console.error("Error fetching today's sales:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // router.post("/", async (req, res, next) => {
@@ -139,6 +361,88 @@ router.put("/:id", async (req, res, next) => {
     res.status(nbDeleted ? 200 : 201).json(order);
   } catch (e) {
     next(e);
+  }
+});
+
+//ADMIN GET Data dashboard
+// router.get("/totalSales", async (req, res, next) => {
+//   try {
+//     // Total des ventes
+//     const totalSales = await Orders.aggregate([
+//       {
+//         $group: {
+//           _id: null,
+//           totalSales: { $sum: "$total_price" },
+//         },
+//       },
+//     ]);
+
+// Nombre total d'utilisateurs
+// const totalUsers = await Orders.distinct("account.id").then(
+//   (users) => users.length
+// );
+
+// Nombre total de commandes
+// const totalOrders = await Orders.countDocuments();
+
+// Produits les plus vendus
+// const topProducts = await Orders.aggregate([
+//   { $unwind: "$Order_products" },
+//   {
+//     $group: {
+//       _id: "$Order_products.label",
+//       totalSales: {
+//         $sum: {
+//           $multiply: [
+//             "$Order_products.unit_price",
+//             "$Order_products.quantity",
+//           ],
+//         },
+//       },
+//       totalQuantity: { $sum: "$Order_products.quantity" },
+//     },
+//   },
+//   { $sort: { totalSales: -1 } },
+//   { $limit: 5 },
+//   {
+//     $project: {
+//       _id: 0,
+//       name: "$_id",
+//       sales: "$totalSales",
+//       quantity: "$totalQuantity",
+//     },
+//   },
+// ]);
+
+//     res.json({
+//       salesData: totalSales[0]?.totalSales || 0,
+//       //userCount: totalUsers,
+//       //topProducts: topProducts,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching dashboard data:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+router.get("/total-users", async (req, res, next) => {
+  try {
+    // Agrégation pour compter les comptes uniques
+    const totalUsers = await Orders.aggregate([
+      {
+        $group: {
+          _id: "$account.id",
+        },
+      },
+      {
+        $count: "totalUsers",
+      },
+    ]);
+
+    res.json({ totalUsers: totalUsers[0]?.totalUsers || 0 });
+  } catch (error) {
+    console.error("Error fetching total users:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

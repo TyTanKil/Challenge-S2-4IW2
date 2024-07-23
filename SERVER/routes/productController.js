@@ -87,7 +87,7 @@ router.get("", async (req, res, next) => {
   }
 });
 
-//POSTGRES ROUTE
+//Mongo ROUTE
 router.get("/:id", async (req, res, next) => {
   try {
     const product = await Products.findById(req.params.id);
