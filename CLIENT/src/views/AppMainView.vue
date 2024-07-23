@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
 import { useRouter } from 'vue-router';
-import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
+import ApiClient from '../assets/js/apiClient';
 
 const router = useRouter();
 const products = ref([]);
@@ -32,14 +32,12 @@ function handleSelect(product) {
   });
 }
 
-
 const props = defineProps({
   route: Boolean,
 });
 </script>
 
 <template>
-  
   <div v-if="props.route">
     <div class="img_main">
       <img src="/src/assets/img/promo/Image_promo_2.png" alt="Image de promo" class="main-img">
@@ -68,10 +66,11 @@ const props = defineProps({
 .img_main{
   width: 100%;
   display: flex;
+  justify-content: center;
+  margin: -1.5rem auto 1rem;
 }
 img.main-img{
   width: 70%;
   height: auto;
-  margin: -1rem auto 1rem;
 }
 </style>

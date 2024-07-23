@@ -1,16 +1,8 @@
 <script setup lang='ts'>
-import { defineProps } from 'vue';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
 
-// const props = defineProps({
-//     id: String,
-//     name: String,
-//     description: String,
-//     price: String,
-//     link_img: String
-// });
 const route = useRoute();
 const product = ref(null);
 const isLoading = ref(true);
@@ -80,7 +72,6 @@ onMounted(fetchProduct);
       <div class="nav_description">
         <ul>
           <li><a href="#description">Description</a></li>
-          <li><a href="#caracteristiques">Caractéristiques</a></li>
           <li><a href="#autres-produits">Autres produits</a></li>
         </ul>
       </div>
@@ -88,13 +79,8 @@ onMounted(fetchProduct);
         <h2>Description</h2>
         {{ product.description }}
       </div>
-      <div id="caracteristiques" class="section">
-        <h2>Caractéristiques</h2>
-        <!-- Contenu des caractéristiques -->
-      </div>
       <div id="autres-produits" class="section">
         <h2>Produits Similaires</h2>
-        <!-- Contenu des autres produits -->
       </div>
     </div>
   </div>
