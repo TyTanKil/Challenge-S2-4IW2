@@ -1,13 +1,15 @@
 <script setup lang='ts'>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import ApiClient from '../assets/js/apiClient'; // Assurez-vous que le chemin est correct
+import ApiClient from '../assets/js/apiClient';
+import {useStore} from "vuex"; // Assurez-vous que le chemin est correct
 
 const route = useRoute();
 const product = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
 
+const store = useStore(); // Accéder au store Vuex
 
 const fetchProduct = async () => {
   try {
@@ -33,23 +35,23 @@ onMounted(fetchProduct);
         <div class="all_images">
           <div class="img1">
             <img
-              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
               alt="">
           </div>
           <div class="img2">
             <img
-              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
               alt="">
           </div>
           <div class="img3">
             <img
-              :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
               alt="">
           </div>
         </div>
         <div class="main_img">
           <img
-            :src="product.images.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+            :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
             alt="">
         </div>
       </div>

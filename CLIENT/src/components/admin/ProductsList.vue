@@ -113,7 +113,7 @@ const itemsPerPage = 10;
 const router = useRouter();
 const toast = useToast();
 
-const urlServerImg = 'http://localhost:3000/uploads/'; // A remplacer par l'url du server
+const urlServerImg = import.meta.env.VITE_API_ENDPOINT + '/uploads/';
 
 const fetchProducts = async () => {
     try {

@@ -3,12 +3,15 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
 import ApiClient from '../assets/js/apiClient';
+import {useStore} from "vuex";
 
 const router = useRouter();
 const products = ref([]);
 const currentPage = ref(1);
 const itemsPerPage = 12;
 const totalProducts = ref(0);
+
+const store = useStore(); // Accéder au store Vuex
 
 const fetchProducts = async () => {
   try {
@@ -60,7 +63,7 @@ const nextPage = () => {
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
-          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
           @select="() => handleSelect(product)"/>
     </div>
     <div class="pagination">
