@@ -11,6 +11,7 @@
     name: 'App',
     components: {
       ProductItem,
+      AppHorizontalCard,
     },
     setup() {
       const store = useStore();
@@ -144,18 +145,12 @@
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
+          :quantity="product.quantity"
           :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
           @select="() => handleSelect(product)"
         />
       </div>
-      <ul v-if="products.length">
-        <li v-for="product in products" :key="product.id">
-          <h3>{{ product.label }}</h3>
-          <p>{{ product.description }}</p>
-          <p>Quantité: {{ product.quantity }}</p>
-          <p>Prix: {{ product.unit_price }}€</p>
-        </li>
-      </ul>
+      
       <div class="total">
         <p>Total TTC: {{ cartTotal }}€</p>
         <button @click="checkout">Passer commande</button>

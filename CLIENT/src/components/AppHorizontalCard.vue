@@ -6,6 +6,7 @@ const props = defineProps({     //Définition des données passées par le compo
     label: String,
     description: String,
     price: String,
+    quantity: Number,
     link: String,
     link_img: String
 });
@@ -29,6 +30,7 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
         </div>
         <div class="buy_div_container">
             <p>Prix : {{ props.price }} €</p>
+            <p><span>Quantité : {{ props.quantity }}</span></p>
         </div>
     </div>
 </template>
@@ -37,9 +39,9 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
     .card_horizontal {
         background-color: #575757;
         color: #fff;
-        width: 60%;
-        max-height: 9rem;
-        min-height: 7rem;
+        width: 70%;
+        max-height: 10rem;
+        min-height: 8rem;
         margin: 1rem;
         padding: 0.8rem;
         display: flex;
@@ -82,10 +84,15 @@ function navigate() {         //Fonction pour naviguer sur la page grace au lien
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-direction: column;
     }
     .buy_div_container p {
         font-size: large;
         font-weight: 500;
+        span{
+            font-size: medium;
+            font-weight: 300;
+        }
     }
 
     @media (prefers-color-scheme: dark) {
