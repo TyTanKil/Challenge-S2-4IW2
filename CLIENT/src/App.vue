@@ -3,14 +3,12 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AppHeader from './components/AppHeader.vue';
 import AppFooter from './components/AppFooter.vue';
-import AppNavbarCategories from './components/AppNavbarCategories.vue';
 
 import AppMainView from './views/AppMainView.vue'
 
 const route = useRoute();
 
 const isIdentifyRoute = computed(() => route.fullPath === '/login' || route.fullPath === '/create' );
-const isAccountRoute = computed(() => route.fullPath === '/login' || route.fullPath === '/create' || route.fullPath === '/account' );
 const isMainRoute = computed(() => route.fullPath === '/');
 const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
 
@@ -19,7 +17,6 @@ const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
 <template>
     <header v-if="!isAdminRoute">
       <AppHeader :route="isIdentifyRoute" />
-    <AppNavbarCategories :route="isAccountRoute" :categories="['Promos et Bons plans', 'PC', 'Composants', 'Périphériques']"></AppNavbarCategories>    
   </header>
     <main :class="{ 'admin-route': isAdminRoute, 'default-route': !isAdminRoute }">
       <AppMainView :route="isMainRoute"></AppMainView>
