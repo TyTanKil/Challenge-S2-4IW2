@@ -25,6 +25,7 @@ const paymentConfirmationTemplate = require("./templates-mail/payment-confirmati
 const newProductTemplate = require("./templates-mail/new-product");
 const restockTemplate = require("./templates-mail/restock");
 const priceChangeTemplate = require("./templates-mail/price-change");
+const contactSupportTemplate = require("./templates-mail/contact_support");
 
 const productController = require("./routes/productController");
 const categoryController = require("./routes/categoryController");
@@ -93,8 +94,8 @@ app.post("/send-email", async (req, res) => {
     case "price-change":
       mailOptions = priceChangeTemplate({ to, ...data });
       break;
-    case "newsletter-signup":
-      mailOptions = newsletterSignupTemplate({ to, ...data });
+    case "contact-support":
+      mailOptions = contactSupportTemplate({ ...data });
       break;
     default:
       return res.status(400).json({ error: "Type de mail non reconnu" });

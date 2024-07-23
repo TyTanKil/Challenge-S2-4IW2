@@ -12,6 +12,7 @@ import Mailer from './views/AppTestMailer.vue'
 import NotFound from './views/AppNotFound.vue'
 import ServerError from './views/AppServerError.vue'
 import MyAccount from './views/AppMyAccount.vue'
+import AppContact from './views/AppContact.vue'
 
 import Cart from './views/AppCart.vue'
 import Success from './views/Payment/AppSuccess.vue'
@@ -39,6 +40,12 @@ import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
 import EditOrder from './views/admin/AppEditOrder.vue'
 import OrderList from './views/admin/AppOrderList.vue'
+
+/* Footer */
+import InfosLegales from './views/AppInformationsLegales.vue'
+import AppCGV from './views/AppCGV.vue'
+import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
+import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
 
 import 'vue-toast-notification/dist/theme-sugar.css'
 import apiClient from './assets/js/apiClient';
@@ -89,9 +96,8 @@ const routes = [
   },
   { path: '/create', component: Create },
   { path: '/test', component: Test },
+  { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
-
-  //ADMIN
   { path: '/admin/users', name: 'UserList', component: Users },
   { path: '/admin/products', name: 'ProductList', component: ProductList },
   { path: '/admin/product/new', name: 'AddProduct', component: NewProduct },
@@ -107,6 +113,7 @@ const routes = [
     component: EditManufacturer,
     props: true
   },
+  { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
   { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
   { path: '/admin/order', name: 'OrderList', component: OrderList },
   { path: '/admin/order/edit/:id', name: 'EditOrder', component: EditOrder },
@@ -135,12 +142,20 @@ const routes = [
   { path: '/payment', name: 'Payment', component: Payment },
   { path: '/cart', name: 'Cart', component: Cart },
   { path: '/success', name: 'Success', component: Success },
-  { path: '/cancel', name: 'Cancel', component: Cancel }
+  { path: '/cancel', name: 'Cancel', component: Cancel },
+  { path: '/informations_legales', name: 'InfosLegales', component: InfosLegales },
+  { path: '/cgv', name: 'AppCGV', component: AppCGV },
+  { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
+  { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // always scroll to top
+    return { top: 0 }
+  },
 })
 
 
@@ -191,7 +206,9 @@ router.beforeEach(async (to, from, next) => {
     await import('./assets/main.css');
     next();
   }
-});
+
+  next()
+})
 
 const app = createApp(App)
 app.use(router)
