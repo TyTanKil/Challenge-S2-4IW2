@@ -83,11 +83,7 @@
         id_product: productId,
         quantity: selectedQuantity.value
         });
-        if (responseAddCart.status === 200) {
         toast.success('Produit ajouté au panier');
-        } else {
-        toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
-        }
     } catch (error) {
         console.error('Error adding product to cart:', error);
         toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
