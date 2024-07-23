@@ -142,8 +142,8 @@
 </script>
 
 <template>
-  <div id="app">
-    <div v-if="products.length">
+  <div id="app" class="container">
+    <div v-if="products.length" class="content">
       <div class="cards_cart">
         <ProductItem
           v-for="product in products"
@@ -170,72 +170,79 @@
   </div>
 </template>
 
+
 <style>
+.content {
+  display: flex;
+  flex: 1; /* Prend toute la largeur disponible */
+}
+
+.cards_cart {
+  flex: 3; /* Prend une plus grande partie de l'espace disponible */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.total {
+  flex: 1; /* Prend une partie plus petite de l'espace disponible */
+  width: 200px; /* Largeur fixe */
+  height: 200px; /* Hauteur fixe */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid black;
+  border-radius: 10px; /* Bords arrondis */
+  padding: 10px; /* Espacement interne */
+  text-align: center;
+  margin-left: 20px; /* Espacement entre les produits et le total */
+}
+
+button {
+  border-radius: 10px;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px; /* Espacement entre le bouton et le texte */
+}
+
+/* Style pour le mode clair */
+@media (prefers-color-scheme: light) {
   .total {
-    width: 200px; /* Largeur du carré */
-    height: 200px; /* Hauteur du carré */
-    right: 20px; /* Distance du bord droit de l'écran */
-    top: 20px; /* Distance du bord supérieur de l'écran */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    border: 1px solid black;
-    border-radius: 10px; /* Bords arrondis */
-    padding: 10px; /* Espacement interne */
-    text-align: center;
+    background-color: #575757; /* Couleur de fond */
+    color: rgb(255, 255, 255);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet de surélévation */
   }
 
   button {
-    border-radius: 10px;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    margin-top: 10px; /* Espacement entre le bouton et le texte */
+    background-color: #8bc34a;
+    color: rgb(255, 255, 255);
   }
 
-  .cards_cart {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+  button:hover {
+    background-color: #7cb342;
+  }
+}
+
+/* Style pour le mode sombre */
+@media (prefers-color-scheme: dark) {
+  .total {
+    background-color: #333333; /* Couleur de fond */
+    color: white;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2); /* Ombre pour un effet de surélévation */
+    border: 1px solid #ffffff; /* Couleur de la bordure */
   }
 
-  /* Style pour le mode clair */
-  @media (prefers-color-scheme: light) {
-    .total {
-      background-color: #575757; /* Couleur de fond */
-      color: rgb(255, 255, 255);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet de surélévation */
-    }
-
-    button {
-      background-color: #8bc34a;
-      color: rgb(255, 255, 255);
-    }
-
-    button:hover {
-      background-color: #7cb342;
-    }
+  button {
+    background-color: #555555;
+    color: #ffffff;
   }
 
-  /* Style pour le mode sombre */
-  @media (prefers-color-scheme: dark) {
-    .total {
-      background-color: #333333; /* Couleur de fond */
-      color: white;
-      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2); /* Ombre pour un effet de surélévation */
-      border: 1px solid #ffffff; /* Couleur de la bordure */
-    }
-
-    button {
-      background-color: #555555;
-      color: #ffffff;
-    }
-
-    button:hover {
-      background-color: #666666;
-    }
+  button:hover {
+    background-color: #666666;
   }
+}
 </style>
   
