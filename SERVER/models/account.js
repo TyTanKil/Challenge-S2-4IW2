@@ -72,10 +72,6 @@ account.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    deleted: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
     notification: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
