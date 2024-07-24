@@ -8,6 +8,7 @@ const accountConfirmationTemplate = require("../templates-mail/account-confirmat
 const accountChangeDataTemplate = require("../templates-mail/account-change-data");
 const { sendEmail } = require("../mailer");
 const bcrypt = require("bcryptjs");
+const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 
 const router = new Router();
 
@@ -105,7 +106,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id", checkAuth, async (req, res, next) => {
   try {
     const accountId = req.params.id.trim();
     if (!isUUID(accountId)) {
@@ -149,7 +150,7 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", checkAuth, async (req, res, next) => {
   try {
     const accountId = req.params.id.trim();
     console.log(accountId);
@@ -175,7 +176,7 @@ router.delete("/:id", async (req, res, next) => {
         password: new_pwd,
         birth_date: null,
         roles: sequelize.literal(`ARRAY[]::"enum_account_roles"[]`),
-        status: 'd',
+        status: "d",
         notification: false,
         validate_hash: null,
       },
@@ -192,11 +193,11 @@ router.delete("/:id", async (req, res, next) => {
 });
 
 //ROUTE ADMIN pour pas afficher les users supprimer en anonymous
-router.get("/show/alluser", async (req, res, next) => {
+router.get("/show/alluser", checkAuthAdmin, async (req, res, next) => {
   try {
     const users = await Account.findAll({
       where: {
-        status: 'a',
+        status: "a",
       },
       attributes: { exclude: ["password"] }, // Optionnel, pour exclure le mot de passe des résultats
     });
@@ -208,7 +209,7 @@ router.get("/show/alluser", async (req, res, next) => {
 });
 
 //route admin
-router.patch("/edit/:id", async (req, res, next) => {
+router.patch("/edit/:id", checkAuthAdmin, async (req, res, next) => {
   try {
     const accountId = req.params.id.trim();
     const existingAccount = await Account.findOne({ where: { id: accountId } });
@@ -249,7 +250,7 @@ router.patch("/edit/:id", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", checkAuth, async (req, res, next) => {
   try {
     const accountId = req.params.id.trim();
     if (!isUUID(accountId)) {

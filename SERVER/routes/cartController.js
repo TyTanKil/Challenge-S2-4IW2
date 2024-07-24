@@ -3,9 +3,9 @@ const Cart = require("../models/cart");
 const CartProduct = require("../models/cartproduct");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
-const { v4: isUUID } = require('uuid');
+const { v4: isUUID } = require("uuid");
 
-router.post("/", async (req, res, next) => {
+router.post("/", checkAuth, async (req, res, next) => {
   try {
     const { id_user } = req.body;
 
@@ -27,7 +27,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", checkAuth, async (req, res, next) => {
   try {
     const cart = await Cart.findByPk(parseInt(req.params.id));
     if (cart) {
@@ -46,14 +46,14 @@ router.post("/getByIDUser", async (req, res, next) => {
 
     // Vérifier si l'ID utilisateur est un UUID valide
     if (!isUUID(id_user)) {
-      return res.status(400).send('Invalid user ID format');
+      return res.status(400).send("Invalid user ID format");
     }
 
     const cart = await Cart.findOne({
-       where: {
-         id_user: id_user 
-        } 
-      });
+      where: {
+        id_user: id_user,
+      },
+    });
     if (cart) {
       res.json(cart);
     } else {
@@ -64,17 +64,17 @@ router.post("/getByIDUser", async (req, res, next) => {
   }
 });
 
-router.get('/getByIDUser/:id', async (req, res, next) => {
+router.get("/getByIDUser/:id", async (req, res, next) => {
   try {
     const id_user = req.params.id;
 
     // Vérifier si l'ID utilisateur est un UUID valide
     if (!isUUID(id_user)) {
-      return res.status(400).send('Invalid user ID format');
+      return res.status(400).send("Invalid user ID format");
     }
 
     const cart = await Cart.findOne({
-      where: { id_user: id_user }
+      where: { id_user: id_user },
     });
 
     if (cart) {
@@ -106,7 +106,7 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", checkAuth, async (req, res, next) => {
   try {
     const nbDeleted = await Cart.destroy({
       where: {
@@ -123,7 +123,7 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
-router.put("/", async (req, res, next) => {
+router.put("/", checkAuth, async (req, res, next) => {
   try {
     const { id_user } = req.body;
     console.log(`Received request to update cart for user ID: ${id_user}`);

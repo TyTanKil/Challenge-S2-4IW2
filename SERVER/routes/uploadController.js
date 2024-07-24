@@ -2,6 +2,7 @@ const { Router } = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 
 const router = new Router();
 
@@ -21,7 +22,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/", upload.single("image"), (req, res) => {
+router.post("/", checkAuthAdmin, upload.single("image"), (req, res) => {
   try {
     res.json({ filename: req.file.filename });
   } catch (error) {
