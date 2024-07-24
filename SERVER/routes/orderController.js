@@ -360,6 +360,7 @@ router.patch("/:id", async (req, res, next) => {
 
 router.delete("/:id", checkAuthAdmin, async (req, res, next) => {
   try {
+
     deleteOrderFromMongo(req.params.id);
   } catch (error) {
     console.error(error);
