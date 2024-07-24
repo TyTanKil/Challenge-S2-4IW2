@@ -9,10 +9,11 @@ const accountChangeDataTemplate = require("../templates-mail/account-change-data
 const { sendEmail } = require("../mailer");
 const bcrypt = require("bcryptjs");
 const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
+const jwt = require("jsonwebtoken");
 
 const router = new Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", checkAuthAdmin, async (req, res, next) => {
   try {
     const accounts = await Account.findAll({
       where: req.query,
@@ -84,7 +85,7 @@ router.post("/verify-password", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", checkAuth, async (req, res, next) => {
   try {
     const accountId = req.params.id.trim();
     if (!isUUID(accountId)) {
@@ -106,9 +107,16 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.patch("/:id", checkAuth, async (req, res, next) => {
+router.patch("", checkAuth, async (req, res, next) => {
   try {
-    const accountId = req.params.id.trim();
+    const token = req.get("jwtCookie");
+    if (!token) return res.sendStatus(401);
+    const this_account = jwt.verify(token, process.env.JWT_SECRET);
+    if (!this_account) {
+      return res.sendStatus(401);
+    }
+
+    const accountId = this_account.id;
     if (!isUUID(accountId)) {
       return res.status(400).json({ error: "Invalid account ID" });
     }
@@ -150,9 +158,16 @@ router.patch("/:id", checkAuth, async (req, res, next) => {
   }
 });
 
-router.delete("/:id", checkAuth, async (req, res, next) => {
+router.delete("", checkAuth, async (req, res, next) => {
   try {
-    const accountId = req.params.id.trim();
+    const token = req.get("jwtCookie");
+    if (!token) return res.sendStatus(401);
+    const this_account = jwt.verify(token, process.env.JWT_SECRET);
+    if (!this_account) {
+      return res.sendStatus(401);
+    }
+
+    const accountId = this_account.id;
     console.log(accountId);
     if (!isUUID(accountId)) {
       return res.status(400).json({ error: "Invalid account ID" });
@@ -231,56 +246,8 @@ router.patch("/edit/:id", checkAuthAdmin, async (req, res, next) => {
       individualHooks: true,
     });
 
-    // if (accounts[0]) {
-    //   // Envoyer un email avec les champs modifiés
-    //   const modifiedFields = updatedFields.join(", ");
-    //   const mailOptions = accountChangeDataTemplate({
-    //     to: accounts[0].email,
-    //     name: accounts[0].firstName,
-    //     modifiedFields: modifiedFields,
-    //   });
-
-    //   await sendEmail(mailOptions);
     res.sendStatus(201);
-    // } else {
-    //   res.sendStatus(404);
-    // }
   } catch (e) {
-    next(e);
-  }
-});
-
-router.put("/:id", checkAuth, async (req, res, next) => {
-  try {
-    const accountId = req.params.id.trim();
-    if (!isUUID(accountId)) {
-      return res.status(400).json({ error: "Invalid account ID" });
-    }
-
-    const nbDeleted = await Account.update(
-      {
-        firstName: "Anonymous",
-        lastName: "User",
-        email: `deleted-${accountId}@example.com`,
-        phone: null,
-        login: `deleted-${accountId}`,
-        password: null,
-        status: "d",
-        validate_hash: null,
-      },
-      {
-        where: { id: accountId },
-      }
-    );
-
-    const account = await Account.create({
-      ...req.body,
-      id: accountId,
-    });
-
-    res.status(nbDeleted ? 200 : 201).json(account);
-  } catch (e) {
-    console.error("Error replacing account:", e);
     next(e);
   }
 });

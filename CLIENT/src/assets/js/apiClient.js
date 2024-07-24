@@ -5,7 +5,10 @@ import axios from 'axios'
 class ApiClient {
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_ENDPOINT
+      baseURL: import.meta.env.VITE_API_ENDPOINT,
+      headers: {
+        'JwtCookie': localStorage.getItem('jwtToken') ?? ''
+      }
     })
 
     // Interceptor pour inclure le token JWT dans les en-têtes Authorization

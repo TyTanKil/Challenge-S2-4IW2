@@ -179,7 +179,7 @@ export default {
       let newValue = prompt(`Entrez le nouveau ${field}:`);
       if (newValue !== null) {
         try {
-          await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
+          await ApiClient.patch(`/user`, { [field]: newValue });
           // Mettre à jour l'utilisateur après modification
           await fetchUserData();
           alert(`Le champ ${field} a été modifié avec succès.`);
@@ -204,7 +204,7 @@ export default {
             });
 
             if (verifyResponse.data.valid) {
-              await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
+              await ApiClient.patch(`/user`, { password: newPassword });
               // Mettre à jour l'utilisateur après modification
               await fetchUserData();
               alert(`Le mot de passe a été modifié avec succès.`);
@@ -225,7 +225,7 @@ export default {
       const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');
       if (confirmDelete) {
         try {
-          await ApiClient.delete(`/user/${user.value.id}`);
+          await ApiClient.delete(`/user`);
           alert('Votre compte a été anonymisé avec succès.');
           logout();
         } catch (error) {
@@ -237,7 +237,7 @@ export default {
 
     const toggleActivation = async () => {
       try {
-        await ApiClient.patch(`/user/${user.value.id}`, { notification: isActivated.value });
+        await ApiClient.patch(`/user`, { notification: isActivated.value });
         alert('L\'état des notifications a été mis à jour avec succès.');
       } catch (error) {
         console.error('Erreur lors de la mise à jour des notifications:', error);
