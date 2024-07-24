@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { Orders } = require("../mongo/OrderSchema");
+const { v4: isUUID } = require('uuid');
 // const Order = require("../models/order");
 const checkAuth = require("../middlewares/checkAuth");
 // const Order_product = require("../models/orderproduct");
@@ -328,7 +329,7 @@ router.get("/ByIdUser/:id", async (req, res, next) => {
       },
     });
 
-    if (order.length > 0) {
+    if (order) {
       res.json(order);
     } else {
       res.sendStatus(404);

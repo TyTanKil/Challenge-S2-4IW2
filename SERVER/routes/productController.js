@@ -59,7 +59,7 @@ const getAllStoreKeeper = async () => {
 };
 
 //ROUTE ADMIN PRODUCT
-router.get("/list-products", async (req, res, next) => {
+router.get("/list-products", checkAuthAdmin, async (req, res, next) => {
   try {
     const products = await Product.findAll({
       where: req.query,
