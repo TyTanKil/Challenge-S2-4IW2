@@ -143,7 +143,7 @@
 
 <template>
   <div id="app" class="container">
-    <div v-if="products.length" class="content">
+    <div v-if="products.length" class="cart content">
       <div class="cards_cart">
         <ProductItem
           v-for="product in products"
@@ -154,7 +154,7 @@
           :description="product.description"
           :price="product.unit_price"
           :quantity="product.quantity"
-          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.jpg'"
+          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.jpg'"
           @select="() => handleSelect(product)"
         />
       </div>
@@ -172,7 +172,7 @@
 
 
 <style>
-.content {
+.cart.content {
   display: flex;
   flex: 1; /* Prend toute la largeur disponible */
 }

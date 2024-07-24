@@ -5,10 +5,12 @@ import { useRouter } from 'vue-router';
 import ApiClient from '../assets/js/apiClient';
 import {useStore} from "vuex";
 
+const store = useStore(); // Accéder au store Vuex
+
+
 const router = useRouter();
 const products = ref([]);
 
-const store = useStore(); // Accéder au store Vuex
 
 const fetchProducts = async () => {
   try {
