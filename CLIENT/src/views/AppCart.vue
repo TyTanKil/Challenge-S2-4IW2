@@ -4,12 +4,14 @@
   import { loadStripe } from '@stripe/stripe-js';
   import ProductItem from '../components/AppCartProduct.vue';
   import ApiClient from '@/assets/js/apiClient';
+  import AppHorizontalCard from '../components/AppHorizontalCard.vue';
   import { useToast } from 'vue-toast-notification';
 
   export default {
     name: 'App',
     components: {
       ProductItem,
+      AppHorizontalCard,
     },
     setup() {
       const store = useStore();
@@ -89,6 +91,12 @@
         return products.value.find(product => product.id === id);
       };
 
+      const cartTotal = computed(() => {
+      return products.value.reduce((total, product) => {
+        return total + (product.unit_price * product.quantity);
+      }, 0).toFixed(2); // Formatage en deux décimales
+    });
+
       const checkout = async () => {
         try {
 
@@ -125,6 +133,7 @@
       return {
         cart,
         products,
+        cartTotal,
         productById,
         checkout,
       };
@@ -133,86 +142,107 @@
 </script>
 
 <template>
-  <div id="app">
-    <div v-if="!products.length">Chargement...</div>
-    <div v-else>
-      <ul v-if="products.length">
-        <li v-for="product in products" :key="product.id">
-          <h3>{{ product.label }}</h3>
-          <p>{{ product.description }}</p>
-          <p>Quantité: {{ product.quantity }}</p>
-          <p>Prix: {{ product.unit_price }}€</p>
-        </li>
-      </ul>
-      <p v-else>Aucun produit dans le panier.</p>
+  <div id="app" class="container">
+    <div v-if="products.length" class="content">
+      <div class="cards_cart">
+        <ProductItem
+          v-for="product in products"
+          :cartProductId="cartProductId"
+          :key="product._id"
+          :id="product.id"
+          :label="product.label"
+          :description="product.description"
+          :price="product.unit_price"
+          :quantity="product.quantity"
+          :link_img="product.images?.length ? 'http://localhost:3000/uploads/' + product.images[0].url : '/src/assets/img/products/default.jpg'"
+          @select="() => handleSelect(product)"
+        />
+      </div>
+      
       <div class="total">
         <p>Total TTC: {{ cartTotal }}€</p>
         <button class="checkout-btn" @click="checkout">Passer commande</button>
       </div>
     </div>
+    <div v-else>
+      <p>Aucun produit dans le panier.</p>
+    </div>
   </div>
 </template>
 
+
 <style>
+.content {
+  display: flex;
+  flex: 1; /* Prend toute la largeur disponible */
+}
+
+.cards_cart {
+  flex: 3; /* Prend une plus grande partie de l'espace disponible */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.total {
+  flex: 1; /* Prend une partie plus petite de l'espace disponible */
+  width: 200px; /* Largeur fixe */
+  height: 200px; /* Hauteur fixe */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid black;
+  border-radius: 10px; /* Bords arrondis */
+  padding: 10px; /* Espacement interne */
+  text-align: center;
+  margin-left: 20px; /* Espacement entre les produits et le total */
+}
+
+button {
+  border-radius: 10px;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px; /* Espacement entre le bouton et le texte */
+}
+
+/* Style pour le mode clair */
+@media (prefers-color-scheme: light) {
   .total {
-    width: 200px; /* Largeur du carré */
-    height: 200px; /* Hauteur du carré */
-    right: 20px; /* Distance du bord droit de l'écran */
-    top: 20px; /* Distance du bord supérieur de l'écran */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    border: 1px solid black;
-    border-radius: 10px; /* Bords arrondis */
-    padding: 10px; /* Espacement interne */
-    text-align: center;
+    background-color: #575757; /* Couleur de fond */
+    color: rgb(255, 255, 255);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet de surélévation */
   }
 
-  .checkout-btn {
-    border-radius: 10px;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    margin-top: 10px; /* Espacement entre le bouton et le texte */
+  button {
+    background-color: #8bc34a;
+    color: rgb(255, 255, 255);
   }
 
-  /* Style pour le mode clair */
-  @media (prefers-color-scheme: light) {
-    .total {
-      background-color: #575757; /* Couleur de fond */
-      color: rgb(255, 255, 255);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet de surélévation */
-    }
+  button:hover {
+    background-color: #7cb342;
+  }
+}
 
-    button {
-      background-color: #8bc34a;
-      color: rgb(255, 255, 255);
-    }
-
-    button:hover {
-      background-color: #7cb342;
-    }
+/* Style pour le mode sombre */
+@media (prefers-color-scheme: dark) {
+  .total {
+    background-color: #333333; /* Couleur de fond */
+    color: white;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2); /* Ombre pour un effet de surélévation */
+    border: 1px solid #ffffff; /* Couleur de la bordure */
   }
 
-  /* Style pour le mode sombre */
-  @media (prefers-color-scheme: dark) {
-    .total {
-      background-color: #333333; /* Couleur de fond */
-      color: white;
-      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2); /* Ombre pour un effet de surélévation */
-      border: 1px solid #ffffff; /* Couleur de la bordure */
-    }
-
-    button {
-      background-color: #555555;
-      color: #ffffff;
-    }
-
-    button:hover {
-      background-color: #666666;
-    }
+  button {
+    background-color: #555555;
+    color: #ffffff;
   }
+
+  button:hover {
+    background-color: #666666;
+  }
+}
 </style>
   
