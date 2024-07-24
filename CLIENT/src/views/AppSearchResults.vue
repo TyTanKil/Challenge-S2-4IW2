@@ -50,9 +50,11 @@
   import { useRoute, useRouter } from 'vue-router';
   import AppVerticalCard from '../components/AppVerticalCard.vue';
   import ApiClient from '../assets/js/apiClient';
+  import { useStore } from 'vuex';
   
   const route = useRoute();
   const router = useRouter();
+  const store = useStore();
   
   const searchQuery = ref(route.query.q || '');
   const products = ref([]); // Initialisé à un tableau vide

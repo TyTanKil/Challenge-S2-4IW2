@@ -346,7 +346,7 @@ input:checked + .slider:before {
 
 .my-account {
   display: flex;
-  height: 70vh;
+  height: 80vh;
 }
 
 .sidebar {
