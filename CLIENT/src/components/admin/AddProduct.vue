@@ -9,7 +9,7 @@
                     @update:modelValue="product.description = $event" required class="mb-4" />
                 <FormTextarea id="ref" label="Ref" :modelValue="product.ref" @update:modelValue="product.ref = $event"
                     required class="mb-4" />
-                <FormInput id="unit_price" label="Prix" type="double" :modelValue="product.unit_price"
+                <FormInput id="unit_price" label="Prix" type="number" step="0.01" :modelValue="product.unit_price"
                     @update:modelValue="product.unit_price = $event" required class="mb-4" />
                 <FormInput id="stock" label="Stock" type="number" :modelValue="product.stock"
                     @update:modelValue="product.stock = $event" required class="mb-4" />
