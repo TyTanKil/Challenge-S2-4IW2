@@ -29,6 +29,7 @@ const {
 } = db; //pour asso
 
 const checkAuth = require("../middlewares/checkAuth");
+const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 const router = new Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -100,21 +101,14 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/", upload.single("image"), async (req, res, next) => {
-  const t = await sequelize.transaction();
-  try {
-    const {
-      label,
-      description,
-      ref,
-      unit_price,
-      stock,
-      id_category,
-      id_manufacturer,
-    } = req.body;
-
-    const product = await Product.create(
-      {
+router.post(
+  "/",
+  checkAuthAdmin,
+  upload.single("image"),
+  async (req, res, next) => {
+    const t = await sequelize.transaction();
+    try {
+      const {
         label,
         description,
         ref,
@@ -122,65 +116,77 @@ router.post("/", upload.single("image"), async (req, res, next) => {
         stock,
         id_category,
         id_manufacturer,
-      },
-      { transaction: t }
-    );
+      } = req.body;
 
-    // Envoi d'email à tous les store Keeper
-    const accounts = await getAllStoreKeeper();
-    const category = await Category.findByPk(id_category);
-    const productName = label;
-    const productPrice = unit_price;
-    const categoryName = category.label;
-
-    accounts.forEach((account) => {
-      if (account.notification) {
-        const mailOptions = newProductTemplate({
-          to: account.email,
-          productName: productName,
-          userName: account.firstName,
-          price: productPrice,
-          categoryName: categoryName,
-        });
-        sendEmail(mailOptions);
-      }
-    });
-
-    if (req.file) {
-      const imagePath = req.file.filename;
-      await Product_image.create(
+      const product = await Product.create(
         {
-          id_product: product.id,
-          url: imagePath,
+          label,
+          description,
+          ref,
+          unit_price,
+          stock,
+          id_category,
+          id_manufacturer,
         },
         { transaction: t }
       );
+
+      // Envoi d'email à tous les store Keeper
+      const accounts = await getAllStoreKeeper();
+      const category = await Category.findByPk(id_category);
+      const productName = label;
+      const productPrice = unit_price;
+      const categoryName = category.label;
+
+      accounts.forEach((account) => {
+        if (account.notification) {
+          const mailOptions = newProductTemplate({
+            to: account.email,
+            productName: productName,
+            userName: account.firstName,
+            price: productPrice,
+            categoryName: categoryName,
+          });
+          sendEmail(mailOptions);
+        }
+      });
+
+      if (req.file) {
+        const imagePath = req.file.filename;
+        await Product_image.create(
+          {
+            id_product: product.id,
+            url: imagePath,
+          },
+          { transaction: t }
+        );
+      }
+
+      // Mise à jour des stocks
+      const quantity = req.body.stock;
+      await Stock.create(
+        {
+          id_product: product.id,
+          quantity: quantity,
+        },
+        { transaction: t }
+      );
+
+      await t.commit();
+
+      // try {
+      //   syncProductWithMongo(product.id);
+      // } catch (error) {
+      //   console.error(error);
+      // }
+
+      res.status(201).json({ product });
+    } catch (error) {
+      await t.rollback();
+      next(error);
     }
-
-    // Mise à jour des stocks
-    const quantity = req.body.stock;
-    await Stock.create(
-      {
-        id_product: product.id,
-        quantity: quantity,
-      },
-      { transaction: t }
-    );
-
-    await t.commit();
-
-    // try {
-    //   syncProductWithMongo(product.id);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-
-    res.status(201).json({ product });
-  } catch (error) {
-    await t.rollback();
-    next(error);
   }
-});
+);
 
 router.get("/show/:id", async (req, res, next) => {
   try {
@@ -203,32 +209,14 @@ router.get("/show/:id", async (req, res, next) => {
   }
 });
 
-router.patch("/:id", upload.single("image"), async (req, res, next) => {
-  const t = await sequelize.transaction();
-  try {
-    const {
-      label,
-      description,
-      ref,
-      unit_price,
-      stock,
-      id_category,
-      id_manufacturer,
-    } = req.body;
-
-    const existingProduct = await Product.findByPk(req.params.id, {
-      include: [Product_image],
-    });
-
-    if (!existingProduct) {
-      await t.rollback();
-      return res.sendStatus(404);
-    }
-
-    const oldStock = existingProduct.Stock ? existingProduct.Stock.quantity : 0;
-
-    const [nbUpdated] = await Product.update(
-      {
+router.patch(
+  "/:id",
+  checkAuthAdmin,
+  upload.single("image"),
+  async (req, res, next) => {
+    const t = await sequelize.transaction();
+    try {
+      const {
         label,
         description,
         ref,
@@ -236,108 +224,133 @@ router.patch("/:id", upload.single("image"), async (req, res, next) => {
         stock,
         id_category,
         id_manufacturer,
-      },
-      { where: { id: req.params.id }, transaction: t }
-    );
+      } = req.body;
 
-    if (nbUpdated === 0) {
-      await t.rollback();
-      return res.sendStatus(404);
-    }
-
-    if (stock !== undefined) {
-      await Stock.update(
-        { quantity: stock },
-        { where: { id_product: req.params.id }, transaction: t }
-      );
-
-      // Détection du réapprovisionnement
-      if (stock > oldStock) {
-        const accounts = await getAllStoreKeeper();
-        const productName = existingProduct.label;
-
-        accounts.forEach((account) => {
-          if (account.notification) {
-            const mailOptions = restockProductTemplate({
-              to: account.email,
-              userName: account.firstName,
-              productName: productName,
-            });
-            sendEmail(mailOptions);
-          }
-        });
-      }
-
-      // Vérification si le stock tombe à 0
-      if (stock <= 3) {
-        const accounts = await getAllStoreKeeper();
-        const productName = existingProduct.label;
-
-        accounts.forEach((account) => {
-          if (account.notification) {
-            const mailOptions = OutOfStockTemplate({
-              to: account.email,
-              userName: account.firstName,
-              productName: productName,
-            });
-            sendEmail(mailOptions);
-          }
-        });
-      }
-    }
-
-    if (req.file) {
-      const imagePath = req.file.filename;
-      const existingImage = await Product_image.findOne({
-        where: { id_product: req.params.id },
-        transaction: t,
+      const existingProduct = await Product.findByPk(req.params.id, {
+        include: [Product_image],
       });
 
-      if (existingProduct.Product_images.length > 0) {
-        const oldImagePath = path.join(
-          __dirname,
-          "../uploads",
-          existingProduct.Product_images[0].url
+      if (!existingProduct) {
+        await t.rollback();
+        return res.sendStatus(404);
+      }
+
+      const oldStock = existingProduct.Stock
+        ? existingProduct.Stock.quantity
+        : 0;
+
+      const [nbUpdated] = await Product.update(
+        {
+          label,
+          description,
+          ref,
+          unit_price,
+          stock,
+          id_category,
+          id_manufacturer,
+        },
+        { where: { id: req.params.id }, transaction: t }
+      );
+
+      if (nbUpdated === 0) {
+        await t.rollback();
+        return res.sendStatus(404);
+      }
+
+      if (stock !== undefined) {
+        await Stock.update(
+          { quantity: stock },
+          { where: { id_product: req.params.id }, transaction: t }
         );
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
+
+        // Détection du réapprovisionnement
+        if (stock > oldStock) {
+          const accounts = await getAllStoreKeeper();
+          const productName = existingProduct.label;
+
+          accounts.forEach((account) => {
+            if (account.notification) {
+              const mailOptions = restockProductTemplate({
+                to: account.email,
+                userName: account.firstName,
+                productName: productName,
+              });
+              sendEmail(mailOptions);
+            }
+          });
+        }
+
+        // Vérification si le stock tombe à 0
+        if (stock <= 3) {
+          const accounts = await getAllStoreKeeper();
+          const productName = existingProduct.label;
+
+          accounts.forEach((account) => {
+            if (account.notification) {
+              const mailOptions = OutOfStockTemplate({
+                to: account.email,
+                userName: account.firstName,
+                productName: productName,
+              });
+              sendEmail(mailOptions);
+            }
+          });
         }
       }
 
-      if (existingImage) {
-        existingImage.url = imagePath;
-        await existingImage.save({ transaction: t });
-      } else {
-        await Product_image.create(
-          {
-            id_product: req.params.id,
-            url: imagePath,
-          },
-          { transaction: t }
-        );
+      if (req.file) {
+        const imagePath = req.file.filename;
+        const existingImage = await Product_image.findOne({
+          where: { id_product: req.params.id },
+          transaction: t,
+        });
+
+        if (existingProduct.Product_images.length > 0) {
+          const oldImagePath = path.join(
+            __dirname,
+            "../uploads",
+            existingProduct.Product_images[0].url
+          );
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+          }
+        }
+
+        if (existingImage) {
+          existingImage.url = imagePath;
+          await existingImage.save({ transaction: t });
+        } else {
+          await Product_image.create(
+            {
+              id_product: req.params.id,
+              url: imagePath,
+            },
+            { transaction: t }
+          );
+        }
       }
-    }
 
-    await t.commit();
+      await t.commit();
 
-    const product = await Product.findByPk(req.params.id, {
-      include: [Category, Manufacturer, Stock, Product_image],
-    });
+      const product = await Product.findByPk(req.params.id, {
+        include: [Category, Manufacturer, Stock, Product_image],
+      });
 
-    try {
-      syncProductWithMongo(product.id);
+      try {
+        syncProductWithMongo(product.id);
+      } catch (error) {
+        console.error(error);
+      }
+
+      res.json(product);
     } catch (error) {
-      console.error(error);
+      await t.rollback();
+      next(error);
     }
-
-    res.json(product);
-  } catch (error) {
-    await t.rollback();
-    next(error);
   }
-});
+);
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", checkAuthAdmin, async (req, res, next) => {
   try {
     deleteProductFromMongo(req.params.id);
   } catch (error) {

@@ -2,7 +2,7 @@ const { Router } = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Account = require("../models/account");
-const {Op} = require("sequelize");
+const { Op } = require("sequelize");
 
 const router = new Router();
 
@@ -23,14 +23,15 @@ router.post("/login", async (req, res, next) => {
   if (!(await bcrypt.compare(req.body.password, account.password))) {
     return res.sendStatus(401);
   }
-  if(account.status === "c"){
+  if (account.status === "c") {
     return res.sendStatus(409);
   }
 
   const token = jwt.sign(
     {
       id: account.id,
-      name: account.firstName
+      name: account.firstName,
+      roles: account.roles,
     },
     process.env.JWT_SECRET,
     {
@@ -46,13 +47,13 @@ router.patch("/validate-account/:hash", async (req, res, next) => {
   try {
     const account = await Account.findOne({
       where: {
-          validate_hash: req.params.hash
-      }
+        validate_hash: req.params.hash,
+      },
     });
 
     if (account) {
       account.validate_hash = null;
-      account.status = 'a';
+      account.status = "a";
       await account.save();
       res.sendStatus(204);
     } else {

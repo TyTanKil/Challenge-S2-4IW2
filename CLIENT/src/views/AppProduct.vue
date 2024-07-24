@@ -1,20 +1,28 @@
 <script setup lang='ts'>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, defineProps } from 'vue';
 import { useRoute } from 'vue-router';
 import ApiClient from '../assets/js/apiClient';
-import {useStore} from "vuex"; // Assurez-vous que le chemin est correct
+import { useToast } from 'vue-toast-notification';
+import {useStore} from "vuex";
 
 const route = useRoute();
 const product = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
 
-const store = useStore(); // Accéder au store Vuex
+const store = useStore();
+const toast = useToast();
+
+const selectedQuantity = ref(1);
+const quantityOptions = ref<number[]>([]);
+
+let productId;
 
 const fetchProduct = async () => {
   try {
     const response = await ApiClient.get(`/products/${route.params.id}`);
     product.value = response;
+    productId = response.id;
     console.log(product.value);
   } catch (err) {
     error.value = 'Erreur lors du chargement du produit.';
@@ -23,7 +31,75 @@ const fetchProduct = async () => {
   }
 };
 
-onMounted(fetchProduct);
+const fetchProductQuantity = async () => {
+  try {
+    const response = await ApiClient.post('/stock/ByIdProduct', { id_product: productId });
+    if (response.status === 200 && response.data.length > 0) {
+      const maxQuantity = response.data[0].quantity;
+      quantityOptions.value = Array.from({ length: maxQuantity }, (_, i) => i + 1);
+    } else {
+      toast.error('Erreur lors de la récupération de la quantité du produit');
+    }
+  } catch (error) {
+    console.error('Error fetching product quantity:', error);
+    toast.error('Erreur lors de la récupération de la quantité du produit');
+  }
+};
+
+const addToCart = async () => {
+  const id_user = store.state.user_id;
+  console.log('User ID:', id_user);
+
+  if (id_user == null) {
+    toast.error('Vous devez être connecté pour ajouter un produit au panier');
+    return;
+  }
+
+  try {
+    let responseGetCart;
+    let cartId;
+
+    // Tenter de récupérer le panier existant
+    try {
+      responseGetCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
+      console.log('Response Cart:', responseGetCart);
+
+      if (responseGetCart.status === 200) {
+        cartId = responseGetCart.data.id;
+      } else {
+        throw new Error('Unexpected response status');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        // Si le panier n'existe pas (404), en créer un nouveau
+        let responseCart = await ApiClient.put(`/cart`, { id_user: id_user });
+        cartId = responseCart.data.id;
+      } else {
+        // Si une autre erreur survient, la gérer
+        throw error;
+      }
+    }
+
+    // Ajouter le produit avec la quantité sélectionnée
+    let responseAddCart = await ApiClient.post(`/cartProduct/addProduct`, {
+      id_cart: cartId,
+      id_product: productId,
+      quantity: selectedQuantity.value
+    });
+    toast.success('Produit ajouté au panier');
+    console.log('Product added:', responseAddCart.data);
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
+  }
+}
+
+onMounted(async () => {
+  await fetchProduct();
+  if (productId) {
+    await fetchProductQuantity();
+  }
+});
 
   
 </script>
@@ -66,7 +142,21 @@ onMounted(fetchProduct);
           <h3>{{ product.unit_price }} €</h3>
         </div>
         <div class="cart">
-          <!-- Vous pouvez ajouter un bouton "Ajouter au panier" ici -->
+          <div class="quantity_selector">
+            <label for="quantity">Quantité : </label>
+            <select v-model="selectedQuantity" id="quantity">
+              <option v-for="num in quantityOptions" :key="num" :value="num">
+                {{ num }}
+              </option>
+            </select>
+          </div>
+          <div class="buy_div_container">
+            <div class="cart_img_container">
+              <button @click="addToCart">
+                <img class="cart_card" src="\src\assets\img\svg\icons\cart2.svg" alt="">
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -173,5 +263,40 @@ img{
 .main_img img{
   width: 24rem;
   height: auto;
+}
+.cart{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.buy_div_container {
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.buy_div_container p {
+  font-size: large;
+  font-weight: 500;
+}
+.cart_img_container {
+  margin-right: 1rem;
+}
+.cart_img_container button {
+  border: none;
+  min-width: 4rem;
+  height: 3.2rem;
+  background-color: #C4F649;
+  border-radius: 8px;
+  box-shadow: 1px 2px #3838385d;
+  padding: 0.4rem;
+}
+.cart_img_container button:hover {
+  cursor: pointer;
+  background-color: #A0DB10;
+}
+.cart_card {
+  width: 100%;
+  height: 100%;
 }
 </style>

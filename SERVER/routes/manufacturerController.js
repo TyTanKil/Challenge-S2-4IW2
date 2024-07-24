@@ -2,6 +2,8 @@ const { Router } = require("express");
 const { sequelize, DataTypes } = require("../db");
 const Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
 const checkAuth = require("../middlewares/checkAuth");
+const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
+
 const router = new Router();
 
 router.get("", async (req, res, next) => {
@@ -11,7 +13,7 @@ router.get("", async (req, res, next) => {
   res.json(manufacturers);
 });
 
-router.post("", async (req, res, next) => {
+router.post("", checkAuthAdmin, async (req, res, next) => {
   try {
     const manufacturer = await Manufacturer.create(req.body);
     res.status(201).json(manufacturer);
@@ -52,7 +54,7 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", checkAuthAdmin, async (req, res, next) => {
   try {
     const nbDeleted = await Manufacturer.destroy({
       where: {
@@ -69,7 +71,7 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", checkAuthAdmin, async (req, res, next) => {
   try {
     const nbDeleted = await Manufacturer.destroy({
       where: {

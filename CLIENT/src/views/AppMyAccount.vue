@@ -34,7 +34,7 @@
           </div>
           <div class="info-item">
             <span>Nom: {{ user.lastName }}</span>
-            <button @click="editField('LastName')">Modifier</button>
+            <button @click="editField('lastName')">Modifier</button>
           </div>
           <div class="info-item">
             <span>Date de naissance: {{ formatDate(user.birth_date) }}</span>
@@ -52,7 +52,29 @@
           <button class="download-button" @click="downloadPersonalDataAsPDF">Télécharger mes données en PDF</button>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
-          <p>Contenu des commandes de l'utilisateur...</p>
+          <div class="orders-container">
+            <div v-if="orders.length">
+              <div v-for="order in orders" :key="order.id" class="order-card">
+                <h2>Commande #{{ order.id }}</h2>
+                <p><strong>Date de la commande :</strong> {{ formatDate(order.order_date) }}</p>
+                <p><strong>Statut de la livraison :</strong> {{ displayOrderStatus(order.delivery_status) }}</p>
+                <p><strong>Total TTC :</strong> {{ order.total_price }} €</p>
+                <div class="order-products">
+                  <h3>Produits :</h3>
+                  <div v-for="product in order.Order_products" :key="product.id" class="product-item">
+                    <p><strong>Nom :</strong> {{ product.label }}</p>
+                    <p><strong>Réf :</strong> {{ product.ref }}</p>
+                    <p><strong>Description :</strong> {{ product.description }}</p>
+                    <p><strong>Quantité :</strong> {{ product.quantity }}</p>
+                    <p><strong>Prix unitaire :</strong> {{ product.unit_price }} €</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <p>Aucune commande trouvée.</p>
+            </div>
+          </div>
         </div>
         <div v-if="selectedTab === 'parameters'" class="parameters">
           <h4 class="parameters-item">Gérer mes notifications mails</h4>
@@ -72,13 +94,11 @@
           <div class="parameters-item">
             <button class="delete-account-button" @click="deleteAccount">Supprimer mon compte</button>
           </div>
-          
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import { useStore } from 'vuex';
@@ -94,6 +114,7 @@ export default {
       selectedTab: 'infos',
       userProfilePhoto: '', 
       user: {},
+      orders: [],
       isActivated: false,
     };
   },
@@ -117,7 +138,6 @@ export default {
 
     const fetchOrders = async () => {
       const id_user = store.state.user_id;
-
       if (!id_user) {
         console.error('User ID is missing');
         return;
@@ -125,10 +145,20 @@ export default {
 
       try {
         const response = await ApiClient.get(`/order/ByIdUser/${id_user}`);
-        orders.value = response.data;
+        orders.value = response;
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
+    };
+
+    const displayOrderStatus = (status) => {
+        const statusMap = {
+            1: 'En cours',
+            2: 'Expédiée',
+            3: 'Livrée',
+            4: 'Annulée'
+        };
+        return statusMap[status] || 'Inconnu';
     };
 
     const formatDate = (dateString) => {
@@ -242,7 +272,19 @@ export default {
       fetchOrders();
     });
 
-    return { logout, user, formatDate, editField, changePassword, deleteAccount, toggleActivation, isActivated, downloadPersonalDataAsPDF  };
+    return { 
+      logout,
+      user, 
+      formatDate, 
+      editField, 
+      changePassword, 
+      deleteAccount, 
+      toggleActivation, 
+      isActivated, 
+      downloadPersonalDataAsPDF,
+      orders,
+      displayOrderStatus,
+    };
   },
 };
 </script>
@@ -304,7 +346,7 @@ input:checked + .slider:before {
 
 .my-account {
   display: flex;
-  height: 70vh;
+  height: 80vh;
 }
 
 .sidebar {
@@ -445,6 +487,22 @@ input:checked + .slider:before {
   background-color: #90ee90;
   padding: 20px;
   box-sizing: border-box;
+}
+
+.orders {
+  max-height: 500px; /* Hauteur maximale avec défilement */
+  overflow-y: auto; /* Barre de défilement verticale si nécessaire */
+  padding: 10px;
+  border: 1px solid #ddd; /* Bordure optionnelle */
+  background-color: #f9f9f9; /* Fond optionnel */
+}
+
+.order-card {
+  margin-bottom: 20px; /* Espacement entre les cartes de commande */
+  padding: 10px;
+  border: 1px solid #ddd; /* Bordure des cartes de commande */
+  background-color: #fff; /* Fond des cartes de commande */
+  border-radius: 5px; /* Coins arrondis des cartes */
 }
 
 @media (prefers-color-scheme: dark) {

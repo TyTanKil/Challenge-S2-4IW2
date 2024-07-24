@@ -1,20 +1,3 @@
-// const jwt = require("jsonwebtoken");
-
-// module.exports = (req, res, next) => {
-//   // const token = localStorage.getItem("jwtToken");
-//   const token = req.signedCookies.JWT;
-//   if (!token) return res.sendStatus(401);
-//   const account = jwt.verify(token, process.env.JWT_SECRET);
-//   if (!account) {
-//     res.clearCookie("JWT");
-//     return res.sendStatus(401);
-//   }
-
-//   req.account = account;
-
-//   next();
-// };
-
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
@@ -35,9 +18,11 @@ module.exports = (req, res, next) => {
     const account = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Account:", account); // Log le compte décodé
 
-    if (!account) {
+    if (!account || !account.roles.includes("ROLE_ADMIN")) {
       res.clearCookie("JWT");
-      return res.sendStatus(401);
+      return res
+        .status(403)
+        .json({ message: "Access denied. Admin role required." });
     }
 
     req.account = account;

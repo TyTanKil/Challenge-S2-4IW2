@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { Orders } = require("../mongo/OrderSchema");
+const { v4: isUUID } = require('uuid');
 // const Order = require("../models/order");
 const checkAuth = require("../middlewares/checkAuth");
 // const Order_product = require("../models/orderproduct");
@@ -9,6 +10,7 @@ const {
   deleteOrderFromMongo,
   syncOrderWithMongo,
 } = require("../services/denormalizations/orderService");
+const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 
 const { sequelize, Order, Order_product, account, DataTypes } = db;
 
@@ -29,7 +31,7 @@ router.get("/", async (req, res, next) => {
 });
 
 //MONGO ROUTE
-router.get("/show", async (req, res, next) => {
+router.get("/show", checkAuthAdmin, async (req, res, next) => {
   try {
     const filter = req.query || {};
     const orders = await Orders.find(filter).sort({ createdAt: -1 });
@@ -311,9 +313,9 @@ router.get("/ByIdUser/:id", async (req, res, next) => {
 
     // Vérifier si l'ID utilisateur est un UUID valide
     if (!isUUID(id_user)) {
-      return res.status(400).send('Invalid user ID format');
+      return res.status(400).send("Invalid user ID format");
     }
-    
+
     const order = await Order.findAll({
       include: [
         { model: Order_product },
@@ -323,11 +325,11 @@ router.get("/ByIdUser/:id", async (req, res, next) => {
         },
       ],
       where: {
-        id_user: id_user 
-      } 
+        id_user: id_user,
+      },
     });
 
-    if (order.length > 0) {
+    if (order) {
       res.json(order);
     } else {
       res.sendStatus(404);
@@ -356,8 +358,9 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", checkAuthAdmin, async (req, res, next) => {
   try {
+
     deleteOrderFromMongo(req.params.id);
   } catch (error) {
     console.error(error);

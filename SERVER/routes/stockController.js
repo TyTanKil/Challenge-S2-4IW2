@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { sequelize, DataTypes } = require("../db");
 const Stock = require("../models/stock")(sequelize, DataTypes);
 const checkAuth = require("../middlewares/checkAuth");
+const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 const router = new Router();
 
 router.get("/", async (req, res, next) => {
@@ -11,7 +12,7 @@ router.get("/", async (req, res, next) => {
   res.json(stocks);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", checkAuthAdmin, async (req, res, next) => {
   try {
     const stock = await Stock.create(req.body);
     res.status(201).json(stock);
@@ -33,9 +34,8 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/ByIdProduct", async (req, res, next) => {
+router.post("/ByIdProduct", checkAuth, async (req, res, next) => {
   try {
-
     const { id_product } = req.body;
 
     if (!id_product) {
@@ -43,7 +43,7 @@ router.post("/ByIdProduct", async (req, res, next) => {
     }
 
     const stock = await Stock.findAll({
-      where: { id_product }
+      where: { id_product },
     });
 
     if (stock.length > 0) {
@@ -52,7 +52,7 @@ router.post("/ByIdProduct", async (req, res, next) => {
       res.sendStatus(404);
     }
   } catch (e) {
-    console.error('Error fetching stock:', e);
+    console.error("Error fetching stock:", e);
     next(e);
   }
 });
@@ -87,7 +87,7 @@ router.post("/ByIdProduct", async (req, res, next) => {
 //   }
 // });
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id", checkAuth, async (req, res, next) => {
   try {
     const [nbUpdated, stocks] = await Stock.update(req.body, {
       where: {
@@ -106,7 +106,7 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", checkAuth, async (req, res, next) => {
   try {
     const nbDeleted = await Stock.destroy({
       where: {
@@ -123,7 +123,7 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", checkAuth, async (req, res, next) => {
   try {
     const nbDeleted = await Stock.destroy({
       where: {

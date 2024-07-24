@@ -4,6 +4,7 @@ const Stripe = require("stripe");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+
 const stripe = new Stripe(
   "sk_test_51Pb4ZxRplArNYE0A1twbt7PDqr1ADz0oSLM0vyOIEwmvCmNIkKUxddGRoBLwea805YkInglHBk4NZs4RZg6fNqJg00vZAYL70g",
   {
@@ -42,8 +43,8 @@ router.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: "http://localhost:8080/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:8080/cancel",
+      success_url: `tech-shop.tech/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `tech-shop.tech/cancel`,
     });
 
     res.json({ id: session.id });

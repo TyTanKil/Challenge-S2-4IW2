@@ -20,9 +20,17 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/getByIds/:id_cart/:id_product", async (req, res, next) => {
   try {
-    const cartProduct = await CartProduct.findByPk(parseInt(req.params.id));
+    const { id_cart, id_product } = req.params;
+
+    const cartProduct = await CartProduct.findOne({
+      where: {
+        id_cart: parseInt(id_cart),
+        id_product: parseInt(id_product),
+      },
+    });
+
     if (cartProduct) {
       res.json(cartProduct);
     } else {
@@ -56,14 +64,12 @@ router.delete("/:id", async (req, res, next) => {
   try {
     const nbDeleted = await CartProduct.destroy({
       where: {
-        id: parseInt(req.params.id),
+        id_cart: parseInt(req.params.id),
       },
     });
-    if (nbDeleted === 1) {
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(404);
-    }
+
+    res.sendStatus(204);
+
   } catch (e) {
     next(e);
   }
