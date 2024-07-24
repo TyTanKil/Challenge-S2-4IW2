@@ -43,8 +43,8 @@ router.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${import.meta.env.VITE_FRONT_ENDPOINT}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${import.meta.env.VITE_FRONT_ENDPOINT}/cancel`,
+      success_url: `tech-shop.tech/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `tech-shop.tech/cancel`,
     });
 
     res.json({ id: session.id });
