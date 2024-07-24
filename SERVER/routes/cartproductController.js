@@ -64,14 +64,12 @@ router.delete("/:id", async (req, res, next) => {
   try {
     const nbDeleted = await CartProduct.destroy({
       where: {
-        id: parseInt(req.params.id),
+        id_cart: parseInt(req.params.id),
       },
     });
-    if (nbDeleted === 1) {
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(404);
-    }
+
+    res.sendStatus(204);
+
   } catch (e) {
     next(e);
   }

@@ -98,6 +98,10 @@
 
           console.log('Response:', responseProduct);
 
+          const responseDeleteCartProduct = await ApiClient.delete(`/cartproduct/${id_cart}`);
+
+          console.log('Response', responseDeleteCartProduct);
+
         } catch (error) {
           console.error('Erreur lors de la récupération des produits du panier:', error);
           return []; // Retourner un tableau vide en cas d'erreur

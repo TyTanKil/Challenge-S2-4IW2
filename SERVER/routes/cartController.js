@@ -4,6 +4,8 @@ const CartProduct = require("../models/cartproduct");
 const checkAuth = require("../middlewares/checkAuth");
 const router = new Router();
 const { v4: isUUID } = require("uuid");
+const db = require("../db");
+const { sequelize } = db;
 
 router.post("/", checkAuth, async (req, res, next) => {
   try {
