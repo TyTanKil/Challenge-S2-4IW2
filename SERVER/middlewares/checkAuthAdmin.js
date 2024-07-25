@@ -1,36 +1,19 @@
+const Account = require("../models/account");
 const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-  // Récupérer le jeton de l'en-tête Authorization
-  let token =
-    req.headers.authorization && req.headers.authorization.split(" ")[1];
-
-  // Si aucun jeton dans l'en-tête, vérifier les cookies signés
-  if (!token) {
-    token = req.signedCookies.JWT;
-  }
-
-  console.log("Token:", token); // Log le jeton reçu
-
+module.exports = async (req, res, next) => {
+  const token = req.get("jwtCookie");
   if (!token) return res.sendStatus(401);
+  const decoded_token = jwt.verify(token, process.env.JWT_SECRET);
+  const account = await Account.findOne({
+    where: {id: decoded_token.id},
+  });
 
-  try {
-    const account = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Account:", account); // Log le compte décodé
-
-    if (!account || !account.roles.includes("ROLE_ADMIN")) {
-      res.clearCookie("JWT");
-      return res
-        .status(403)
-        .json({ message: "Access denied. Admin role required." });
-    }
-
-    req.account = account;
-    next();
-  } catch (err) {
-    res.clearCookie("JWT");
-    console.error("JWT verification error:", err); // Log les erreurs de vérification
-
+  if (!account || !Object.values(account.roles).includes("ROLE_ADMIN")) {
     return res.sendStatus(401);
   }
+
+  req.account = decoded_token;
+
+  next();
 };
