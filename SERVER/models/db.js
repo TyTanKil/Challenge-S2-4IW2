@@ -8,7 +8,7 @@ const opts = {
   },
 };
 
-const connection = new Sequelize(process.env.DATABASE_URL, opts);
+const connection = new Sequelize(process.env.DATABASE_URL || 'postgres://techshop_site:3zH659q0fUMW6ve4FXLv@postgres:5432/techshop', opts);
 
 connection.authenticate().then(() => {
   console.log("Database connection has been established successfully.");

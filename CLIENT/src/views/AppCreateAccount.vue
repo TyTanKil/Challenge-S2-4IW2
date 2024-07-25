@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import AppButtonSecondary from '@/components/formComponents/AppButtonSecondary.vue';
 import AppInputText from '@/components/formComponents/AppInputText.vue';
@@ -27,7 +27,7 @@ const phoneRegex = /^(?:(?:\+33|0)\s*[1-9](?:[\s.-]*\d{2}){4}|\d{10})$/;
 
 const toast = useToast();
 
-const validateEmail = () => {
+export const validateEmail = () => {
   if (!emailRegex.test(email.value)) {
     emailError.value = "Veuillez entrer une adresse email valide.";
     return false;
