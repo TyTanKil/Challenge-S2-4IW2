@@ -9,6 +9,7 @@ const accountChangeDataTemplate = require("../templates-mail/account-change-data
 const { sendEmail } = require("../mailer");
 const bcrypt = require("bcryptjs");
 const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
+const moment = require('moment');
 
 const router = new Router();
 
@@ -26,6 +27,10 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
+    if(req.body.birth_date && moment(req.body.birth_date).isAfter(moment().subtract(18, "years"))){
+      res.sendStatus(400);
+    }
+
     req.body.login =
       `${req.body.firstName[0]}${req.body.lastName}`.toLowerCase();
     const nbExisting = await Account.count({
@@ -110,6 +115,10 @@ router.get("/:id", async (req, res, next) => {
 
 router.patch("/:id", checkAuth, async (req, res, next) => {
   try {
+    if(req.body.birth_date && moment(req.body.birth_date).isAfter(moment().subtract(18, "years"))){
+      res.sendStatus(400);
+    }
+
     const accountId = req.params.id.trim();
     if (!isUUID(accountId)) {
       return res.status(400).json({ error: "Invalid account ID" });
@@ -215,6 +224,10 @@ router.get("/show/alluser", checkAuthAdmin, async (req, res, next) => {
 //route admin
 router.patch("/edit/:id", checkAuthAdmin, async (req, res, next) => {
   try {
+    if(req.body.birth_date && moment(req.body.birth_date).isAfter(moment().subtract(18, "years"))){
+      res.sendStatus(400);
+    }
+
     const accountId = req.params.id.trim();
     const existingAccount = await Account.findOne({ where: { id: accountId } });
 

@@ -112,7 +112,6 @@ const handleCreate = async () => {
 
   if ( fieldsAreOkay ) {
     try {
-      console.log(subNewsletter.value);
       const userData = {
         "firstName": firstName.value,
         "lastName": lastName.value,
