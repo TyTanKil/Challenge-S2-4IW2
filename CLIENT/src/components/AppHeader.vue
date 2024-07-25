@@ -84,7 +84,7 @@ const goToSearchResults = () => {
     searchQuery.value = '';
     setTimeout(() => {
     location.reload();
-  }, 1);
+  }, 3);
   }
 };
 </script>
