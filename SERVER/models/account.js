@@ -76,6 +76,10 @@ account.init(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    newsletter: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize: connection,

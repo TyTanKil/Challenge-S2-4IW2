@@ -75,6 +75,10 @@ module.exports = {
       notification: {
         allowNull:false,
         type: Sequelize.BOOLEAN
+      },
+      newsletter: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       }
     });
   },

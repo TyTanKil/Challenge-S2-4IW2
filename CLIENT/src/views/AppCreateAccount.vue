@@ -6,6 +6,7 @@ import AppInputDate from '@/components/formComponents/AppInputDate.vue';
 import AppInputRadio from '@/components/formComponents/AppInputRadio.vue';
 import { useToast } from 'vue-toast-notification';
 import ApiClient from '@/assets/js/apiClient';
+import AppInputCheckbox from "@/components/formComponents/AppInputCheckbox.vue";
 
 const email = ref('');
 const password = ref('');
@@ -20,6 +21,7 @@ const passwordError = ref('');
 const phoneError = ref('');
 const lastNameError = ref('');
 const firstNameError = ref('');
+const subNewsletter = ref('false');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/;
@@ -81,15 +83,19 @@ const handleCreate = async () => {
 
   if ( isEmailValid && isPasswordValid && isPhoneValid && isFirstNameValid && isLastNameValid ) {
     try {
-      await ApiClient.post( "/user", {
+      console.log(subNewsletter.value);
+      const userData = {
         "firstName": firstName.value,
         "lastName": lastName.value,
         "gender": gender.value,
         "email": email.value,
         "password": password.value,
-        "phone": phone.value,
-        "birth_date": birthDate.value
-      } );
+        "birth_date": birthDate.value,
+        "newsletter": subNewsletter.value ? "1" : "0",
+      }
+      if (phone.value) userData["phone"] = phone.value;
+
+      await ApiClient.post( "/user", userData );
 
       toast.success(`Compte crée : vous avez reçu un email de confirmation. Veuillez vérifier votre boîte de réception.`);
     } catch ( error ) {
@@ -127,6 +133,8 @@ const handleCreate = async () => {
         <span v-if="lastNameError" class="error">{{ lastNameError }}</span>
         <AppInputRadio v-model="gender" label="Civilité" :options="[{value: 'm', label: 'M.'}, {value: 'f', label: 'Mme.'}, {value: 'a', label: 'Autre'}]"></AppInputRadio>
         <AppInputDate v-model="birthDate" label="Date de naissance" isNeeded></AppInputDate>
+        <br>
+        <AppInputCheckbox v-model="subNewsletter" label="Je souhaite m'inscrire à la newsletter TechShop afin de recevoir les offres promotionnelles par mail"></AppInputCheckbox>
       </div>
       <AppButtonSecondary label="Valider"></AppButtonSecondary>
     </form>
