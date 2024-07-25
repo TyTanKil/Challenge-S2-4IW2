@@ -3,7 +3,6 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { sendEmail } = require("./mailer");
-const paymentRoutes = require("./payment"); // Importation du fichier de paiement
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const ProductRouter = require("./routes/productController");
@@ -11,7 +10,7 @@ const CartRouter = require("./routes/cartController");
 const CartProductRouter = require("./routes/cartproductController");
 const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
-const PayementRouter = require("./payment");
+const PaymentRouter = require("./payment");
 const path = require("path");
 
 // Import email templates
@@ -47,13 +46,13 @@ app.use("/stocks", stockController);
 app.use("/productimage", productimageController);
 app.use("/order", orderController);
 app.use("/order-product", orderProductController);
-app.use("/payment", PayementRouter);
+app.use("/payment", PaymentRouter);
 app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Utilisation des routes de paiement
-app.use(paymentRoutes);
+app.use(PaymentRouter);
 
 require("./middlewares/birthdayEmailScheduler");
 
