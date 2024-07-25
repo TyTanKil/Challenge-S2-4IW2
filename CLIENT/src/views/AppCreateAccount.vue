@@ -111,6 +111,7 @@ const handleCreate = async () => {
   const fieldsAreOkay = areFieldsOkay();
 
   if ( fieldsAreOkay ) {
+    document.getElementById("loader").style.display = 'block';
     try {
       const userData = {
         "firstName": firstName.value,
@@ -126,7 +127,9 @@ const handleCreate = async () => {
       await ApiClient.post( "/user", userData );
 
       toast.success(`Compte crée : vous avez reçu un email de confirmation. Veuillez vérifier votre boîte de réception.`);
+      document.getElementById("loader").style.display = 'none';
     } catch ( error ) {
+      console.log(error)
       switch ( error.response.status ) {
         case 409:
           toast.error( `Impossible de créer le compte - le champ ${error.response.data.field} n'est pas unique` );
@@ -135,6 +138,7 @@ const handleCreate = async () => {
           toast.error( 'Impossible de créer le compte - veuillez contacter l\'assistance' );
           break;
       }
+      document.getElementById("loader").style.display = 'none';
     }
   }
 };
@@ -167,7 +171,7 @@ const handleCreate = async () => {
         <AppInputCheckbox v-model="subNewsletter" label="Je souhaite m'inscrire à la newsletter TechShop afin de recevoir les offres promotionnelles par mail"></AppInputCheckbox>
       </div>
       <AppButtonSecondary label="Valider"></AppButtonSecondary>
-
+      <div class="loader" id="loader" hidden></div>
     </form>
   </div>
 </template>
@@ -201,6 +205,20 @@ form {
       width: 100%;
     }
   }
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .error {
