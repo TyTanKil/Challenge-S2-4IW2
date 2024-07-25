@@ -41,6 +41,8 @@ router.post("/", async (req, res, next) => {
 
     const validate_hash = uuidv4();
 
+    delete req.body.roles;
+
     const account = await Account.create({
       id: uuidv4(),
       ...req.body,
@@ -120,6 +122,8 @@ router.patch("/:id", checkAuth, async (req, res, next) => {
     }
 
     const updatedFields = Object.keys(req.body);
+
+    delete req.body.roles;
 
     const [nbUpdated, accounts] = await Account.update(req.body, {
       where: {
@@ -217,8 +221,6 @@ router.patch("/edit/:id", checkAuthAdmin, async (req, res, next) => {
     if (!existingAccount) {
       return res.status(404).json({ error: "Account not found" });
     }
-
-    const updatedFields = Object.keys(req.body);
 
     if (req.body.roles && typeof req.body.roles === "string") {
       req.body.roles = req.body.roles.split(",").map((role) => role.trim());
