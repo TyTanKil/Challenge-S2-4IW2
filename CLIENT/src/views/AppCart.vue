@@ -94,7 +94,7 @@ export default {
             product_data: {
               name: product.label
             },
-            unit_amount: product.unit_price * 100,
+            unit_amount: Math.round(product.unit_price * 100),
           },
           quantity: product.quantity,
         }));
