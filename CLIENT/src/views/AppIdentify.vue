@@ -114,12 +114,11 @@
     width: 50%;
     height: 2px;
     background-color: limegreen;
-    transition: transform 0.3s ease;
+    transition: 0.3s ease;
   }
   
   .underline.active {
-    transform: translateX(100%);
-    
+    margin-left: 50%;
   }
 
   @media (prefers-color-scheme: dark) {

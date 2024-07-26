@@ -1,144 +1,143 @@
 <script>
-  import { computed, onMounted, ref } from 'vue';
-  import { useStore } from 'vuex';
-  import { loadStripe } from '@stripe/stripe-js';
-  import ProductItem from '../components/AppCartProduct.vue';
-  import ApiClient from '@/assets/js/apiClient';
-  import AppHorizontalCard from '../components/AppHorizontalCard.vue';
-  import { useToast } from 'vue-toast-notification';
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from 'vuex';
+import { loadStripe } from '@stripe/stripe-js';
+import ProductItem from '../components/AppCartProduct.vue';
+import ApiClient from '@/assets/js/apiClient';
+import AppHorizontalCard from '../components/AppHorizontalCard.vue';
+import { useToast } from 'vue-toast-notification';
+import Swal from 'sweetalert2';
 
-  export default {
-    name: 'App',
-    components: {
-      ProductItem,
-      AppHorizontalCard,
-    },
-    setup() {
-      const store = useStore();
-      const toast = useToast();
-      const products = ref([]);
+export default {
+  name: 'App',
+  components: {
+    ProductItem,
+    AppHorizontalCard,
+  },
+  setup() {
+    const store = useStore();
+    const toast = useToast();
+    const products = ref([]);
 
-      // Fonction pour récupérer les produits du panier
-      const fetchCartProducts = async (id_user) => {
-        try {
-          if (id_user == null) {
-            throw new Error('L\'ID utilisateur est requis.');
-          }
-
-          // Récupérer le panier de l'utilisateur
-          const responseCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
-          if (responseCart.status !== 200) {
-            throw new Error('Erreur lors de la récupération du panier : ' + responseCart.statusText);
-          }
-
-          const id_cart = responseCart.data.id;
-
-          // Récupérer les produits du panier
-          const responseCartProducts = await ApiClient.post(`/cartProduct/products`, { id_cart: id_cart });
-          if (responseCartProducts.status !== 200) {
-            throw new Error('Erreur lors de la récupération des produits du panier : ' + responseCartProducts.statusText);
-          }
-
-          const DataCartProducts = responseCartProducts.data;
-
-          // Récupérer les détails des produits
-          const productDetailsPromises = DataCartProducts.map(async (cartProduct) => {
-            const { id_product, quantity } = cartProduct;
-            try {
-              const responseProduct = await ApiClient.get(`/product/show/${id_product}`);
-              console.log('Product:', responseProduct.data);
-              return {
-                label : responseProduct.label,
-                description: responseProduct.description,
-                unit_price: responseProduct.unit_price,
-                id_cart: cartProduct.id_cart,
-                quantity: cartProduct.quantity,
-                createdAt: cartProduct.createdAt,
-                updatedAt: cartProduct.updatedAt,
-              };
-            } catch (error) {
-              console.error(`Erreur lors de la récupération du produit ${id_product}:`, error);
-              return null;
-            }
-          });
-
-          const productsArray = await Promise.all(productDetailsPromises);
-          console.log('Products:', productsArray);
-          return productsArray.filter(product => product !== null);
-        } catch (error) {
-          console.error('Erreur lors de la récupération des produits du panier:', error);
-          return []; // Retourner un tableau vide en cas d'erreur
+    const fetchCartProducts = async (id_user) => {
+      try {
+        if (id_user == null) {
+          throw new Error('L\'ID utilisateur est requis.');
         }
-      };
 
-      // Fonction pour charger les produits au montage du composant
-      const loadProducts = async () => {
-        const id_user = store.state.user_id;
-        if (id_user) {
-          products.value = await fetchCartProducts(id_user);
-        } else {
-          toast.error('Vous devez être connecté pour voir les produits du panier.');
+        const responseCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
+        if (responseCart.status !== 200) {
+          throw new Error('Erreur lors de la récupération du panier : ' + responseCart.statusText);
         }
-      };
 
-      onMounted(() => {
-        loadProducts(); // Appeler loadProducts lors de la montée du composant
-      });
+        const id_cart = responseCart.data.id;
+        const responseCartProducts = await ApiClient.post(`/cartProduct/products`, { id_cart: id_cart });
+        if (responseCartProducts.status !== 200) {
+          throw new Error('Erreur lors de la récupération des produits du panier : ' + responseCartProducts.statusText);
+        }
 
-      const cart = computed(() => store.state.cart);
+        const DataCartProducts = responseCartProducts.data;
 
-      const productById = (id) => {
-        return products.value.find(product => product.id === id);
-      };
+        const productDetailsPromises = DataCartProducts.map(async (cartProduct) => {
+          const { id_product, quantity } = cartProduct;
+          try {
+            const responseProduct = await ApiClient.get(`/product/show/${id_product}`);
+            return {
+              label: responseProduct.label,
+              description: responseProduct.description,
+              unit_price: responseProduct.unit_price,
+              id_cart: cartProduct.id_cart,
+              quantity: cartProduct.quantity,
+              createdAt: cartProduct.createdAt,
+              updatedAt: cartProduct.updatedAt,
+            };
+          } catch (error) {
+            console.error(`Erreur lors de la récupération du produit ${id_product}:`, error);
+            return null;
+          }
+        });
 
-      const cartTotal = computed(() => {
-      return products.value.reduce((total, product) => {
-        return total + (product.unit_price * product.quantity);
-      }, 0).toFixed(2); // Formatage en deux décimales
+        const productsArray = await Promise.all(productDetailsPromises);
+        return productsArray.filter(product => product !== null);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des produits du panier:', error);
+        return [];
+      }
+    };
+
+    const loadProducts = async () => {
+      const id_user = store.state.user_id;
+      if (id_user) {
+        products.value = await fetchCartProducts(id_user);
+      } else {
+        toast.error('Vous devez être connecté pour voir les produits du panier.');
+      }
+    };
+
+    onMounted(() => {
+      loadProducts();
     });
 
-      const checkout = async () => {
-        try {
+    const cart = computed(() => store.state.cart);
 
-          const lineItems = products.value.map(product => ({
-            price_data: {
-              currency: 'eur',
-              product_data: {
-                name: product.label
-              },
-              unit_amount: product.unit_price * 100,
+    const cartTotal = computed(() => {
+      return products.value.reduce((total, product) => {
+        return total + (product.unit_price * product.quantity);
+      }, 0).toFixed(2);
+    });
+
+    const checkout = async () => {
+      try {
+        const lineItems = products.value.map(product => ({
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: product.label
             },
-            quantity: product.quantity,
-          }));
+            unit_amount: product.unit_price * 100,
+          },
+          quantity: product.quantity,
+        }));
 
-          const response = await ApiClient.post(`/create-checkout-session`, { lineItems: lineItems });
+        const response = await ApiClient.post(`/payment/create-checkout-session`, { lineItems: lineItems });
 
-          console.log('Checkout session:', response);
-
-          if (!response.status === 200) {
-            const error = await response.json();
-            throw new Error(error.error || 'Failed to create checkout session');
-          }
-
-          const data = await response.data;
-          if (data.id) {
-            const stripe = await loadStripe('pk_test_51Pb4ZxRplArNYE0A2N3uv8m9TYjIO1xFOgiZj2JQdJIrmyh5LRUobmcIZSkGSntrSEyb79uTGlo78C5vdBjjMj8900RnJ2Issz');
-            stripe.redirectToCheckout({ sessionId: data.id });
-          }
-        } catch (error) {
-          console.error('Error creating checkout session:', error);
+        if (response.status !== 200) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create checkout session');
         }
-      };
 
-      return {
-        cart,
-        products,
-        cartTotal,
-        productById,
-        checkout,
-      };
-    },
-  };
+        const data = await response.data;
+        if (data.id) {
+          const stripe = await loadStripe('pk_test_51Pb4ZxRplArNYE0A2N3uv8m9TYjIO1xFOgiZj2JQdJIrmyh5LRUobmcIZSkGSntrSEyb79uTGlo78C5vdBjjMj8900RnJ2Issz');
+          stripe.redirectToCheckout({ sessionId: data.id });
+        }
+      } catch (error) {
+        console.error('Error creating checkout session:', error);
+      }
+    };
+
+    const confirmCheckout = async () => {
+      const result = await Swal.fire({
+        title: 'Êtes-vous sûr de vouloir payer ?',
+        text: `Le montant total est de ${cartTotal.value}€.`,
+        showCancelButton: true,
+        confirmButtonText: 'Oui, payer',
+        cancelButtonText: 'Non, annuler',
+      });
+
+      if (result.isConfirmed) {
+        await checkout();
+      }
+    };
+
+    return {
+      cart,
+      products,
+      cartTotal,
+      confirmCheckout,
+    };
+  },
+};
 </script>
 
 <template>
@@ -147,21 +146,17 @@
       <div class="cards_cart">
         <ProductItem
           v-for="product in products"
-          :cartProductId="cartProductId"
-          :key="product._id"
-          :id="product.id"
+          :key="product.id"
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
           :quantity="product.quantity"
-          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.jpg'"
-          @select="() => handleSelect(product)"
         />
       </div>
       
       <div class="total">
         <p>Total TTC: {{ cartTotal }}€</p>
-        <button class="checkout-btn" @click="checkout">Passer commande</button>
+        <button class="checkout-btn" @click="confirmCheckout">Passer commande</button>
       </div>
     </div>
     <div v-else>
