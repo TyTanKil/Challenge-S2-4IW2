@@ -88,22 +88,31 @@ const submitForm = async () => {
     formData.append('label', product.value.label);
     formData.append('description', product.value.description);
     formData.append('ref', product.value.ref);
+
+    if(typeof product.value.unit_price == 'string' && product.value.unit_price.includes(',')){
+      product.value.unit_price = product.value.unit_price.replace(',', '.')
+    }
+    product.value.unit_price = (parseFloat(product.value.unit_price)).toFixed(2)
     formData.append('unit_price', product.value.unit_price);
+
     formData.append('stock', product.value.stock);
     formData.append('id_category', product.value.id_category);
     formData.append('id_manufacturer', product.value.id_manufacturer);
+
+    console.log(product.value.unit_price)
+
     if (product.value.image) {
         formData.append('image', product.value.image);
     }
 
     try {
-        await ApiClient.post('/products', formData, {
+        /*await ApiClient.post('/products', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
         router.push({ name: 'ProductList' });
-        toast.success('Produit ajouté avec succès');
+        toast.success('Produit ajouté avec succès');*/
     } catch (error) {
         console.error('Error adding product:', error);
         toast.error('Erreur lors de l\'ajout du produit');
