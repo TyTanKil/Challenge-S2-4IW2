@@ -22,7 +22,7 @@
         </ul>
       </div>
       <div>
-        <h2>Cadre Légal</h2>
+        <h2>Cadre légal</h2>
         <ul>
           <li><router-link to="/cgv">Conditions générales de vente</router-link></li>
           <li><router-link to="/informations_legales">Informations légales</router-link></li>

@@ -1,60 +1,45 @@
 # Challenge-S2-4IW2
 Challenge semestriel du S2 
 
-## Sequelize : 
+## Développeurs :
+- ANDRE Hugo (HugoAndre15):
+    * Paiement par Stripe
+    * Envoi de mails
+    * Anonymisation des données
+    * Page 'mon compte'
 
-### Models :
+- HALIMI Kylian (TyTanKil):
+    * Models
+    * Panier
+    * Commandes
 
-Créer un model :
+- BEGUERISSE Jean-Pierre (JPBeguerisse):
+    * Dashboard admin
+
+- COPPE Rafael (RafaelCoppe):
+    * Docker et Serveur de prod
+    * Bases de Sequelize, seeding, routes et Mongoose
+    * Pages liées au légal
+    * Login / Inscription
+    * Liaison back et front
+
+## Lancement du projet : 
+
+Installer les dépendances : 
 ```
-npx sequelize-cli model:generate --name {Name} --attributes firstName:string,lastName:integer
+cd CLIENT
+npm install
+cd ../SERVER
+npm install
 ```
 
-Créer une migration :
+Créer la base de données : 
 ```
 npx sequelize-cli db:migrate
-```
-*Pensez à modifier le fichier avant de lancer la migration*
-
-Annuler la dernière migration :
-```
-npx sequelize-cli db:migrate:undo
-```
-
-Annuler toutes les migrations :
-```
-npx sequelize-cli db:migrate:undo:all
-```
-
-Annuler toutes les migrations jusqu'à une migration spécifique :
-```
-npx sequelize-cli db:migrate:undo:all --to XXXXXXXXXXXXXX-create-posts.js
-```
-
-### Seeding (fixtures) :
-
-Créer une fixture :
-```
-npx sequelize-cli seed:generate --name {Name}
-```
-*Pensez à modifier le fichier avant de lancer la fixture*
-
-Lancer les fixtures :
-```
 npx sequelize-cli db:seed:all
 ```
 
-Annuler la dernière fixture :
-```
-npx sequelize-cli db:seed:undo
-```
-
-Annuler toutes les fixtures :
-```
-npx sequelize-cli db:seed:undo:all
-```
-
-Annuler toutes les fixtures jusqu'à une fixture spécifique :
-```
-npx sequelize-cli db:seed:undo --seed {Nom du seed)
+Une fois le serveur lancé, allez sur l'url : 
+``` 
+http://localhost:8080/
 ```

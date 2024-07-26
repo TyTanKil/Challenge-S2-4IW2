@@ -6,6 +6,8 @@ import AppInputDate from '@/components/formComponents/AppInputDate.vue';
 import AppInputRadio from '@/components/formComponents/AppInputRadio.vue';
 import { useToast } from 'vue-toast-notification';
 import ApiClient from '@/assets/js/apiClient';
+import AppInputCheckbox from "@/components/formComponents/AppInputCheckbox.vue";
+import moment from 'moment';
 
 const email = ref('');
 const password = ref('');
@@ -20,6 +22,9 @@ const passwordError = ref('');
 const phoneError = ref('');
 const lastNameError = ref('');
 const firstNameError = ref('');
+const ageError = ref('');
+const genderError = ref('');
+const subNewsletter = ref('false');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/;
@@ -50,7 +55,7 @@ const validatePhone = () => {
     phoneError.value = "Le format du numéro de téléphone n'est pas bon";
     return false;
   }
-  passwordError.value = '';
+  phoneError.value = '';
   return true;
 };
 
@@ -72,27 +77,59 @@ const validateLastName = () => {
     return true;
 }
 
-const handleCreate = async () => {
-  const isEmailValid = validateEmail();
-  const isPasswordValid = validatePassword();
-  const isPhoneValid = validatePhone();
-  const isFirstNameValid = validateFirstName();
-  const isLastNameValid = validateLastName();
+const validateGender = () => {
+  if (!gender.value) {
+    genderError.value = "Veuillez renseigner votre civilité.";
+    return false;
+    }
+    genderError.value = "";
+    return true;
+}
 
-  if ( isEmailValid && isPasswordValid && isPhoneValid && isFirstNameValid && isLastNameValid ) {
+const validateAge = () => {
+  if (moment(birthDate.value).isAfter(moment().subtract(18, "years"))) {
+    ageError.value = "Vous devez avoir 18 ans pour créer un compte.";
+    return false;
+    }
+    ageError.value = "";
+    return true;
+}
+
+const areFieldsOkay = () => {
+  const emailIsOkay = validateEmail();
+  const passwordIsOkay = validatePassword();
+  const phoneIsOkay = validatePhone();
+  const firstNameIsOkay = validateFirstName();
+  const lastNameIsOkay = validateLastName();
+  const ageIsOkay = validateAge();
+  const genderIsOkay = validateGender();
+
+  return emailIsOkay && passwordIsOkay && phoneIsOkay && firstNameIsOkay && lastNameIsOkay && ageIsOkay && genderIsOkay;
+};
+
+const handleCreate = async () => {
+  const fieldsAreOkay = areFieldsOkay();
+
+  if ( fieldsAreOkay ) {
+    document.getElementById("loader").style.display = 'block';
     try {
-      await ApiClient.post( "/user", {
+      const userData = {
         "firstName": firstName.value,
         "lastName": lastName.value,
         "gender": gender.value,
         "email": email.value,
         "password": password.value,
-        "phone": phone.value,
-        "birth_date": birthDate.value
-      } );
+        "birth_date": birthDate.value,
+        "newsletter": subNewsletter.value ? "1" : "0",
+      }
+      if (phone.value) userData["phone"] = phone.value;
+
+      await ApiClient.post( "/user", userData );
 
       toast.success(`Compte crée : vous avez reçu un email de confirmation. Veuillez vérifier votre boîte de réception.`);
+      document.getElementById("loader").style.display = 'none';
     } catch ( error ) {
+      console.log(error)
       switch ( error.response.status ) {
         case 409:
           toast.error( `Impossible de créer le compte - le champ ${error.response.data.field} n'est pas unique` );
@@ -101,6 +138,7 @@ const handleCreate = async () => {
           toast.error( 'Impossible de créer le compte - veuillez contacter l\'assistance' );
           break;
       }
+      document.getElementById("loader").style.display = 'none';
     }
   }
 };
@@ -125,10 +163,15 @@ const handleCreate = async () => {
         <span v-if="firstNameError" class="error">{{ firstNameError }}</span>
         <AppInputText v-model="lastName" label="Nom" isNeeded placeholder="Nom"></AppInputText>
         <span v-if="lastNameError" class="error">{{ lastNameError }}</span>
-        <AppInputRadio v-model="gender" label="Civilité" :options="[{value: 'm', label: 'M.'}, {value: 'f', label: 'Mme.'}, {value: 'a', label: 'Autre'}]"></AppInputRadio>
+        <AppInputRadio v-model="gender" label="Civilité" isNeeded :options="[{value: 'm', label: 'M.'}, {value: 'f', label: 'Mme.'}, {value: 'a', label: 'Autre'}]"></AppInputRadio>
+        <span v-if="genderError" class="error">{{ genderError }}</span>
         <AppInputDate v-model="birthDate" label="Date de naissance" isNeeded></AppInputDate>
+        <span v-if="ageError" class="error">{{ ageError }}</span>
+        <br>
+        <AppInputCheckbox v-model="subNewsletter" label="Je souhaite m'inscrire à la newsletter TechShop afin de recevoir les offres promotionnelles par mail"></AppInputCheckbox>
       </div>
       <AppButtonSecondary label="Valider"></AppButtonSecondary>
+      <div class="loader" id="loader" hidden></div>
     </form>
   </div>
 </template>
@@ -162,6 +205,20 @@ form {
       width: 100%;
     }
   }
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .error {
