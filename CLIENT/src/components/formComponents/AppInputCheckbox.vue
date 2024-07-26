@@ -12,15 +12,15 @@ const emit = defineEmits(['update:modelValue']);
 
 <template>
   <div class="inputCheckbox">
+    <input
+        :id="props.label"
+        type="checkbox"
+        :value="props.modelValue"
+        @input="$emit('update:modelValue', $event.target.value)">
     <label :for="props.label">
       {{ props.label }}
       <span v-if="props.isNeeded">*</span>
-    </label>        
-    <input 
-    :id="props.label"
-    type="checkbox"
-    :value="props.modelValue"
-    @input="$emit('update:modelValue', $event.target.value)"> 
+    </label>
   </div>
 </template>
 
@@ -29,6 +29,7 @@ const emit = defineEmits(['update:modelValue']);
 .inputCheckbox {
   display: flex;
   flex-direction: row;
+  gap: 1rem;
   margin: 0.5rem;
   width: 80%;
   min-width: 10rem;

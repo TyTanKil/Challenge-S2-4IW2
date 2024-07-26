@@ -64,7 +64,7 @@ const fetchProducts = async () => {
     const response = await ApiClient.get('/products');
     products.value = response;
   } catch (error) {
-    toast.error('Erreur lors de la récupération des produits');
+    console.error('Erreur lors de la récupération des produits');
   }
 };
 
@@ -84,7 +84,7 @@ const goToSearchResults = () => {
     searchQuery.value = '';
     setTimeout(() => {
     location.reload();
-  }, 1);
+  }, 3);
   }
 };
 </script>

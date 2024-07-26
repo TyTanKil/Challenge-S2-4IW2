@@ -1,7 +1,7 @@
 <script setup lang='ts'>
-  import AppButtonSecondary from '../formComponents/AppButtonSecondary.vue';
-  import AppInputText from '../formComponents/AppInputText.vue';
-  import AppInputCheckbox from '../formComponents/AppInputCheckbox.vue';
+  import AppButtonSecondary from '../components/formComponents/AppButtonSecondary.vue';
+  import AppInputText from '../components/formComponents/AppInputText.vue';
+  import AppInputCheckbox from '../components/formComponents/AppInputCheckbox.vue';
 
   import { ref } from 'vue';
   import ApiClient from '@/assets/js/apiClient';
@@ -65,8 +65,7 @@
 
   .login-page{
     width: 80%;
-    margin: auto;
-    margin-top: 2rem;
+    margin: 2rem auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -80,10 +79,7 @@
         margin: auto;
         color: #575757;
     }
-    .btnNewAccount{
-        width: 80%;
-        margin: auto;
-    }
+
     @media (prefers-color-scheme: dark) {
         p{
           color: #fff;

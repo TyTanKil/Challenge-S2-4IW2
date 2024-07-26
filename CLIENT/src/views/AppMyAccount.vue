@@ -104,6 +104,7 @@
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import ApiClient from "@/assets/js/apiClient.js";
 
@@ -129,7 +130,6 @@ export default {
       const userId = store.state.user_id;
       try {
         user.value = await ApiClient.get(`/user/${userId}`);
-        // Initialiser l'état du switch avec la valeur de la notification de l'utilisateur
         isActivated.value = user.value.notification;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
@@ -176,28 +176,65 @@ export default {
     };
 
     const editField = async (field) => {
-      let newValue = prompt(`Entrez le nouveau ${field}:`);
-      if (newValue !== null) {
+      const { value: newValue } = await Swal.fire({
+        title: `Modifier ${field}`,
+        input: 'text',
+        inputLabel: `Entrez le nouveau ${field}`,
+        inputPlaceholder: `Nouveau ${field}`,
+        showCancelButton: true,
+        confirmButtonText: 'Sauvegarder',
+        cancelButtonText: 'Annuler',
+        inputValidator: (value) => {
+          if (!value) {
+            return 'Ce champ est requis !';
+          }
+        }
+      });
+
+      if (newValue) {
         try {
           await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
-          // Mettre à jour l'utilisateur après modification
           await fetchUserData();
-          alert(`Le champ ${field} a été modifié avec succès.`);
+          Swal.fire({
+            title: 'Succès',
+            text: `Le champ ${field} a été modifié avec succès.`,
+            icon: 'success'
+          });
         } catch (error) {
           console.error(`Erreur lors de la modification du champ ${field}:`, error);
-          alert(`Erreur lors de la modification du champ ${field}. Veuillez réessayer.`);
+          Swal.fire({
+            title: 'Erreur',
+            text: `Erreur lors de la modification du champ ${field}. Veuillez réessayer.`,
+            icon: 'error'
+          });
         }
       }
     };
 
     const changePassword = async () => {
-      let oldPassword = prompt('Entrez votre ancien mot de passe:');
-      let newPassword = prompt('Entrez votre nouveau mot de passe:');
-      let newPasswordConfirmation = prompt('Confirmez votre nouveau mot de passe:');
-      if (oldPassword !== null && newPassword !== null && newPasswordConfirmation !== null) {
+      const { value: formValues } = await Swal.fire({
+        title: 'Modifier le mot de passe',
+        html:
+          '<input id="old-password" class="swal2-input" placeholder="Ancien mot de passe" type="password">' +
+          '<input id="new-password" class="swal2-input" placeholder="Nouveau mot de passe" type="password">' +
+          '<input id="new-password-confirmation" class="swal2-input" placeholder="Confirmez le nouveau mot de passe" type="password">',
+        focusConfirm: false,
+        preConfirm: () => {
+          return {
+            oldPassword: document.getElementById('old-password').value,
+            newPassword: document.getElementById('new-password').value,
+            newPasswordConfirmation: document.getElementById('new-password-confirmation').value
+          };
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Sauvegarder',
+        cancelButtonText: 'Annuler'
+      });
+
+      if (formValues) {
+        const { oldPassword, newPassword, newPasswordConfirmation } = formValues;
         if (newPassword === newPasswordConfirmation) {
           try {
-            // Vérifier l'ancien mot de passe
             const verifyResponse = await ApiClient.post(`/user/verify-password`, {
               accountId: user.value.id,
               password: oldPassword
@@ -205,32 +242,63 @@ export default {
 
             if (verifyResponse.data.valid) {
               await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
-              // Mettre à jour l'utilisateur après modification
               await fetchUserData();
-              alert(`Le mot de passe a été modifié avec succès.`);
+              Swal.fire({
+                title: 'Succès',
+                text: 'Le mot de passe a été modifié avec succès.',
+                icon: 'success'
+              });
             } else {
-              alert('L\'ancien mot de passe est incorrect. Veuillez réessayer.');
+              Swal.fire({
+                title: 'Erreur',
+                text: 'L\'ancien mot de passe est incorrect. Veuillez réessayer.',
+                icon: 'error'
+              });
             }
           } catch (error) {
             console.error(`Erreur lors de la modification du mot de passe:`, error);
-            alert(`Erreur lors de la modification du mot de passe. Veuillez réessayer.`);
+            Swal.fire({
+              title: 'Erreur',
+              text: 'Erreur lors de la modification du mot de passe. Veuillez réessayer.',
+              icon: 'error'
+            });
           }
         } else {
-          alert('Les mots de passe ne correspondent pas. Veuillez réessayer.');
+          Swal.fire({
+            title: 'Erreur',
+            text: 'Les mots de passe ne correspondent pas. Veuillez réessayer.',
+            icon: 'error'
+          });
         }
       }
     };
 
     const deleteAccount = async () => {
-      const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');
-      if (confirmDelete) {
+      const confirmDelete = await Swal.fire({
+        title: 'Supprimer le compte',
+        text: 'Êtes-vous sûr de vouloir supprimer votre compte ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+      });
+
+      if (confirmDelete.isConfirmed) {
         try {
           await ApiClient.delete(`/user/${user.value.id}`);
-          alert('Votre compte a été anonymisé avec succès.');
+          Swal.fire({
+            title: 'Compte supprimé',
+            text: 'Votre compte a été anonymisé avec succès.',
+            icon: 'success'
+          });
           logout();
         } catch (error) {
           console.error('Erreur lors de la suppression du compte:', error);
-          alert('Erreur lors de la suppression du compte. Veuillez réessayer.');
+          Swal.fire({
+            title: 'Erreur',
+            text: 'Erreur lors de la suppression du compte. Veuillez réessayer.',
+            icon: 'error'
+          });
         }
       }
     };
@@ -238,10 +306,18 @@ export default {
     const toggleActivation = async () => {
       try {
         await ApiClient.patch(`/user/${user.value.id}`, { notification: isActivated.value });
-        alert('L\'état des notifications a été mis à jour avec succès.');
+        Swal.fire({
+          title: 'Succès',
+          text: 'L\'état des notifications a été mis à jour avec succès.',
+          icon: 'success'
+        });
       } catch (error) {
         console.error('Erreur lors de la mise à jour des notifications:', error);
-        alert('Erreur lors de la mise à jour des notifications. Veuillez réessayer.');
+        Swal.fire({
+          title: 'Erreur',
+          text: 'Erreur lors de la mise à jour des notifications. Veuillez réessayer.',
+          icon: 'error'
+        });
       }
     };
 
@@ -256,14 +332,14 @@ export default {
         "Login": user.value.login,
         "Membre depuis": formatDate(user.value.createdAt),
       };
-      
+
       doc.text("Données personnelles de l'utilisateur", 10, 10);
       let y = 20;
       for (const [key, value] of Object.entries(data)) {
         doc.text(`${key}: ${value}`, 10, y);
         y += 10;
       }
-      
+
       doc.save(`user_data_${user.value.firstName}_${user.value.lastName}.pdf`);
     };
 
@@ -288,7 +364,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 /* Slider */

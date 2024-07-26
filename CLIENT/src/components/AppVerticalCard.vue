@@ -25,11 +25,10 @@
         const maxQuantity = response.data[0].quantity;
         quantityOptions.value = Array.from({ length: maxQuantity }, (_, i) => i + 1);
         } else {
-        toast.error('Erreur lors de la récupération de la quantité du produit');
+        console.error('Erreur lors de la récupération de la quantité du produit');
         }
     } catch (error) {
         console.error('Error fetching product quantity:', error);
-        toast.error('Erreur lors de la récupération de la quantité du produit');
     }
     });
 
