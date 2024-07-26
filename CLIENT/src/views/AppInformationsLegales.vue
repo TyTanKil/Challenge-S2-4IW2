@@ -5,7 +5,7 @@
     <div>
       <p>Forme de la société : Société par Actions Simplifiée (SAS)</p>
       <p>Capital social : 500 €</p>
-      <p>RCS de Lyon : 403 554 182</p>
+      <p>RCS de Beauvais : 403 554 182</p>
       <p>Siège social : 121 RUE PASTEUR 60290 LAIGNEVILLE CEDEX France</p>
       <p>Numéros d'appel (standard du siège social) : Tél : 06 27 06 22 55</p>
       <p>du lundi au vendredi de 9h00 à 12h30 et de 13h45 à 18h (heure de Paris)</p>
