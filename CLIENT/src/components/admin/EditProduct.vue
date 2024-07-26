@@ -119,7 +119,13 @@ const submitForm = async () => {
     formData.append('label', product.value.label);
     formData.append('description', product.value.description);
     formData.append('ref', product.value.ref);
+
+    if(typeof product.value.unit_price == 'string' && product.value.unit_price.includes(',')){
+      product.value.unit_price = product.value.unit_price.replace(',', '.')
+    }
+    product.value.unit_price = (parseFloat(product.value.unit_price)).toFixed(2)
     formData.append('unit_price', product.value.unit_price);
+
     formData.append('stock', product.value.stock);
     formData.append('id_category', product.value.id_category);
     formData.append('id_manufacturer', product.value.id_manufacturer);
