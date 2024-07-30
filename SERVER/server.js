@@ -6,6 +6,7 @@ const { sendEmail } = require("./mailer");
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const ProductRouter = require("./routes/productController");
+const NewsletterRouter = require("./routes/newsletterController");
 const CartRouter = require("./routes/cartController");
 const CartProductRouter = require("./routes/cartproductController");
 const StockRouter = require("./routes/stockController");
@@ -124,6 +125,7 @@ app.use("/user", AccountRouter);
 app.use("/cart", CartRouter);
 app.use("/cartproduct", CartProductRouter);
 app.use("/product", ProductRouter);
+app.use("/newsletter", NewsletterRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {

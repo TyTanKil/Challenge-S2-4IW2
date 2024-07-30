@@ -32,6 +32,9 @@ import CategoryList from './views/admin/AppCategoryList.vue'
 import NewCategory from './views/admin/AppAddCategory.vue'
 import EditCategory from './views/admin/AppEditCategory.vue'
 
+import NewsletterList from './views/admin/AppNewsletterList.vue'
+import NewsletterAdd from './views/admin/AppAddNewsletter.vue'
+
 import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
@@ -111,6 +114,8 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
+  { path: '/admin/newsletter', name: 'NewsletterList', component: NewsletterList },
+  { path: '/admin/newsletter/new', name: 'AddNewsletter', component: NewsletterAdd },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',
