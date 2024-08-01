@@ -36,6 +36,10 @@ import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
+import PromotionList from './views/admin/AppPromotionList.vue'
+import NewPromotion from './views/admin/AppAddPromotion.vue'
+import EditPromotion from './views/admin/AppEditPromotion.vue'
+
 import SearchResults from './views/AppSearchResults.vue'
 
 
@@ -106,6 +110,9 @@ const routes = [
   { path: '/admin/products', name: 'ProductList', component: ProductList },
   { path: '/admin/product/new', name: 'AddProduct', component: NewProduct },
   { path: '/admin/product/edit/:id', name: 'EditProduct', component: EditProduct, props: true },
+  { path: '/admin/promotions', name: 'PromotionList', component: PromotionList },
+  { path: '/admin/promotions/new', name: 'AddPromotion', component: NewPromotion },
+  { path: '/admin/promotions/edit/:id', name: 'EditPromotion', component: EditPromotion, props: true },
   { path: '/admin/category/new', name: 'AddCategory', component: NewCategory },
   { path: '/admin/category', name: 'CategoryList', component: CategoryList },
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },

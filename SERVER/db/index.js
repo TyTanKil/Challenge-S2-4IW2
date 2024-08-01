@@ -18,8 +18,7 @@ db.account = require("../models/account");
 db.User_addresses = require("../models/useraddress")(sequelize, DataTypes);
 db.cart = require("../models/cart");
 db.cartProduct = require("../models/cartproduct");
-
-// db.Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
+db.Promotion = require("../models/promotion");
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {

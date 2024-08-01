@@ -27,6 +27,7 @@ const priceChangeTemplate = require("./templates-mail/price-change");
 const contactSupportTemplate = require("./templates-mail/contact_support");
 
 const productController = require("./routes/productController");
+const promotionController = require("./routes/promotionController");
 const categoryController = require("./routes/categoryController");
 const manufacturerController = require("./routes/manufacturerController");
 const uploadController = require("./routes/uploadController");
@@ -40,6 +41,7 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/products", productController);
+app.use("/promotions", promotionController);
 app.use("/category", categoryController);
 app.use("/manufacturer", manufacturerController);
 app.use("/stocks", stockController);

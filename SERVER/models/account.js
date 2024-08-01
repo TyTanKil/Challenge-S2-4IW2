@@ -72,6 +72,10 @@ account.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    validate_hash: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     notification: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,

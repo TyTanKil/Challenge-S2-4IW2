@@ -27,12 +27,13 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    if(req.body.birth_date && moment(req.body.birth_date).isAfter(moment().subtract(18, "years"))){
-      res.sendStatus(400);
+    // Check if birth_date is valid and the user is at least 18 years old
+    if (req.body.birth_date && moment(req.body.birth_date).isAfter(moment().subtract(18, "years"))) {
+      return res.status(400).json({ error: "User must be at least 18 years old" });
     }
 
-    req.body.login =
-      `${req.body.firstName[0]}${req.body.lastName}`.toLowerCase();
+    // Generate the login
+    req.body.login = `${req.body.firstName[0]}${req.body.lastName}`.toLowerCase();
     const nbExisting = await Account.count({
       where: {
         login: {
@@ -44,32 +45,70 @@ router.post("/", async (req, res, next) => {
       req.body.login += nbExisting + 1;
     }
 
-    const validate_hash = uuidv4();
+    // Hash the anonymized data to check for existing anonymized accounts
+    const anonymizedDataHash = await bcrypt.hash(
+      `${req.body.firstName}${req.body.lastName}${req.body.email}`,
+      await bcrypt.genSalt(10)
+    );
 
-    delete req.body.roles;
-
-    const account = await Account.create({
-      id: uuidv4(),
-      ...req.body,
-      status: "c",
-      roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
-      validate_hash: validate_hash,
+    // Check for an existing anonymized account
+    const anonymizedAccount = await Account.findOne({
+      where: {
+        anonymizedDataHash: anonymizedDataHash,
+        status: "d",
+      },
     });
 
-    const mailOptions = accountConfirmationTemplate({
-      to: req.body.email,
-      name: `${req.body.firstName} ${req.body.lastName}`,
-      valid_link: `${process.env.FRONT_URL}/validate/${validate_hash}`,
-    });
+    if (anonymizedAccount) {
+      // Reactivate the anonymized account
+      await Account.update(
+        {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          phone: req.body.phone,
+          login: req.body.login,
+          password: await bcrypt.hash(req.body.password, await bcrypt.genSalt(10)),
+          birth_date: req.body.birth_date,
+          roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
+          status: "c",
+          notification: true,
+          validate_hash: uuidv4(),
+          anonymizedDataHash: null,
+        },
+        {
+          where: { id: anonymizedAccount.id },
+        }
+      );
 
-    await sendEmail(mailOptions);
-    res.sendStatus(201);
+      return res.status(200).json({ message: "Account reactivated successfully" });
+    } else {
+      // Create a new account
+      const validate_hash = uuidv4();
+      delete req.body.roles;
+      const account = await Account.create({
+        id: uuidv4(),
+        ...req.body,
+        status: "c",
+        roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
+        validate_hash: validate_hash,
+      });
+
+      const mailOptions = accountConfirmationTemplate({
+        to: req.body.email,
+        name: `${req.body.firstName} ${req.body.lastName}`,
+        valid_link: `${process.env.FRONT_URL}/validate/${validate_hash}`,
+      });
+
+      await sendEmail(mailOptions);
+      return res.sendStatus(201);
+    }
   } catch (e) {
     console.error("Error creating account:", e);
     if (e.errors && e.errors[0] && e.errors[0].type === "unique violation") {
       return res.status(409).json({ field: e.errors[0].path });
     }
-    res.status(400).json(e);
+    return res.status(400).json(e);
   }
 });
 
@@ -177,7 +216,13 @@ router.delete("/:id", checkAuth, async (req, res, next) => {
       return res.status(404).json({ error: "Account not found" });
     }
 
-    new_pwd = await bcrypt.hash("deleted", await bcrypt.genSalt(10));
+    const new_pwd = await bcrypt.hash("deleted", await bcrypt.genSalt(10));
+
+    // Stocker les informations anonymisées
+    const anonymizedDataHash = await bcrypt.hash(
+      `${account.firstName}${account.lastName}${account.email}`,
+      await bcrypt.genSalt(10)
+    );
 
     await Account.update(
       {
@@ -192,6 +237,7 @@ router.delete("/:id", checkAuth, async (req, res, next) => {
         status: "d",
         notification: false,
         validate_hash: null,
+        anonymizedDataHash: anonymizedDataHash, // Stocker le hash des informations anonymisées
       },
       {
         where: { id: accountId },
@@ -246,56 +292,8 @@ router.patch("/edit/:id", checkAuthAdmin, async (req, res, next) => {
       individualHooks: true,
     });
 
-    // if (accounts[0]) {
-    //   // Envoyer un email avec les champs modifiés
-    //   const modifiedFields = updatedFields.join(", ");
-    //   const mailOptions = accountChangeDataTemplate({
-    //     to: accounts[0].email,
-    //     name: accounts[0].firstName,
-    //     modifiedFields: modifiedFields,
-    //   });
-
-    //   await sendEmail(mailOptions);
     res.sendStatus(201);
-    // } else {
-    //   res.sendStatus(404);
-    // }
   } catch (e) {
-    next(e);
-  }
-});
-
-router.put("/:id", checkAuth, async (req, res, next) => {
-  try {
-    const accountId = req.params.id.trim();
-    if (!isUUID(accountId)) {
-      return res.status(400).json({ error: "Invalid account ID" });
-    }
-
-    const nbDeleted = await Account.update(
-      {
-        firstName: "Anonymous",
-        lastName: "User",
-        email: `deleted-${accountId}@example.com`,
-        phone: null,
-        login: `deleted-${accountId}`,
-        password: null,
-        status: "d",
-        validate_hash: null,
-      },
-      {
-        where: { id: accountId },
-      }
-    );
-
-    const account = await Account.create({
-      ...req.body,
-      id: accountId,
-    });
-
-    res.status(nbDeleted ? 200 : 201).json(account);
-  } catch (e) {
-    console.error("Error replacing account:", e);
     next(e);
   }
 });

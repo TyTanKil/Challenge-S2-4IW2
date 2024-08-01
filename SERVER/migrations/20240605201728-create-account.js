@@ -63,6 +63,10 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: true
       },
+      anonymizedDataHash: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
       createdAt: {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),

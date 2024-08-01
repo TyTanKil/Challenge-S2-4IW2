@@ -18,6 +18,9 @@ export default {
     const store = useStore();
     const toast = useToast();
     const products = ref([]);
+    const promoCode = ref('');
+    const discount = ref(0);
+    const accountId = ref(null);
 
     const fetchCartProducts = async (id_user) => {
       try {
@@ -67,6 +70,7 @@ export default {
 
     const loadProducts = async () => {
       const id_user = store.state.user_id;
+      accountId.value = id_user; // Set the account ID
       if (id_user) {
         products.value = await fetchCartProducts(id_user);
       } else {
@@ -86,6 +90,30 @@ export default {
       }, 0).toFixed(2);
     });
 
+    const discountAmount = computed(() => {
+      return (cartTotal.value * discount.value / 100).toFixed(2);
+    });
+
+    const finalTotal = computed(() => {
+      return (cartTotal.value - discountAmount.value).toFixed(2);
+    });
+
+    const validatePromoCode = async () => {
+      try {
+        const response = await ApiClient.post('/payment/validate-promo-code', { promoCode: promoCode.value, accountId: accountId.value });
+        if (response.status === 200 && response.data.valid) {
+          discount.value = response.data.discount;
+          toast.success(`Code promo validé! Vous bénéficiez de ${discount.value}% de réduction.`);
+        } else {
+          discount.value = 0;
+          toast.error('Code promo invalide.');
+        }
+      } catch (error) {
+        discount.value = 0;
+        toast.error('Erreur lors de la validation du code promo.');
+      }
+    };
+
     const checkout = async () => {
       try {
         const lineItems = products.value.map(product => ({
@@ -94,12 +122,16 @@ export default {
             product_data: {
               name: product.label
             },
-            unit_amount: Math.round(product.unit_price * 100),
+            unit_amount: product.unit_price * 100,
           },
           quantity: product.quantity,
         }));
 
-        const response = await ApiClient.post(`/payment/create-checkout-session`, { lineItems: lineItems });
+        const response = await ApiClient.post(`/payment/create-checkout-session`, {
+          lineItems: lineItems,
+          promoCode: promoCode.value,
+          accountId: accountId.value
+        });
 
         if (response.status !== 200) {
           const error = await response.json();
@@ -119,7 +151,7 @@ export default {
     const confirmCheckout = async () => {
       const result = await Swal.fire({
         title: 'Êtes-vous sûr de vouloir payer ?',
-        text: `Le montant total est de ${cartTotal.value}€.`,
+        text: `Le montant total est de ${finalTotal.value}€.`,
         showCancelButton: true,
         confirmButtonText: 'Oui, payer',
         cancelButtonText: 'Non, annuler',
@@ -134,6 +166,11 @@ export default {
       cart,
       products,
       cartTotal,
+      promoCode,
+      discount,
+      discountAmount,
+      finalTotal,
+      validatePromoCode,
       confirmCheckout,
     };
   },
@@ -147,6 +184,7 @@ export default {
         <ProductItem
           v-for="product in products"
           :key="product.id"
+          :id="product.id"
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
@@ -155,7 +193,15 @@ export default {
       </div>
       
       <div class="total">
-        <p>Total TTC: {{ cartTotal }}€</p>
+        <div class="amount-section">
+          <p>Total TTC: <span>{{ cartTotal }}€</span></p>
+          <div class="promo-section">
+            <input v-model="promoCode" type="text" placeholder="Code promo">
+            <button @click="validatePromoCode">Appliquer</button>
+          </div>
+          <p v-if="discount > 0">Promo : <span class="discount">-{{ discountAmount }}€</span></p>
+          <p>Total après remise: <span>{{ finalTotal }}€</span></p>
+        </div>
         <button class="checkout-btn" @click="confirmCheckout">Passer commande</button>
       </div>
     </div>
@@ -164,7 +210,6 @@ export default {
     </div>
   </div>
 </template>
-
 
 <style>
 .cart.content {
@@ -181,26 +226,78 @@ export default {
 
 .total {
   flex: 1; /* Prend une partie plus petite de l'espace disponible */
-  width: 200px; /* Largeur fixe */
-  height: 200px; /* Hauteur fixe */
+  display: flex;
+  height: fit-content;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px; /* Espacement interne */
+  border-radius: 10px; /* Bords arrondis */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre pour un effet de surélévation */
+  margin-left: 20px; /* Espacement entre les produits et le total */
+  background-color: #575757; /* Couleur de fond */
+  color: rgb(255, 255, 255);
+}
+
+.promo-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  border: 1px solid black;
-  border-radius: 10px; /* Bords arrondis */
-  padding: 10px; /* Espacement interne */
-  text-align: center;
-  margin-left: 20px; /* Espacement entre les produits et le total */
+  width: 100%;
+  margin-bottom: 20px; /* Espacement entre la section promo et le reste */
 }
 
-button {
-  border-radius: 10px;
-  border: none;
+.promo-section input {
   padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px; /* Espacement entre le champ et le bouton */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.promo-section button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
   cursor: pointer;
-  margin-top: 10px; /* Espacement entre le bouton et le texte */
+  background-color: #8bc34a;
+  color: rgb(255, 255, 255);
+  width: 100%;
+}
+
+.promo-section button:hover {
+  background-color: #7cb342;
+}
+
+.amount-section {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px; /* Espacement entre la section des montants et le bouton */
+}
+
+.amount-section p {
+  margin: 5px 0;
+}
+
+.amount-section span {
+  font-weight: bold;
+  &.discount{
+    color: rgb(253, 84, 84);
+  }
+}
+
+.checkout-btn {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #8bc34a;
+  color: rgb(255, 255, 255);
+  width: 100%;
+}
+
+.checkout-btn:hover {
+  background-color: #7cb342;
 }
 
 /* Style pour le mode clair */
@@ -211,12 +308,14 @@ button {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet de surélévation */
   }
 
-  button {
+  .promo-section button,
+  .checkout-btn {
     background-color: #8bc34a;
     color: rgb(255, 255, 255);
   }
 
-  button:hover {
+  .promo-section button:hover,
+  .checkout-btn:hover {
     background-color: #7cb342;
   }
 }
@@ -230,14 +329,15 @@ button {
     border: 1px solid #ffffff; /* Couleur de la bordure */
   }
 
-  button {
+  .promo-section button,
+  .checkout-btn {
     background-color: #555555;
     color: #ffffff;
   }
 
-  button:hover {
+  .promo-section button:hover,
+  .checkout-btn:hover {
     background-color: #666666;
   }
 }
 </style>
-  
