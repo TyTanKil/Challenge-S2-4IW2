@@ -1,25 +1,43 @@
-'use strict';
-const { Model } = require("sequelize");
+"use strict";
+const { Model, DataTypes } = require("sequelize");
+const connection = require("./db");
 
-module.exports = (sequelize, DataTypes) => {
-  class Newsletter extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
+class newsletter extends Model {
+  static associate(models) {
   }
-  Newsletter.init({
-    date: DataTypes.DATEONLY,
-    object: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    sent: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'newsletter',
-  });
-  return Newsletter;
-};
+}
+
+newsletter.init(
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER
+      },
+      date: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+      },
+      object: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      sent: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      }
+    },
+    {
+      sequelize: connection,
+      modelName: "newsletter",
+      timestamps: false,
+    }
+);
+
+module.exports = newsletter;

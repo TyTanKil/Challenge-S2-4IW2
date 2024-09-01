@@ -33,7 +33,7 @@
                         <td class="py-3 px-6 text-left">{{ email.date }}</td>
                         <td class="py-3 px-6 text-left">{{ email.sent }}</td>
                         <td class="py-3 px-6 text-center">
-                            <div class="flex item-center justify-center space-x-2 w-full gap-4">
+                            <div v-if="!email.sent" class="flex item-center justify-center space-x-2 w-full gap-4">
                                 <button @click="editEmail(email.id)"
                                     class="bg-customGreen hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -140,7 +140,7 @@ const addEmail = () => {
 };
 
 const editEmail = (id) => {
-    /*router.push({ name: 'EditCategory', params: { id } });*/
+    router.push({ name: 'EditNewsletter', params: { id } });
 };
 
 const confirmDelete = (id) => {
@@ -150,14 +150,14 @@ const confirmDelete = (id) => {
 };
 
 const deleteEmail = async (id) => {
-    /*try {
-        await ApiClient.delete(`/category/${id}`); 
+    try {
+        await ApiClient.delete(`/newsletter/${id}`);
         emails.value = emails.value.filter(category => category.id !== id);
-        toast.success('Catégorie supprimée avec succès');
+        toast.success('Email supprimée avec succès');
     } catch (error) {
-        console.error('Error deleting category:', error);
-        toast.error('Erreur lors de la suppression de la catégorie');
-    }*/
+        console.error('Error deleting email:', error);
+        toast.error('Erreur lors de la suppression de l\'email');
+    }
 };
 </script>
 

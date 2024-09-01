@@ -1,7 +1,7 @@
 <template>
     <div class="mb-6">
         <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
-        <textarea :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :required="required"
+        <textarea :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :required="required" rows="15"
             class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen"></textarea>
     </div>
 </template>
