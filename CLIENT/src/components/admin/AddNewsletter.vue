@@ -3,12 +3,12 @@
         <div class="w-full max-w-lg">
             <h1 class="text-2xl font-bold mb-8">Ajouter un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
-                <FormInput id="object" label="Objet du mail" type="text" :modelValue="product.object"
-                    @update:modelValue="product.object = $event" required class="mb-4" />
-                <FormInput id="content" label="Contenu du mail" type="text" :modelValue="product.content"
-                    @update:modelValue="product.content = $event" required class="mb-4" />
-                <FormDate id="date" label="Date d'envoi" :modelValue="product.date" :datemin="tomorrow"
-                         @update:modelValue="product.date = $event" required class="mb-4" />
+                <FormInput id="object" label="Objet du mail" type="text" :modelValue="email.object"
+                    @update:modelValue="email.object = $event" required class="mb-4" />
+                <FormTextarea id="content" label="Contenu du mail" :modelValue="email.content"
+                    @update:modelValue="email.content = $event" required class="mb-4" />
+                <FormDate id="date" label="Date d'envoi" :modelValue="email.date" :datemin="tomorrow"
+                         @update:modelValue="email.date = $event" required class="mb-4" />
                 <div class="text-right">
                     <button type="submit"
                         class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
@@ -37,7 +37,7 @@ let tomorrow = d.toLocaleDateString('en-CA');
 
 const toast = useToast();
 const router = useRouter();
-const product = ref({
+const email = ref({
     date: '',
     object: '',
     content: '',
@@ -45,14 +45,18 @@ const product = ref({
 
 const submitForm = async () => {
     const formData = new FormData();
-    formData.append('date', product.value.date);
-    formData.append('object', product.value.object);
-    formData.append('content', product.value.content);
+    formData.append('date', email.value.date);
+    formData.append('object', email.value.object);
+    formData.append('content', email.value.content);
 
     try {
-        /*await ApiClient.post('/newsletter', formData);
+        await ApiClient.post('/newsletter', {
+            date: email.value.date,
+            object: email.value.object,
+            content: email.value.content,
+        });
         router.push({ name: 'NewsletterList' });
-        toast.success('Email ajouté avec succès');*/
+        toast.success('Email ajouté avec succès');
     } catch (error) {
         console.error('Error adding email:', error);
         toast.error('Erreur lors de l\'ajout du produit');
