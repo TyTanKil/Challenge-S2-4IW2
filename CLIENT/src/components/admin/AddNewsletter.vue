@@ -3,10 +3,17 @@
         <div class="w-full max-w-lg">
             <h1 class="text-2xl font-bold mb-8">Ajouter un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
-                <FormInput id="object" label="Objet du mail" type="text" :modelValue="email.object"
-                    @update:modelValue="email.object = $event" required class="mb-4" />
-                <FormTextarea id="content" label="Contenu du mail" :modelValue="email.content"
-                    @update:modelValue="email.content = $event" required class="mb-4" />
+                <FormStylisedInput
+                    id="object"
+                    label="Objet du mail"
+                    required
+                />
+                <FormStylisedInput
+                    id="content"
+                    label="Contenu du mail"
+                    toolbar="full"
+                    required
+                />
                 <FormDate id="date" label="Date d'envoi" :modelValue="email.date" :datemin="tomorrow"
                          @update:modelValue="email.date = $event" required class="mb-4" />
                 <div class="text-right">
@@ -21,13 +28,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ApiClient from '../../assets/js/apiClient'; 
-import FormInput from '../formComponents/admin/FormInput.vue';
-import FormTextarea from '../formComponents/admin/FormTextarea.vue';
-import FormFileInput from '../formComponents/admin/FormFileInput.vue';
-import FormSelect from '../formComponents/admin/FormSelect.vue';
+import FormStylisedInput from '../formComponents/admin/FormStylisedInput.vue';
 import { useToast } from 'vue-toast-notification';
 import FormDate from "@/components/formComponents/admin/FormDate.vue";
 
@@ -44,16 +48,14 @@ const email = ref({
 });
 
 const submitForm = async () => {
-    const formData = new FormData();
-    formData.append('date', email.value.date);
-    formData.append('object', email.value.object);
-    formData.append('content', email.value.content);
+    const mailObject = document.querySelector('#object .ql-editor').innerHTML;
+    const mailContent = document.querySelector('#content .ql-editor').innerHTML;
 
     try {
         await ApiClient.post('/newsletter', {
             date: email.value.date,
-            object: email.value.object,
-            content: email.value.content,
+            object: mailObject,
+            content: mailContent,
         });
         router.push({ name: 'NewsletterList' });
         toast.success('Email ajouté avec succès');
