@@ -1,34 +1,60 @@
 <template>
     <div class="p-6 bg-gray-100 min-h-screen">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold color-dark">Liste des Fabricants</h1>
-            <button @click="addManufacturer"
-                class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
-                <router-link to="/admin/manufacturers/new">Ajouter un fabricant</router-link>
-            </button>
+            <h1 class="text-2xl font-bold color-dark">Liste des Produits</h1>
+            <div class="flex gap-3">
+                <button
+                    class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                    <router-link to="/admin/stock-evolution">Évolution des stocks</router-link>
+                </button>
+                <button @click="addProduct"
+                    class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                    <router-link to="/admin/product/new">Ajouter un produit</router-link>
+                </button>
+            </div>
         </div>
         <div class="mb-4">
-            <input v-model="searchQuery" type="text" placeholder="Rechercher des fabricants..."
-                class=" color-dark w-full p-2 border border-gray-300 rounded-lg" />
+            <input v-model="searchQuery" type="text" placeholder="Rechercher des produits..."
+                class="color-dark w-full p-2 border border-gray-300 rounded-lg" />
         </div>
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                     <tr>
+                        <th class="py-3 px-6 text-left">Image</th>
                         <th class="py-3 px-6 text-left">Nom</th>
+                        <th class="py-3 px-6 text-center">Prix</th>
+                        <th class="py-3 px-6 text-center">Stock</th>
+                        <th class="py-3 px-6 text-center">Catégorie</th>
+                        <th class="py-3 px-6 text-center">Statut</th>
                         <th class="py-3 px-6 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
-                    <tr v-if="paginatedManufacturers.length === 0">
-                        <td colspan="2" class="text-center py-4">Aucun fabricant</td>
+                    <tr v-if="paginatedProducts.length === 0">
+                        <td colspan="9" class="text-center py-4">Aucun produit</td>
                     </tr>
-                    <tr v-else v-for="manufacturer in paginatedManufacturers" :key="manufacturer.id"
+                    <tr v-else v-for="product in paginatedProducts" :key="product.id"
                         class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left">{{ manufacturer.label }}</td>
+                        <td class="py-3 px-6 text-left">
+                            <img v-if="product.Product_images && product.Product_images.length"
+                                :src="urlServerImg + product.Product_images[0].url" alt="Product Image"
+                                class="w-10 h-10 object-cover rounded" />
+                            <img v-else src="" alt="Default Image" class="w-10 h-10 object-cover rounded" />
+                        </td>
+                        <td class="py-3 px-6 text-left">{{ product.label }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.unit_price.toFixed(2) }} €</td>
+                        <td class="py-3 px-6 text-center">{{ product.Stock ? product.Stock.quantity : 0 }}</td>
+                        <td class="py-3 px-6 text-center">{{ product.Category ? product.Category.label : 'Non catégorisé' }}</td>
+                        <td class="py-3 px-6 text-center">
+                            <span
+                                :class="{ 'bg-customGreen px-4 py-1 rounded-lg text-white': (product.Stock && product.Stock.quantity > 0), 'btn-red text-white px-4 py-1 rounded-lg': !(product.Stock && product.Stock.quantity > 0) }">
+                                {{ product.Stock && product.Stock.quantity > 0 ? 'Actif' : 'Inactif' }}
+                            </span>
+                        </td>
                         <td class="py-3 px-6 text-center">
                             <div class="flex item-center justify-center space-x-2 w-full gap-4">
-                                <button @click="editManufacturer(manufacturer.id)"
+                                <button @click="addStock(product.id)"
                                     class="bg-customGreen hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -36,8 +62,8 @@
                                             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                     </svg>
                                 </button>
-                                <button @click="confirmDelete(manufacturer.id)"
-                                    class="bg-customRed btn-red hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
+                                <button @click="confirmDelete(product.id)"
+                                    class="btn-red hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -79,9 +105,9 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
-import ApiClient from "@/assets/js/apiClient.js";
+import ApiClient from '../../assets/js/apiClient';
 
-const manufacturers = ref([]);
+const products = ref([]);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
@@ -89,28 +115,34 @@ const itemsPerPage = 10;
 const router = useRouter();
 const toast = useToast();
 
-const fetchManufacturers = async () => {
+const urlServerImg = import.meta.env.VITE_API_ENDPOINT + '/uploads/';
+
+const fetchProducts = async () => {
     try {
-        manufacturers.value = await ApiClient.get('/manufacturer');
+        const response = await ApiClient.get('/products/list-products');
+        products.value = response;
     } catch (error) {
-        console.error('Error fetching manufacturers:', error);
+        console.error('Error fetching products:', error);
     }
 };
 
-const filteredManufacturers = computed(() => {
-    return manufacturers.value.filter(manufacturer =>
-        manufacturer.label.toLowerCase().includes(searchQuery.value.toLowerCase())
+const filteredProducts = computed(() => {
+    return products.value.filter(product =>
+        product.label.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        (product.Category && product.Category.label.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+        (product.Manufacturer && product.Manufacturer.label.toLowerCase().includes(searchQuery.value.toLowerCase()))
     );
 });
 
 const totalPages = computed(() => {
-    return Math.ceil(filteredManufacturers.value.length / itemsPerPage);
+    return Math.ceil(filteredProducts.value.length / itemsPerPage);
 });
 
-const paginatedManufacturers = computed(() => {
+const paginatedProducts = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    return filteredManufacturers.value.slice(start, end);
+    return filteredProducts.value.slice(start, end);
 });
 
 const prevPage = () => {
@@ -127,30 +159,30 @@ const goToPage = (page) => {
     }
 };
 
-onMounted(fetchManufacturers);
+onMounted(fetchProducts);
 
-const addManufacturer = () => {
-    router.push({ name: 'AddManufacturer' });
+const addProduct = () => {
+    router.push({ name: 'AddProduct' });
 };
 
-const editManufacturer = (id) => {
-    router.push({ name: 'EditManufacturer', params: { id } });
+const addStock = (id) => {
+    router.push({ name: 'AddStock', params: { id } });
 };
 
 const confirmDelete = (id) => {
-    if (confirm('Voulez-vous vraiment supprimer ce fabricant ?')) {
-        deleteManufacturer(id);
+    if (confirm('Voulez-vous vraiment supprimer ce produit ?')) {
+        deleteProduct(id);
     }
 };
 
-const deleteManufacturer = async (id) => {
+const deleteProduct = async (id) => {
     try {
-        await ApiClient.delete(`/manufacturer/${id}`);
-        manufacturers.value = manufacturers.value.filter(manufacturer => manufacturer.id !== id);
-        toast.success('Fabricant supprimé avec succès');
+        await ApiClient.delete(`/products/${id}`);
+        products.value = products.value.filter(product => product.id !== id);
+        toast.success('Produit supprimé avec succès');
     } catch (error) {
-        console.error('Error deleting manufacturer:', error);
-        toast.error('Erreur lors de la suppression du fabricant');
+        console.error('Error deleting product:', error);
+        toast.error('Erreur lors de la suppression du produit');
     }
 };
 </script>

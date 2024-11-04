@@ -3,7 +3,7 @@
         <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
         <input :type="type" :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"
             :required="required"
-            class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen" />
+            class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen color-dark" />
     </div>
 </template>
 
@@ -22,5 +22,8 @@ const emits = defineEmits(['update:modelValue']);
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
-</style>
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
+}</style>
