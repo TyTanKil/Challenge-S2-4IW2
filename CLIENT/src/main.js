@@ -6,6 +6,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import StockList from './views/admin/AppStockList.vue'
 import StockEvolution from './views/admin/AppStockEvolution.vue'
+import StockEvolutionProduct from './components/admin/StockEvolutionProduct.vue'
+import AppStockEvolutionProduct from './views/admin/AppStockEvolutionProduct.vue'
 import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
@@ -102,6 +104,11 @@ const routes = [
   { path: '/create', component: Create },
 
   { path: '/admin/stock', name: 'StockList', component: StockList },
+  {
+    path: '/admin/stock-evolution/:id',
+    name: 'StockEvolutionProduct',
+    component: AppStockEvolutionProduct
+  },
 
   { path: '/qui_sommes_nous', component: AppQuiSommesNous },
   { path: '/contact', component: AppContact },

@@ -34,6 +34,26 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+//Récupérer l'historique de stock d'un produit /stock-history/product
+router.post("/product", async (req, res, next) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+    if (!id) {
+      return res.status(400).json({ error: "ID du produit requis." });
+    }
+
+    const stockHistory = await StockHistoty.findAll({
+      where: { id_product: id }, // Filtre par ID du produit
+      order: [["createdAt", "ASC"]],
+    });
+
+    res.json(stockHistory);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // router.get("/:id", async (req, res, next) => {
 //   try {
 //     const stock = await Stock.findByPk(parseInt(req.params.id));
