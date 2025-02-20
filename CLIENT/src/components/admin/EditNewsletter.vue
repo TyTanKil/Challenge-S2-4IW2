@@ -3,12 +3,20 @@
     <div class="w-full max-w-lg">
       <h1 class="text-2xl font-bold mb-8">Modifier un email de la newsletter</h1>
       <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
-        <FormInput id="object" label="Objet du mail" type="text" :modelValue="email.object"
-                   @update:modelValue="email.object = $event" required class="mb-4"/>
-        <FormTextarea id="content" label="Contenu du mail" :modelValue="email.content"
-                      @update:modelValue="email.content = $event" required class="mb-4"/>
-        <FormDate id="date" label="Date d'envoi" :modelValue="email.date" :datemin="tomorrow"
-                  @update:modelValue="email.date = $event" required class="mb-4"/>
+        <FormInput
+            id="object"
+            label="Objet du mail"
+            required
+            :modelValue="email.object"
+            @update:modelValue="email.object = $event"
+        />
+        <FormStylisedInput
+            id="content"
+            label="Contenu du mail"
+            toolbar="full"
+            required
+        />
+        <FormDate id="date" label="Date d'envoi" :modelValue="email.date" :datemin="tomorrow"  v-model="email.date"/>
         <div class="flex justify-between items-center">
           <button type="submit"
                   class="bg-customGreen hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
@@ -28,10 +36,10 @@
 import {onMounted, ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useToast} from 'vue-toast-notification';
-import FormInput from '../formComponents/admin/FormInput.vue';
 import ApiClient from '../../assets/js/apiClient';
 import FormDate from "@/components/formComponents/admin/FormDate.vue";
-import FormTextarea from "@/components/formComponents/admin/FormTextarea.vue";
+import FormStylisedInput from '../formComponents/admin/FormStylisedInput.vue';
+import FormInput from '../formComponents/admin/FormInput.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -47,6 +55,7 @@ onMounted(async () => {
   const emailId = route.params.id;
   try {
     email.value = await ApiClient.get(`/newsletter/${emailId}`);
+    document.querySelector('#content .ql-editor').innerHTML = email.value.content;
   } catch (error) {
     console.error('Error fetching email:', error);
   }
@@ -54,6 +63,9 @@ onMounted(async () => {
 
 const submitForm = async () => {
   const emailId = route.params.id;
+
+  email.value.content = document.querySelector('#content .ql-editor').innerHTML;
+
   try {
     await ApiClient.put(`/newsletter/${emailId}`, email.value);
     toast.success('Email modifié avec succès');

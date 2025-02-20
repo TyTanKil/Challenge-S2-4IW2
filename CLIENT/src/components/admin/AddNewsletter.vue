@@ -3,10 +3,11 @@
         <div class="w-full max-w-lg">
             <h1 class="text-2xl font-bold mb-8">Ajouter un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
-                <FormStylisedInput
+                <FormInput
                     id="object"
                     label="Objet du mail"
                     required
+                    @update:modelValue="email.object = $event"
                 />
                 <FormStylisedInput
                     id="content"
@@ -34,6 +35,7 @@ import ApiClient from '../../assets/js/apiClient';
 import FormStylisedInput from '../formComponents/admin/FormStylisedInput.vue';
 import { useToast } from 'vue-toast-notification';
 import FormDate from "@/components/formComponents/admin/FormDate.vue";
+import FormInput from '../formComponents/admin/FormInput.vue';
 
 let d = new Date();
 d.setDate(d.getDate() + 1);
@@ -48,15 +50,10 @@ const email = ref({
 });
 
 const submitForm = async () => {
-    const mailObject = document.querySelector('#object .ql-editor').innerHTML;
-    const mailContent = document.querySelector('#content .ql-editor').innerHTML;
+    email.value.content = document.querySelector('#content .ql-editor').innerHTML;
 
     try {
-        await ApiClient.post('/newsletter', {
-            date: email.value.date,
-            object: mailObject,
-            content: mailContent,
-        });
+        await ApiClient.post('/newsletter', email.value);
         router.push({ name: 'NewsletterList' });
         toast.success('Email ajouté avec succès');
     } catch (error) {
