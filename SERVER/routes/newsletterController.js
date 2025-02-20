@@ -6,6 +6,7 @@ const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 const router = new Router();
 const { sendEmail } = require("../mailer");
 const accountConfirmationTemplate = require("../templates-mail/account-confirmation");
+const newsletter = require("../templates-mail/newsletter");
 
 router.get("/", checkAuthAdmin, async (req, res, next) => {
     const newsletter = await Newsletter.findAll();
@@ -79,9 +80,13 @@ router.delete("/:id", checkAuthAdmin, async (req, res, next) => {
 
 router.put("/:id", checkAuthAdmin, async (req, res, next) => {
     try {
-        const email = await Newsletter.findByPk(parseInt(req.params.id));
-        if (!email || (req.body.date && new Date(req.body.date) <= new Date() || email.sent === true)) {
-            res.sendStatus(401);
+        const email = await Newsletter.findOne({
+            where: {
+                id: parseInt(req.params.id),
+            }
+        });
+        if (!email || (req.body.date && (new Date(req.body.date) <= new Date() || (new Date(email.date) <= new Date() || email.sent === true)))) {
+            res.sendStatus(400);
         }else{
             delete req.body.sent;
             const nbDeleted = await Newsletter.destroy({
@@ -116,15 +121,18 @@ router.post("/send-newsletter", checkAuthAdmin, async (req, res, next) => {
             res.sendStatus(404);
         }else{
             /*send emails*/
-            const mailOptions = accountConfirmationTemplate({
-                to: accounts.map(account => account.email),
-                subject: req.body.subject,
-                content: req.body.content,
-            });
+            for (let email of emails) {
+                console.log(email);
+                const mailOptions = newsletter({
+                    to: accounts.map(account => account.email),
+                    object: email.object,
+                    content: email.content,
+                });
 
-            await sendEmail(mailOptions);
+                await sendEmail(mailOptions);
+            }
+            res.sendStatus(201);
         }
-        res.sendStatus(201);
     } catch (e) {
         next(e);
     }

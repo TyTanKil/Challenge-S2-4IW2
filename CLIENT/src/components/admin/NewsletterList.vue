@@ -33,7 +33,7 @@
                         <td class="py-3 px-6 text-left">{{ email.date }}</td>
                         <td class="py-3 px-6 text-left">{{ email.sent }}</td>
                         <td class="py-3 px-6 text-center">
-                            <div v-if="!email.sent" class="flex item-center justify-center space-x-2 w-full gap-4">
+                            <div v-if="!email.sent || (new Date() <= new Date(email.date))" class="flex item-center justify-center space-x-2 w-full gap-4">
                                 <button @click="editEmail(email.id)"
                                     class="bg-customGreen hover:bg-customGreen-600 text-white font-bold py-1 px-3 rounded-lg shadow-md transition duration-300 w-1/3 flex items-center justify-center space-x-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
