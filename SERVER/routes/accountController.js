@@ -13,7 +13,7 @@ const moment = require('moment');
 
 const router = new Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", checkAuthAdmin, async (req, res, next) => {
   try {
     const accounts = await Account.findAll({
       where: req.query,
@@ -46,14 +46,20 @@ router.post("/", async (req, res, next) => {
 
     const validate_hash = uuidv4();
 
-    delete req.body.roles;
-
     const account = await Account.create({
       id: uuidv4(),
-      ...req.body,
       status: "c",
       roles: sequelize.literal(`ARRAY['ROLE_USER']::"enum_account_roles"[]`),
       validate_hash: validate_hash,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      gender: req.body.gender,
+      email: req.body.email,
+      password: req.body.password,
+      birth_date: req.body.birth_date,
+      newsletter: req.body.newsletter,
+      phone: req.body.phone,
+      login: req.body.login,
     });
 
     const mailOptions = accountConfirmationTemplate({
@@ -73,11 +79,11 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/verify-password", async (req, res) => {
-  const { accountId, password } = req.body;
+router.post("/verify-password", checkAuth, async (req, res) => {
+  const password = req.body.password;
   try {
     const account = await Account.findOne({
-      where: { id: accountId },
+      where: { id: req.account.id },
     });
 
     if (account && bcrypt.compareSync(password, account.password)) {
@@ -91,40 +97,25 @@ router.post("/verify-password", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get('/me', checkAuth, async (req, res) => {
   try {
-    const accountId = req.params.id.trim();
-    if (!isUUID(accountId)) {
-      return res.status(400).json({ error: "Invalid account ID" });
-    }
-
     const account = await Account.findOne({
-      where: { id: accountId },
+      where: { id: req.account.id },
     });
-
-    if (account) {
-      res.json(account);
-    } else {
-      res.status(404).json({ error: "Account not found" });
-    }
-  } catch (e) {
-    console.error("Error finding account by ID:", e);
-    next(e);
-  }
+    res.json(account);
+  } catch (error) {
+    console.error("Error fetching account:", error);
+    res.status(500).json({ error: "Failed to fetch account" });
+  } 
 });
 
-router.patch("/:id", checkAuth, async (req, res, next) => {
+router.patch("/", checkAuth, async (req, res, next) => {
   try {
     if(req.body.birth_date && moment(req.body.birth_date).isAfter(moment().subtract(18, "years"))){
       res.sendStatus(400);
     }
 
-    const accountId = req.params.id.trim();
-    if (!isUUID(accountId)) {
-      return res.status(400).json({ error: "Invalid account ID" });
-    }
-
-    const existingAccount = await Account.findOne({ where: { id: accountId } });
+    const existingAccount = req.account;
 
     if (!existingAccount) {
       return res.status(404).json({ error: "Account not found" });
@@ -132,11 +123,14 @@ router.patch("/:id", checkAuth, async (req, res, next) => {
 
     const updatedFields = Object.keys(req.body);
 
+    delete req.body.id;
+    delete req.body.status;
     delete req.body.roles;
+    delete req.body.validate_hash;
 
     const [nbUpdated, accounts] = await Account.update(req.body, {
       where: {
-        id: accountId,
+        id: existingAccount.id,
       },
       returning: true,
       individualHooks: true,
@@ -163,22 +157,11 @@ router.patch("/:id", checkAuth, async (req, res, next) => {
   }
 });
 
-router.delete("/:id", checkAuth, async (req, res, next) => {
+router.delete("/", checkAuth, async (req, res, next) => {
   try {
-    const accountId = req.params.id.trim();
-    console.log(accountId);
-    if (!isUUID(accountId)) {
-      return res.status(400).json({ error: "Invalid account ID" });
-    }
-
-    const account = await Account.findOne({ where: { id: accountId } });
-
-    if (!account) {
-      return res.status(404).json({ error: "Account not found" });
-    }
+    const accountId = req.account.id;
 
     new_pwd = await bcrypt.hash("deleted", await bcrypt.genSalt(10));
-
     await Account.update(
       {
         firstName: "Anonymous",
@@ -201,6 +184,29 @@ router.delete("/:id", checkAuth, async (req, res, next) => {
     res.json({ message: "Account anonymized successfully" });
   } catch (e) {
     console.error("Error deleting account:", e);
+    next(e);
+  }
+});
+
+//ROUTE ADMIN pour récupérer les infos d'un user
+router.get("/:id", checkAuthAdmin, async (req, res, next) => {
+  try {
+    const accountId = req.params.id.trim();
+    if (!isUUID(accountId)) {
+      return res.status(400).json({ error: "Invalid account ID" });
+    }
+
+    const account = await Account.findOne({
+      where: { id: accountId },
+    });
+
+    if (account) {
+      res.json(account);
+    } else {
+      res.status(404).json({ error: "Account not found" });
+    }
+  } catch (e) {
+    console.error("Error finding account by ID:", e);
     next(e);
   }
 });
@@ -296,6 +302,47 @@ router.put("/:id", checkAuth, async (req, res, next) => {
     res.status(nbDeleted ? 200 : 201).json(account);
   } catch (e) {
     console.error("Error replacing account:", e);
+    next(e);
+  }
+});
+
+// route admin
+router.delete("/:id", checkAuthAdmin, async (req, res, next) => {
+  try {
+    const accountId = req.params.id.trim();
+    if (!isUUID(accountId)) {
+      return res.status(400).json({ error: "Invalid account ID" });
+    }
+
+    const account = await Account.findOne({ where: { id: accountId } });
+
+    if (!account) {
+      return res.status(404).json({ error: "Account not found" });
+    }
+
+    new_pwd = await bcrypt.hash("deleted", await bcrypt.genSalt(10));
+    await Account.update(
+      {
+        firstName: "Anonymous",
+        lastName: "User",
+        email: `deleted-${accountId}@example.com`,
+        phone: null,
+        login: `deleted-${accountId}`,
+        password: new_pwd,
+        birth_date: null,
+        roles: sequelize.literal(`ARRAY[]::"enum_account_roles"[]`),
+        status: "d",
+        notification: false,
+        validate_hash: null,
+      },
+      {
+        where: { id: accountId },
+      }
+    );
+
+    res.json({ message: "Account anonymized successfully" });
+  } catch (e) {
+    console.error("Error deleting account:", e);
     next(e);
   }
 });
