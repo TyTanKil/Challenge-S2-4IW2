@@ -7,7 +7,7 @@ class ApiClient {
     this.client = axios.create({
       baseURL: import.meta.env.VITE_API_ENDPOINT,
       headers: {
-        'JwtCookie': localStorage.getItem('jwtToken') ?? ''
+        JwtCookie: localStorage.getItem('jwtToken') ?? ''
       }
     })
 
@@ -82,6 +82,23 @@ class ApiClient {
         login: login,
         password: password
       })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getDelivery(id) {
+    try {
+      return await this.get(`/api/delivery/${id}`)
+    } catch (error) {
+      throw error
+    }
+  }
+
+  // Méthode pour créer une nouvelle livraison
+  async createDelivery(id) {
+    try {
+      return await this.post(`/api/delivery`, { id })
     } catch (error) {
       throw error
     }

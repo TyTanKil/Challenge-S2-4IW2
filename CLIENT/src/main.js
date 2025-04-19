@@ -2,7 +2,6 @@ import { createApp, ref } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
 
-
 import { createRouter, createWebHistory } from 'vue-router'
 import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
@@ -38,7 +37,6 @@ import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
 import SearchResults from './views/AppSearchResults.vue'
 
-
 import 'vue-toast-notification/dist/theme-sugar.css'
 import AppMainView from './views/AppMainView.vue'
 import EditOrder from './views/admin/AppEditOrder.vue'
@@ -50,8 +48,10 @@ import AppCGV from './views/AppCGV.vue'
 import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
 import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
 
+import Delivery from './views/Delivery.vue'
+
 import 'vue-toast-notification/dist/theme-sugar.css'
-import apiClient from './assets/js/apiClient';
+import apiClient from './assets/js/apiClient'
 
 const store = createStore({
   state() {
@@ -145,8 +145,15 @@ const routes = [
   { path: '/cgv', name: 'AppCGV', component: AppCGV },
   { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
   { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles },
-  
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, 
+
+  {
+    path: '/delivery/:id',
+    name: 'Delivery',
+    component: Delivery,
+    props: (route) => ({ deliveryId: route.params.id }) // Transmet l'ID comme prop
+  },
+
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ]
 
 const router = createRouter({
@@ -154,32 +161,29 @@ const router = createRouter({
   routes,
   scrollBehavior() {
     return { top: 0 }
-  },
+  }
 })
 
-
-
-const user = ref({});
-const isAdmin = ref(false);
+const user = ref({})
+const isAdmin = ref(false)
 
 const fetchUserData = async () => {
-  if(store.state.user_id){
+  if (store.state.user_id) {
     try {
-      const response = await apiClient.get('/user/me/');
-      user.value = response;
+      const response = await apiClient.get('/user/me/')
+      user.value = response
       if (user.value.roles.includes('ROLE_ADMIN')) {
-        isAdmin.value = true;
+        isAdmin.value = true
       } else {
-        isAdmin.value = false;
+        isAdmin.value = false
       }
     } catch (error) {
-      console.error('Erreur lors de la récupération de l\'utilisateur');
+      console.error("Erreur lors de la récupération de l'utilisateur")
     }
   }
-};
+}
 
-
-fetchUserData();
+fetchUserData()
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
@@ -197,19 +201,18 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.path.startsWith('/admin')) {
     if (store.state.user_id != null && isAdmin.value) {
-      await import('./assets/admin.css');
-      next();
+      await import('./assets/admin.css')
+      next()
     } else {
-      next({ path: '/login' });
+      next({ path: '/login' })
     }
   } else {
-    await import('./assets/main.css');
-    next();
+    await import('./assets/main.css')
+    next()
   }
 
   next()
 })
-
 
 const app = createApp(App)
 app.use(router)
