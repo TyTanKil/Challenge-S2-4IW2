@@ -2,7 +2,7 @@
     <div class="mb-6">
         <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
         <textarea :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :required="required"
-            class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen"></textarea>
+            class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen color-dark"></textarea>
     </div>
 </template>
 
@@ -20,5 +20,10 @@ const emits = defineEmits(['update:modelValue']);
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
+}
 </style>
+

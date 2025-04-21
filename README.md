@@ -35,6 +35,7 @@ npm install
 
 Créer la base de données : 
 ```
+npx sequelize-cli db:create
 npx sequelize-cli db:migrate
 npx sequelize-cli db:seed:all
 ```

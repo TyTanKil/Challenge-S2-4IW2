@@ -24,5 +24,8 @@ const handleFileUpload = (event) => {
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
-</style>
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
+}</style>

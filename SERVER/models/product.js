@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true, // Permettre les valeurs nulles
       });
       Product.hasOne(models.Stock, { foreignKey: "id_product" });
+      Product.hasMany(models.StockHistory, { foreignKey: "id_product" });
       Product.hasMany(models.Product_image, {
         foreignKey: "id_product",
       });
