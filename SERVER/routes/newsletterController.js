@@ -1,11 +1,9 @@
 const {Router} = require("express");
 const Newsletter = require("../models/newsletter");
 const Account = require("../models/account");
-const checkAuth = require("../middlewares/checkAuth");
 const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 const router = new Router();
 const { sendEmail } = require("../mailer");
-const accountConfirmationTemplate = require("../templates-mail/account-confirmation");
 const newsletter = require("../templates-mail/newsletter");
 
 router.get("/", checkAuthAdmin, async (req, res, next) => {
@@ -120,9 +118,7 @@ router.post("/send-newsletter", checkAuthAdmin, async (req, res, next) => {
         if(accounts.length === 0 || emails.length === 0){
             res.sendStatus(404);
         }else{
-            /*send emails*/
             for (let email of emails) {
-                console.log(email);
                 const mailOptions = newsletter({
                     to: accounts.map(account => account.email),
                     object: email.object,
@@ -130,6 +126,14 @@ router.post("/send-newsletter", checkAuthAdmin, async (req, res, next) => {
                 });
 
                 await sendEmail(mailOptions);
+
+                await Newsletter.update({
+                    sent: true,
+                }, {
+                    where: {
+                        id: email.id,
+                    },
+                });
             }
             res.sendStatus(201);
         }
