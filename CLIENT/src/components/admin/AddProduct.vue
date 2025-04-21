@@ -106,13 +106,13 @@ const submitForm = async () => {
     }
 
     try {
-        await ApiClient.post('/products', formData, {
+        /*await ApiClient.post('/products', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
         router.push({ name: 'ProductList' });
-        toast.success('Produit ajouté avec succès');
+        toast.success('Produit ajouté avec succès');*/
     } catch (error) {
         console.error('Error adding product:', error);
         toast.error('Erreur lors de l\'ajout du produit');

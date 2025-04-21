@@ -127,9 +127,8 @@ export default {
     const isActivated = ref(false);
 
     const fetchUserData = async () => {
-      const userId = store.state.user_id;
       try {
-        user.value = await ApiClient.get(`/user/${userId}`);
+        user.value = await ApiClient.get('/user/me');
         isActivated.value = user.value.notification;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
@@ -193,7 +192,7 @@ export default {
 
       if (newValue) {
         try {
-          await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
+          await ApiClient.patch('/user', { [field]: newValue });
           await fetchUserData();
           Swal.fire({
             title: 'Succès',
@@ -236,12 +235,11 @@ export default {
         if (newPassword === newPasswordConfirmation) {
           try {
             const verifyResponse = await ApiClient.post(`/user/verify-password`, {
-              accountId: user.value.id,
               password: oldPassword
             });
 
             if (verifyResponse.data.valid) {
-              await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
+              await ApiClient.patch('/user', { password: newPassword });
               await fetchUserData();
               Swal.fire({
                 title: 'Succès',
@@ -285,7 +283,7 @@ export default {
 
       if (confirmDelete.isConfirmed) {
         try {
-          await ApiClient.delete(`/user/${user.value.id}`);
+          await ApiClient.delete(`/user`);
           Swal.fire({
             title: 'Compte supprimé',
             text: 'Votre compte a été anonymisé avec succès.',
@@ -305,7 +303,7 @@ export default {
 
     const toggleActivation = async () => {
       try {
-        await ApiClient.patch(`/user/${user.value.id}`, { notification: isActivated.value });
+        await ApiClient.patch('/user', { notification: isActivated.value });
         Swal.fire({
           title: 'Succès',
           text: 'L\'état des notifications a été mis à jour avec succès.',

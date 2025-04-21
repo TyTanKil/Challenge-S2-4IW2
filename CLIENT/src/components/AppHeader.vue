@@ -26,15 +26,10 @@ if (store.state.user_id == null) {
 const user = ref({});
 const isAdmin = ref(false);
 const fetchUserData = async () => {
-  const userId = store.state.user_id;
-  if(userId){
+  if(store.state.user_id){
     try {
-      user.value = await ApiClient.get(`/user/${userId}`);
-      if (user.value.roles.includes('ROLE_ADMIN')) {
-        isAdmin.value = true;
-      } else {
-        isAdmin.value = false;
-      }
+      user.value = await ApiClient.get('/user/me');
+      isAdmin.value = user.value.roles.includes('ROLE_ADMIN');
     } catch (error) {
       toast.error('Erreur lors de la récupération de l\'utilisateur');
     }
