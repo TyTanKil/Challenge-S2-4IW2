@@ -174,10 +174,10 @@ const user = ref({})
 const isAdmin = ref(false)
 
 const fetchUserData = async () => {
-  if(store.state.user_id){
+  if (store.state.user_id) {
     try {
-      const response = await apiClient.get('/user/me/');
-      user.value = response;
+      const response = await apiClient.get('/user/me/')
+      user.value = response
       if (user.value.roles.includes('ROLE_ADMIN')) {
         isAdmin.value = true
       } else {
