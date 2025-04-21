@@ -1,19 +1,25 @@
 <template>
     <div class="mb-6">
         <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
-        <textarea :id="id" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :required="required" rows="15"
-            class="mt-1 p-2 block w-full border border-gray-300 rounded-lg focus:ring focus:ring-customGreen focus:border-customGreen"></textarea>
+        <QuillEditor
+            theme="snow"
+            :toolbar="toolbar"
+            :id="id"
+            :required="required"
+        />
     </div>
 </template>
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const props = defineProps({
     id: { type: String, required: true },
     label: { type: String, required: true },
-    modelValue: { type: String, required: true },
-    required: { type: Boolean, default: false }
+    required: { type: Boolean, default: false },
+    toolbar: { type: String, default: 'minimal' },
 });
 
 const emits = defineEmits(['update:modelValue']);
