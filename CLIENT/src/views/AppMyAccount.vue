@@ -144,9 +144,8 @@ export default {
     const isNewsletterActivated = ref(false);
 
     const fetchUserData = async () => {
-      const userId = store.state.user_id;
       try {
-        user.value = await ApiClient.get(`/user/${userId}`);
+        user.value = await ApiClient.get('/user/me');
         isMailsActivated.value = user.value.notification;
         isNewsletterActivated.value = user.value.newsletter;
       } catch (error) {
@@ -211,7 +210,7 @@ export default {
 
       if (newValue) {
         try {
-          await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
+          await ApiClient.patch('/user', { [field]: newValue });
           await fetchUserData();
           Swal.fire({
             title: 'Succès',
@@ -254,12 +253,11 @@ export default {
         if (newPassword === newPasswordConfirmation) {
           try {
             const verifyResponse = await ApiClient.post(`/user/verify-password`, {
-              accountId: user.value.id,
               password: oldPassword
             });
 
             if (verifyResponse.data.valid) {
-              await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
+              await ApiClient.patch('/user', { password: newPassword });
               await fetchUserData();
               Swal.fire({
                 title: 'Succès',
@@ -303,7 +301,7 @@ export default {
 
       if (confirmDelete.isConfirmed) {
         try {
-          await ApiClient.delete(`/user/${user.value.id}`);
+          await ApiClient.delete(`/user`);
           Swal.fire({
             title: 'Compte supprimé',
             text: 'Votre compte a été anonymisé avec succès.',
@@ -323,7 +321,7 @@ export default {
 
     const toggleMailsActivation = async () => {
       try {
-        await ApiClient.patch(`/user/${user.value.id}`, { notification: isMailsActivated.value });
+        await ApiClient.patch('/user', { notification: isMailsActivated.value });
         Swal.fire({
           title: 'Succès',
           text: 'L\'état des envois d\'emails a été mis à jour avec succès.',
@@ -341,7 +339,7 @@ export default {
 
     const toggleNewsletterActivation = async () => {
       try {
-        await ApiClient.patch(`/user/${user.value.id}`, { newsletter: isNewsletterActivated.value });
+        await ApiClient.patch('/user', { newsletter: isNewsletterActivated.value });
         Swal.fire({
           title: 'Succès',
           text: 'L\'état de la newsletter a été mis à jour avec succès.',
