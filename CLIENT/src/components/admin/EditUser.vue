@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 bg-gray-100 min-h-screen flex justify-center items-center">
         <div class="w-full max-w-lg">
-            <h1 class="text-2xl font-bold mb-8">Modifier un Utilisateur</h1>
+            <h1 class="text-2xl font-bold mb-8 color-dark">Modifier un Utilisateur</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
                 <FormInput id="firstName" label="Prénom" type="text" :modelValue="user.firstName"
                     @update:modelValue="user.firstName = $event" required class="mb-4" />
@@ -139,5 +139,10 @@ const deleteUser = async () => {
 
 .form-checkbox:checked+label {
     @apply text-indigo-900;
+}
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
 }
 </style>

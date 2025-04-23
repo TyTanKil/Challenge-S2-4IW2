@@ -9,6 +9,7 @@
                 aria-hidden="true">
                 <path :d="icon"></path>
             </svg>
+            <!-- <img :src="image" width="30px" height="30px"/> -->
             <p class="block antialiased font-sans text-base leading-relaxed font-medium">{{ label }}</p>
         </button>
     </router-link>

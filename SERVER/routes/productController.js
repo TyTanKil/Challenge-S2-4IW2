@@ -69,7 +69,7 @@ router.get("/list-products", async (req, res, next) => {
         { model: Stock },
         { model: Product_image },
       ],
-      order: [["createdAt", "DESC"]],
+      order: [["updatedAt", "DESC"]],
     });
     res.json(products);
   } catch (e) {
@@ -267,7 +267,6 @@ router.patch(
         if (stock > oldStock) {
           const accounts = await getAllStoreKeeper();
           const productName = existingProduct.label;
-
           accounts.forEach((account) => {
             if (account.notification) {
               const mailOptions = restockProductTemplate({

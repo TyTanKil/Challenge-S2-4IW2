@@ -11,6 +11,7 @@ db.Category = require("../models/category")(sequelize, DataTypes);
 db.Product = require("../models/product")(sequelize, DataTypes);
 db.Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
 db.Stock = require("../models/stock")(sequelize, DataTypes);
+db.StockHistory = require("../models/stockHistory")(sequelize, DataTypes);
 db.Product_image = require("../models/productimage")(sequelize, DataTypes);
 db.Order = require("../models/order")(sequelize, DataTypes);
 db.Order_product = require("../models/orderproduct")(sequelize, DataTypes);
