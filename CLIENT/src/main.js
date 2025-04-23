@@ -3,6 +3,11 @@ import { createStore } from 'vuex'
 import App from './App.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
+
+import StockList from './views/admin/AppStockList.vue'
+import StockEvolution from './views/admin/AppStockEvolution.vue'
+import StockEvolutionProduct from './components/admin/StockEvolutionProduct.vue'
+import AppStockEvolutionProduct from './views/admin/AppStockEvolutionProduct.vue'
 import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
@@ -26,10 +31,15 @@ import Users from './views/AppAdminUsers.vue'
 import ProductList from './views/AppAdminProducts.vue'
 import NewProduct from './views/admin/AppAddProduct.vue'
 import EditProduct from './views/admin/AppEditProduct.vue'
+import AppAddStock from './views/admin/AppAddStock.vue'
 
 import CategoryList from './views/admin/AppCategoryList.vue'
 import NewCategory from './views/admin/AppAddCategory.vue'
 import EditCategory from './views/admin/AppEditCategory.vue'
+
+import NewsletterList from './views/admin/AppNewsletterList.vue'
+import NewsletterAdd from './views/admin/AppAddNewsletter.vue'
+import NewsletterEdit from './views/admin/AppEditNewsletter.vue'
 
 import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
@@ -99,6 +109,13 @@ const routes = [
   },
   { path: '/create', component: Create },
 
+  { path: '/admin/stock', name: 'StockList', component: StockList },
+  {
+    path: '/admin/stock-evolution/:id',
+    name: 'StockEvolutionProduct',
+    component: AppStockEvolutionProduct
+  },
+
   { path: '/qui_sommes_nous', component: AppQuiSommesNous },
   { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
@@ -111,6 +128,9 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
+  { path: '/admin/newsletter', name: 'NewsletterList', component: NewsletterList },
+  { path: '/admin/newsletter/new', name: 'AddNewsletter', component: NewsletterAdd },
+  { path: '/admin/newsletter/edit/:id', name: 'EditNewsletter', component: NewsletterEdit },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',
@@ -121,6 +141,8 @@ const routes = [
   { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
   { path: '/admin/order', name: 'OrderList', component: OrderList },
   { path: '/admin/order/edit/:id', name: 'EditOrder', component: EditOrder },
+  { path: '/admin/stock/add/:id', name: 'AddStock', component: AppAddStock },
+  { path: '/admin/stock-evolution', name: 'StockEvolution', component: StockEvolution },
 
   { path: '/account', name: 'Account', component: MyAccount },
 

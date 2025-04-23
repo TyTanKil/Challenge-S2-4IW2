@@ -32,3 +32,5 @@ coverage
 CLIENT/.env
 
 SERVER/uploads
+
+package-lock.json

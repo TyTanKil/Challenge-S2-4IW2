@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 bg-gray-100 min-h-screen flex justify-center items-center">
         <div class="w-full max-w-lg">
-            <h1 class="text-2xl font-bold mb-8">Ajouter un Produit</h1>
+            <h1 class="text-2xl font-bold mb-8 color-dark">Ajouter un Produit</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
                 <FormInput id="label" label="Nom du produit" type="text" :modelValue="product.label"
                     @update:modelValue="product.label = $event" required class="mb-4" />
@@ -106,13 +106,13 @@ const submitForm = async () => {
     }
 
     try {
-        /*await ApiClient.post('/products', formData, {
+        await ApiClient.post('/products', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
         router.push({ name: 'ProductList' });
-        toast.success('Produit ajouté avec succès');*/
+        toast.success('Produit ajouté avec succès');
     } catch (error) {
         console.error('Error adding product:', error);
         toast.error('Erreur lors de l\'ajout du produit');
@@ -126,4 +126,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
+}
 </style>
