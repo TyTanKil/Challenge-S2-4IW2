@@ -1,27 +1,27 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import AppVerticalCard from '../components/AppVerticalCard.vue';
+import AppHorizontalCard from '../components/AppHorizontalCard.vue';
 import { useRouter } from 'vue-router';
 import ApiClient from '../assets/js/apiClient';
 import { useStore } from 'vuex';
 
-const store = useStore(); // Accéder au store Vuex
+const store = useStore();
 const router = useRouter();
 const products = ref([]);
+const isVertical = ref(true); // mode par défaut : vertical
 
-// Fonction pour récupérer les produits
 const fetchProducts = async () => {
   try {
     const response = await ApiClient.get('/products');
     products.value = response;
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Erreur lors de la récupération des produits:', error);
   }
 };
 
 onMounted(fetchProducts);
 
-// Fonction pour gérer la sélection d'un produit
 function handleSelect(product) {
   router.push({
     name: 'Product',
@@ -35,7 +35,6 @@ function handleSelect(product) {
   });
 }
 
-// Définition des propriétés du composant
 const props = defineProps({
   route: Boolean,
 });
@@ -43,17 +42,34 @@ const props = defineProps({
 
 <template>
   <div v-if="props.route">
-    <!-- Image principale avec animation au survol -->
+    <!-- Image principale -->
     <div class="img_main">
       <img src="/src/assets/img/promo/Image_promo_2.png" alt="Image de promo" class="main-img" />
     </div>
 
-    <!-- Affichage des cartes produits -->
-    <div class="cards">
-      <AppVerticalCard
+    <!-- Bouton pour changer la vue -->
+    <div class="toggle-button">
+      <button
+        @click="isVertical = true"
+        :class="['view-button', isVertical ? 'active' : '', 'vertical-button']"
+      >
+        <img src="/src/assets/img/svg/icons/vertical.svg" alt="Vertical View" />
+      </button>
+      <button
+        @click="isVertical = false"
+        :class="['view-button', !isVertical ? 'active' : '', 'horizontal-button']"
+      >
+        <img src="/src/assets/img/svg/icons/horizontal.svg" alt="Horizontal View" />
+      </button>
+    </div>
+
+    <!-- Affichage dynamique des cartes -->
+    <div class="cards" :class="{ 'horizontal-mode': !isVertical }">
+      <component
         v-for="product in products"
         :key="product._id"
-        :id="product.id"
+        :is="isVertical ? AppVerticalCard : AppHorizontalCard"
+        :id="product._id"
         :label="product.label"
         :description="product.description"
         :price="product.unit_price"
@@ -83,7 +99,62 @@ img.main-img {
 
 img.main-img:hover {
   cursor: pointer;
-  transform: scale(1.05); /* Effet de zoom au survol */
+  transform: scale(1.05);
+}
+
+.toggle-button {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.view-button {
+  border: 2px solid #1e1e1e;
+  border-radius: 8px;
+  background-color: transparent;
+  padding: 0.5rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+/* Inactive button: grisâtre */
+.view-button img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0.5);
+  transition: filter 0.3s ease;
+}
+
+/* Active button: fond + icône contrastée */
+.view-button.active {
+  background-color: #050E18; /* sombre par défaut */
+}
+
+.view-button.active img {
+  filter: brightness(0) invert(1); /* rend l'icône blanche */
+}
+
+/* Dark theme inverse le fond si besoin */
+@media (prefers-color-scheme: light) {
+  .view-button.active {
+    background-color: black;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .view-button.active {
+    background-color: white;
+  }
+
+  .view-button.active img {
+    filter: brightness(0); /* rend l'icône noire */
+  }
 }
 
 /* Container des cartes produits */
@@ -96,7 +167,14 @@ img.main-img:hover {
   position: relative;
 }
 
-/* Adaptation au mode sombre */
+.cards.horizontal-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   img.main-img {
     border-radius: 12px;
