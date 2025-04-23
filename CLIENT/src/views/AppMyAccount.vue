@@ -339,7 +339,7 @@ export default {
 
     const toggleNewsletterActivation = async () => {
       try {
-        await ApiClient.patch(`/user/${user.value.id}`, { newsletter: isNewsletterActivated.value });
+        await ApiClient.patch('/user', { newsletter: isNewsletterActivated.value });
         Swal.fire({
           title: 'Succès',
           text: 'L\'état de la newsletter a été mis à jour avec succès.',
