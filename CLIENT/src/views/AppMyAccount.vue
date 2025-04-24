@@ -52,7 +52,7 @@
           <button class="download-button" @click="downloadPersonalDataAsPDF">Télécharger mes données en PDF</button>
         </div>
         <div v-if="selectedTab === 'commandes'" class="orders">
-          <div class="orders-container">
+          <div class="orders-container" style="color: black;">
             <div v-if="orders.length">
               <div v-for="order in orders" :key="order.id" class="order-card">
                 <h2>Commande #{{ order.id }}</h2>
