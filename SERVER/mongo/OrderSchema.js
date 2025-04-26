@@ -23,8 +23,7 @@ const OrderSchema = new mongoose.Schema(
     total_price: { type: Number, required: true },
     order_date: { type: Date },
     order_status: { type: Number, required: true },
-    delivery_date: { type: Date },
-    delivery_status: { type: Number, required: true },
+    expected_delivery_date: { type: Date },
     Order_products: [OrderProductSchema],
   },
   {

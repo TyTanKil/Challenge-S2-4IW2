@@ -20,6 +20,7 @@ db.User_addresses = require("../models/useraddress")(sequelize, DataTypes);
 db.cart = require("../models/cart");
 db.cartProduct = require("../models/cartproduct");
 db.Newsletter = require('../models/newsletter')
+db.DeliveryStatus = require('../models/delivery')(sequelize, DataTypes);
 
 // db.Manufacturer = require("../models/manufacturer")(sequelize, DataTypes);
 

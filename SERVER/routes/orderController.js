@@ -12,7 +12,7 @@ const {
 } = require("../services/denormalizations/orderService");
 const checkAuthAdmin = require("../middlewares/checkAuthAdmin");
 
-const { sequelize, Order, Order_product, account, DataTypes } = db;
+const { sequelize, Order, Order_product, DeliveryStatus, account, DataTypes } = db;
 
 // console.log(db);
 
@@ -21,6 +21,10 @@ router.get("/", async (req, res, next) => {
     where: req.query,
     include: [
       { model: Order_product },
+      {
+        model: DeliveryStatus,
+        attributes: ["status", "date"],
+      },
       {
         model: account,
         attributes: ["firstName", "lastName", "email", "phone"],
@@ -276,6 +280,15 @@ router.post("/", async (req, res, next) => {
           { transaction: t }
         )
       )
+    );
+
+    await DeliveryStatus.create(
+      {
+        id_order: createdOrder.id,
+        status: ["En attente"],
+        date: new Date(),
+      },
+      { transaction: t }
     );
 
     await t.commit();

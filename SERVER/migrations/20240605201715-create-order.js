@@ -16,17 +16,20 @@ module.exports = {
         type: Sequelize.FLOAT,
       },
       order_date: {
-        defaultValue: Sequelize.fn("NOW"),
         type: Sequelize.DATE,
+        defaultValue: Sequelize.fn("NOW"),
       },
       order_status: {
         type: Sequelize.INTEGER,
       },
-      delivery_date: {
+      expected_delivery_date: {
         type: Sequelize.DATE,
-      },
-      delivery_status: {
-        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: () => {
+          const date = new Date();
+          date.setDate(date.getDate() + 7);
+          return date;
+        },
       },
       createdAt: {
         allowNull: false,
