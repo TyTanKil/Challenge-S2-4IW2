@@ -15,14 +15,18 @@ const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
 </script>
 
 <template>
+  <div id="app">
     <header v-if="!isAdminRoute">
       <AppHeader :route="isIdentifyRoute" />
-  </header>
+    </header>
+
     <main :class="{ 'admin-route': isAdminRoute, 'default-route': !isAdminRoute }">
-      <AppMainView :route="isMainRoute"></AppMainView>
-    <RouterView />
-  </main>
-  <AppFooter/>
+      <AppMainView :route="isMainRoute" />
+      <RouterView />
+    </main>
+
+    <AppFooter />
+  </div>
 </template>
 
 
@@ -30,13 +34,23 @@ const isAdminRoute = computed(() => route.fullPath.startsWith('/admin'));
 body {
   background-color: white;
   color: #575757;
-  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 header {
   position: sticky;
   top: 0;
   z-index: 1000;
   background-color: #575757;
+}
+main {
+  flex: 1;
 }
 main.default-route {
   width: 80%;
