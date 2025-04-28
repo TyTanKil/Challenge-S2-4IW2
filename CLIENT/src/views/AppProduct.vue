@@ -108,27 +108,9 @@ onMounted(async () => {
   <div class="content" v-if="!isLoading && product">
     <div class="main_infos">
       <div class="images">
-        <div class="all_images">
-          <div class="img1">
-            <img
-              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-              alt="">
-          </div>
-          <div class="img2">
-            <img
-              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-              alt="">
-          </div>
-          <div class="img3">
-            <img
-              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-              alt="">
-          </div>
-        </div>
         <div class="main_img">
           <img
-            :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-            alt="">
+          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/image_not_available.png'">
         </div>
       </div>
       <div class="text_description">
@@ -164,15 +146,11 @@ onMounted(async () => {
       <div class="nav_description">
         <ul>
           <li><a href="#description">Description</a></li>
-          <li><a href="#autres-produits">Autres produits</a></li>
         </ul>
       </div>
       <div id="description" class="section">
         <h2>Description</h2>
         {{ product.description }}
-      </div>
-      <div id="autres-produits" class="section">
-        <h2>Produits Similaires</h2>
       </div>
     </div>
   </div>

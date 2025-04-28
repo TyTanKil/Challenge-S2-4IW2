@@ -18,34 +18,37 @@ const props = defineProps({     //Définition des données passées par le compo
     link_img: String,
     cartProductId: Number
 });
+console.log('Props:', props);
 
-function navigate() {         //Fonction pour naviguer sur la page grace au lien fourni
-  if (props.link) {
-    window.location.href = props.link;
-  }
-}
+const decrementQuantity = async () => {
+    if (props.quantity > 1) {
+        try {
+            await ApiClient.patch(`/cartProduct/${props.cartProductId}/${props.id}`, { quantity: props.quantity - 1 });
+            toast.success('Quantité diminuée');
+            emits('productDeleted', null); // Ou crée un nouvel event pour "refresh"
+            window.location.reload();
+        } catch (error) {
+            toast.error('Erreur lors de la modification de la quantité');
+        }
+    } else {
+        // Si quantité = 1, supprimer le produit
+        await deleteProduct();
+    }
+};
 
 const deleteProduct = async () => {
     const id_user = store.state.user_id;
-    console.log('User ID:', id_user);
-    console.log('Props:', props);
-
     if (id_user == null) {
         toast.error('Vous devez être connecté pour supprimer un produit du panier');
         return;
     }
-
     try {
-        const response = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
-        let cartId = response.data.id;
-        let productId = props.id;
-
-        const responseDelete = await ApiClient.get(`/getByIds/${cartId}/${productId}`);
-        
+        await ApiClient.delete(`/cartProduct/${props.cartProductId}/${props.id}`);
         toast.success('Produit supprimé du panier');
         emits('productDeleted', props.cartProductId);
+        //force reload
+        window.location.reload();
     } catch (error) {
-        console.error('Error deleting product from cart:', error);
         toast.error('Une erreur est survenue lors de la suppression du produit du panier');
     }
 };
@@ -63,7 +66,10 @@ const deleteProduct = async () => {
       <div class="buy_div_container">
           <div class="price_quantity_container">
               <p>Prix : {{ props.price }} €</p>
-              <p><span>Quantité : {{ props.quantity }}</span></p>
+              <p>
+                <span>Quantité : {{ props.quantity }}</span>
+                <button @click="decrementQuantity" style="margin-left: 10px;">-</button>
+              </p>
           </div>
           <div class="action_div_container">
               <button @click="deleteProduct">

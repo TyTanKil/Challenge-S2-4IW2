@@ -38,6 +38,8 @@ export default {
 
         const DataCartProducts = responseCartProducts.data;
 
+        console.log('DataCartProducts:', DataCartProducts);
+
         const productDetailsPromises = DataCartProducts.map(async (cartProduct) => {
           const { id_product, quantity } = cartProduct;
           try {
@@ -50,6 +52,10 @@ export default {
               quantity: cartProduct.quantity,
               createdAt: cartProduct.createdAt,
               updatedAt: cartProduct.updatedAt,
+              id_product: cartProduct.id_product,
+              link_img: responseProduct.Product_images?.length
+                ? store.state.api_endpoint + '/uploads/' + responseProduct.Product_images[0].url
+                : '/src/assets/img/products/image_not_available.png',
             };
           } catch (error) {
             console.error(`Erreur lors de la récupération du produit ${id_product}:`, error);
@@ -146,11 +152,16 @@ export default {
       <div class="cards_cart">
         <ProductItem
           v-for="product in products"
-          :key="product.id"
+          :id="product.id_product"
+          :key="product.id_product"
           :label="product.label"
           :description="product.description"
           :price="product.unit_price"
           :quantity="product.quantity"
+          :link_img="product.link_img"
+          :cartProductId="product.id_cart"
+          @productDeleted="removeProduct"
+
         />
       </div>
       
