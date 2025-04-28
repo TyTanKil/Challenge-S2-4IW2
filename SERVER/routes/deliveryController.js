@@ -4,11 +4,11 @@ const {
   getDelivery,
 } = require("../services/denormalizations/deliveryService");
 
-const router = express.Router();
+const db = require("../db");
+const { DeliveryStatus } = db;
 
-router.get("/test", (req, res) => {
-  res.send("API is working!");
-});
+
+const router = express.Router();
 
 // Route pour créer une nouvelle livraison
 router.post("/delivery", (req, res) => {
@@ -20,14 +20,22 @@ router.post("/delivery", (req, res) => {
 });
 
 // Route pour récupérer une livraison par ID
-router.get("/delivery/:id", (req, res) => {
-  console.log(`GET /delivery/${req.params.id} called`);
+router.get("/:id", async (req, res) => {
+  try {
+    const deliveries = await DeliveryStatus.findAll({
+      where: { id_order: req.params.id },
+      order: [['date', 'ASC']], // ou DESC si tu veux le plus récent en premier
+      attributes: ["status", "date"],
+    });
 
-  const delivery = getDelivery(req.params.id);
-  if (!delivery) {
-    return res.status(404).json({ error: "Delivery not found" });
+    if (!deliveries.length) {
+      return res.status(404).json({ error: "No delivery status found" });
+    }
+    res.json(deliveries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
   }
-  res.json(delivery);
 });
 
 module.exports = router;

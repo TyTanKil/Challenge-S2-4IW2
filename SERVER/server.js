@@ -55,7 +55,7 @@ app.use("/stock-history", stockHistoryController);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/api", deliveryController);
+app.use("/delivery", deliveryController);
 
 // Utilisation des routes de paiement
 app.use(PaymentRouter);

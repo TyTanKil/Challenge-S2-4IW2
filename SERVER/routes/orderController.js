@@ -16,7 +16,7 @@ const { sequelize, Order, Order_product, DeliveryStatus, account, DataTypes } = 
 
 // console.log(db);
 
-router.get("/", async (req, res, next) => {
+router.get("/", checkAuth, async (req, res, next) => {
   const orders = await Order.findAll({
     where: req.query,
     include: [
@@ -292,6 +292,33 @@ router.post("/", async (req, res, next) => {
     );
 
     await t.commit();
+
+    // Logique asynchrone pour les statuts suivants (hors transaction)
+    setTimeout(async () => {
+      try {
+        await DeliveryStatus.create({
+          id_order: createdOrder.id,
+          status: ["Expédié"],
+          date: new Date(),
+        });
+
+        setTimeout(async () => {
+          try {
+            const isCancelled = Math.floor(Math.random() * 5) === 0;
+            await DeliveryStatus.create({
+              id_order: createdOrder.id,
+              status: isCancelled ? ["Annulé"] : ["Livré"],
+              date: new Date(),
+            });
+          } catch (err) {
+            console.error("Erreur lors de la création du statut final :", err);
+          }
+        }, 15000);
+
+      } catch (err) {
+        console.error("Erreur lors de la création du statut Expédié :", err);
+      }
+    }, 15000);
     res.status(201).json({ order: createdOrder, products: createdProducts });
   } catch (e) {
     await t.rollback();
