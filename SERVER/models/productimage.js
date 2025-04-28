@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   Product_image.init(
     {
       id_product: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
       },
       url: {

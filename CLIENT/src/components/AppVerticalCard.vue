@@ -20,6 +20,7 @@
 
     onMounted(async () => {
     try {
+        console.log("2 : " + props.id);
         const response = await ApiClient.post('/stock/ByIdProduct', { id_product: props.id });
         if (response.status === 200 && response.data.length > 0) {
         const maxQuantity = response.data[0].quantity;

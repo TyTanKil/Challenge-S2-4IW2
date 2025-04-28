@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   StockHistory.init(
     {
-      id_product: DataTypes.INTEGER,
+      id_product: DataTypes.UUID,
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
