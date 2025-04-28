@@ -14,6 +14,7 @@ const isVertical = ref(true); // mode par défaut : vertical
 const fetchProducts = async () => {
   try {
     const response = await ApiClient.get('/products');
+    console.log('Produits récupérés:', response);
     products.value = response;
   } catch (error) {
     console.error('Erreur lors de la récupération des produits:', error);
@@ -26,7 +27,7 @@ function handleSelect(product) {
   router.push({
     name: 'Product',
     params: {
-      id: product._id,
+      id: product.id,
       name: product.label,
       description: product.description,
       price: product.unit_price,
@@ -67,9 +68,9 @@ const props = defineProps({
     <div class="cards" :class="{ 'horizontal-mode': !isVertical }">
       <component
         v-for="product in products"
-        :key="product._id"
+        :key="product.id"
         :is="isVertical ? AppVerticalCard : AppHorizontalCard"
-        :id="product._id"
+        :id="product.id"
         :label="product.label"
         :description="product.description"
         :price="product.unit_price"
