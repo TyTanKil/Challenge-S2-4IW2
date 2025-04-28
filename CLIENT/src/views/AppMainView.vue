@@ -28,6 +28,7 @@ function handleSelect(product) {
     name: 'Product',
     params: {
       id: product.id,
+      mongoId: product._id,
       name: product.label,
       description: product.description,
       price: product.unit_price,
@@ -70,6 +71,7 @@ const props = defineProps({
         v-for="product in products"
         :key="product.id"
         :is="isVertical ? AppVerticalCard : AppHorizontalCard"
+        :mongoId="product._id"
         :id="product.id"
         :label="product.label"
         :description="product.description"

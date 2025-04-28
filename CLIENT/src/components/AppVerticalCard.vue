@@ -7,6 +7,7 @@
     // Définition des propriétés passées au composant
     const props = defineProps({
     id: Number,
+    mongoId: String,
     label: String,
     description: String,
     price: String,
@@ -43,58 +44,59 @@
     }
 
     const addToCart = async () => {
-    const id_user = store.state.user_id;
-    console.log('User ID:', id_user);
-    const productId = props.id;
+        const id_user = store.state.user_id;
+        console.log('User ID:', id_user);
+        const productId = props.id;
 
-    if (id_user == null) {
-        toast.error('Vous devez être connecté pour ajouter un produit au panier');
-        return;
-    }
+        if (id_user == null) {
+            toast.error('Vous devez être connecté pour ajouter un produit au panier');
+            return;
+        }
 
-    try {
-        let responseGetCart;
-        let cartId;
-
-        // Tenter de récupérer le panier existant
         try {
-        responseGetCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
-        console.log('Response Cart:', responseGetCart);
+            let responseGetCart;
+            let cartId;
 
-        if (responseGetCart.status === 200) {
-            cartId = responseGetCart.data.id;
-        } else {
-            throw new Error('Unexpected response status');
-        }
+            // Tenter de récupérer le panier existant
+            try {
+            responseGetCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
+            console.log('Response Cart:', responseGetCart);
+
+            if (responseGetCart.status === 200) {
+                cartId = responseGetCart.data.id;
+            } else {
+                throw new Error('Unexpected response status');
+            }
+            } catch (error) {
+            if (error.response && error.response.status === 404) {
+                // Si le panier n'existe pas (404), en créer un nouveau
+                let responseCart = await ApiClient.put(`/cart`, { id_user: id_user });
+                cartId = responseCart.data.id;
+            } else {
+                // Si une autre erreur survient, la gérer
+                throw error;
+            }
+            }
+
+            // Ajouter le produit avec la quantité sélectionnée
+            let responseAddCart = await ApiClient.post(`/cartProduct/addProduct`, { 
+            id_cart: cartId,
+            id_product: productId,
+            quantity: selectedQuantity.value
+            });
+            toast.success('Produit ajouté au panier');
+            console.log('Product added:', responseAddCart.data);
+            emits('productAdded', responseAddCart.data.id);
         } catch (error) {
-        if (error.response && error.response.status === 404) {
-            // Si le panier n'existe pas (404), en créer un nouveau
-            let responseCart = await ApiClient.put(`/cart`, { id_user: id_user });
-            cartId = responseCart.data.id;
-        } else {
-            // Si une autre erreur survient, la gérer
-            throw error;
+            console.error('Error adding product to cart:', error);
+            toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
         }
-        }
-
-        // Ajouter le produit avec la quantité sélectionnée
-        let responseAddCart = await ApiClient.post(`/cartProduct/addProduct`, { 
-        id_cart: cartId,
-        id_product: productId,
-        quantity: selectedQuantity.value
-        });
-        toast.success('Produit ajouté au panier');
-        console.log('Product added:', responseAddCart.data);
-        emits('productAdded', responseAddCart.data.id);
-    } catch (error) {
-        console.error('Error adding product to cart:', error);
-        toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
-    }
     }
 
     function selectCard() {
     emits('select', {
         id : props.id,
+        mongoId: props.mongoId,
         name: props.label,
         description: props.description,
         price: props.price,
@@ -104,8 +106,8 @@
 </script>
 
 <template>        
-    <div class="card_vertical">
-        <img @click="selectCard" class="card_vertical_img" :src="props.link_img" :alt="props.label">
+    <div class="card_vertical" @click="selectCard">
+        <img class="card_vertical_img" :src="props.link_img" :alt="props.label">
         <div class="infos">
             <h3>{{ props.label }}</h3>
             <h4>{{ props.description }}</h4>
@@ -121,7 +123,7 @@
         <div class="buy_div_container">
             <p>Prix : {{ props.price }} €</p>
             <div class="cart_img_container">
-                <button @click="addToCart">
+                <button @click.stop="addToCart">
                     <img class="cart_card" src="\src\assets\img\svg\icons\cart2.svg" alt="">
                 </button>
             </div>
