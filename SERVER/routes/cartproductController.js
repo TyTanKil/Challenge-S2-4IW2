@@ -62,6 +62,21 @@ router.patch("/:id_cart/:id_product", async (req, res, next) => {
   }
 });
 
+router.delete("/:id_cart", checkAuth, async (req, res, next) => {
+  try {
+    const { id_cart } = req.params;
+    const nbDeleted = await CartProduct.destroy({
+      where: {
+        id_cart: parseInt(id_cart)
+      },
+    });
+    res.sendStatus(nbDeleted ? 204 : 404);
+  } catch (e) {
+    next(e);
+  }
+}
+);
+
 router.delete("/:id_cart/:id_product", async (req, res, next) => {
   try {
     const { id_cart, id_product } = req.params;
