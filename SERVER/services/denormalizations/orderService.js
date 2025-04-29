@@ -27,8 +27,7 @@ async function syncOrderWithMongo(orderId) {
       total_price: order.total_price,
       order_date: order.order_date,
       order_status: order.order_status,
-      delivery_date: order.delivery_date,
-      delivery_status: order.delivery_status,
+      expected_delivery_date: order.expected_delivery_date,
       Order_products: order.Order_products
         ? order.Order_products.map((product) => ({
             id_order: product.id_order,

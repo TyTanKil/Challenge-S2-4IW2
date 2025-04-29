@@ -13,6 +13,7 @@ const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
 const PaymentRouter = require("./payment");
 const path = require("path");
+const deliveryController = require("./routes/deliveryController");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
@@ -53,6 +54,8 @@ app.use("/stock-history", stockHistoryController);
 // app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use("/delivery", deliveryController);
 
 // Utilisation des routes de paiement
 app.use(PaymentRouter);

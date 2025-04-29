@@ -55,18 +55,26 @@
           <div class="orders-container">
             <div v-if="orders.length">
               <div v-for="order in orders" :key="order.id" class="order-card">
-                <h2>Commande #{{ order.id }}</h2>
-                <p><strong>Date de la commande :</strong> {{ formatDate(order.order_date) }}</p>
-                <p><strong>Statut de la livraison :</strong> {{ displayOrderStatus(order.delivery_status) }}</p>
-                <p><strong>Total TTC :</strong> {{ order.total_price }} €</p>
+                <div class="order-header">
+                  <h2>Commande #{{ order.id }}</h2>
+                  <span class="order-date">{{ formatDate(order.order_date) }}</span>
+                </div>
+                <span>
+                  <strong>Statut livraison :</strong> {{ order.deliveryStatus.toString() }}
+                  <button class="history-btn" @click="openHistoryModal(order)">Voir l'historique</button>
+                </span>
                 <div class="order-products">
-                  <h3>Produits :</h3>
-                  <div v-for="product in order.Order_products" :key="product.id" class="product-item">
-                    <p><strong>Nom :</strong> {{ product.label }}</p>
-                    <p><strong>Réf :</strong> {{ product.ref }}</p>
-                    <p><strong>Description :</strong> {{ product.description }}</p>
-                    <p><strong>Quantité :</strong> {{ product.quantity }}</p>
-                    <p><strong>Prix unitaire :</strong> {{ product.unit_price }} €</p>
+                  <h3>Produits</h3>
+                  <div
+                    v-for="product in order.Order_products"
+                    :key="product.id"
+                    class="product-item"
+                  >
+                    <div class="product-row">
+                      <span><strong>Nom :</strong> {{ product.label }}</span>
+                      <span><strong>Quantité :</strong> {{ product.quantity }}</span>
+                      <span><strong>Prix unitaire :</strong> {{ product.unit_price }} €</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -113,6 +121,17 @@
       </div>
     </div>
   </div>
+  <div v-if="showHistoryModal" class="modal-overlay" @click.self="closeHistoryModal">
+  <div class="modal-content">
+    <h3>Historique de livraison - Commande #{{ selectedOrderId }}</h3>
+    <ul>
+      <li v-for="(item, idx) in selectedHistory" :key="idx">
+        <strong>{{ item.status.toString() }}</strong> - {{ new Date(item.date).toLocaleString('fr-FR') }}
+      </li>
+    </ul>
+    <button @click="closeHistoryModal">Fermer</button>
+  </div>
+</div>
 </template>
 
 <script>
@@ -143,6 +162,22 @@ export default {
     const isMailsActivated = ref(false);
     const isNewsletterActivated = ref(false);
 
+    const showHistoryModal = ref(false);
+    const selectedHistory = ref([]);
+    const selectedOrderId = ref(null);
+
+    const openHistoryModal = (order) => {
+      selectedHistory.value = order.deliveryHistory || [];
+      selectedOrderId.value = order.id;
+      showHistoryModal.value = true;
+    };
+
+    const closeHistoryModal = () => {
+      showHistoryModal.value = false;
+      selectedHistory.value = [];
+      selectedOrderId.value = null;
+    };
+
     const fetchUserData = async () => {
       try {
         user.value = await ApiClient.get('/user/me');
@@ -162,7 +197,17 @@ export default {
 
       try {
         const response = await ApiClient.get(`/order/ByIdUser/${id_user}`);
-        orders.value = response;
+        const ordersWithDelivery = await Promise.all(
+          response.map(async (order) => {
+            try {
+              const deliveries = await ApiClient.get(`/delivery/${order.id}`);
+              return { ...order, deliveryStatus: deliveries[deliveries.length - 1]?.status, deliveryHistory: deliveries };              return { ...order, deliveryStatus: delivery.status };
+            } catch {
+              return { ...order, deliveryStatus: 'Inconnu' };
+            }
+          })
+        );
+        orders.value = ordersWithDelivery;
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
@@ -396,12 +441,55 @@ export default {
       downloadPersonalDataAsPDF,
       orders,
       displayOrderStatus,
+      showHistoryModal,
+      selectedHistory,
+      selectedOrderId,
+      openHistoryModal,
+      closeHistoryModal,
     };
   },
 };
 </script>
 
 <style scoped>
+/* Modal Overlay */
+.history-btn {
+  margin-left: 10px;
+  background: #A0DB10;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  color: #222;
+  font-size: 0.95em;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  min-width: 300px;
+  max-width: 90vw;
+  color: #000;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 2px 0;
+  margin: 0;
+  li{
+    margin: 0.5rem 0;
+  }
+}
+
 /* Slider */
 .switch-container {
   display: flex;
@@ -579,6 +667,47 @@ input:checked + .slider:before {
   }
 }
 
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #A0DB10;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.order-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #000;
+}
+
+.order-products {
+  margin-top: 10px;
+  color: #000;
+}
+
+.product-item {
+  background: #f1f8e9;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  padding: 10px 15px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  color: #000;
+}
+
+.product-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.98rem;
+}
+
 .tabs {
   display: flex;
   background-color: #A0DB10;
@@ -622,6 +751,7 @@ input:checked + .slider:before {
   border: 1px solid #ddd; /* Bordure des cartes de commande */
   background-color: #fff; /* Fond des cartes de commande */
   border-radius: 5px; /* Coins arrondis des cartes */
+  color: #000; /* Couleur du texte des cartes */
 }
 
 @media (prefers-color-scheme: dark) {

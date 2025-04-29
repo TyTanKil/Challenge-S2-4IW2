@@ -82,7 +82,6 @@
               id_user: id_user,
               total_price: cartTotal.value,
               order_status: 1,
-              delivery_status: 1
           };
 
           const productsData = productsArray._value;

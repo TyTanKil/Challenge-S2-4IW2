@@ -1,5 +1,6 @@
 "use strict";
 const { Model, DataTypes } = require("sequelize");
+const { Sequelize } = require("../db");
 
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
@@ -11,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Order.belongsTo(models.account, { foreignKey: "id_user" });
       Order.hasMany(models.Order_product, { foreignKey: "id_order" });
+      Order.hasMany(models.DeliveryStatus, { foreignKey: "id_order" });
     }
   }
   Order.init(
@@ -19,8 +21,15 @@ module.exports = (sequelize, DataTypes) => {
       total_price: DataTypes.FLOAT,
       order_date: DataTypes.DATE,
       order_status: DataTypes.INTEGER,
-      delivery_date: DataTypes.DATE,
-      delivery_status: DataTypes.INTEGER,
+      expected_delivery_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: () => {
+          const date = new Date();
+          date.setDate(date.getDate() + 7);
+          return date;
+        },
+      },
     },
     {
       sequelize,

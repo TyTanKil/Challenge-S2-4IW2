@@ -58,6 +58,8 @@ import AppCGV from './views/AppCGV.vue'
 import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
 import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
 
+import Delivery from './views/Delivery.vue'
+
 import 'vue-toast-notification/dist/theme-sugar.css'
 import apiClient from './assets/js/apiClient'
 
@@ -165,6 +167,13 @@ const routes = [
   { path: '/cgv', name: 'AppCGV', component: AppCGV },
   { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
   { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles },
+
+  {
+    path: '/delivery/:id',
+    name: 'Delivery',
+    component: Delivery,
+    props: (route) => ({ deliveryId: route.params.id }) // Transmet l'ID comme prop
+  },
 
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ]
