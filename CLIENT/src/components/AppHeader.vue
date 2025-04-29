@@ -170,7 +170,6 @@ const goToSearchResults = () => {
 
 .search_bar input:focus {
   outline: none;
-  background-color: #f0f0f0;
 }
 
 /* Résultats de recherche */

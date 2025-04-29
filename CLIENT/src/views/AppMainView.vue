@@ -42,10 +42,6 @@ const props = defineProps({
 
 <template>
   <div v-if="props.route">
-    <!-- Image principale -->
-    <div class="img_main">
-      <img src="/src/assets/img/promo/Image_promo_2.png" alt="Image de promo" class="main-img" />
-    </div>
 
     <!-- Bouton pour changer la vue -->
     <div class="toggle-button">
@@ -73,7 +69,7 @@ const props = defineProps({
         :label="product.label"
         :description="product.description"
         :price="product.unit_price"
-        :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
+        :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/image_not_available.png'"
         @select="() => handleSelect(product)"
       />
     </div>
