@@ -180,20 +180,21 @@ export default {
 <style>
 .cart.content {
   display: flex;
-  flex: 1; /* Prend toute la largeur disponible */
 }
 
 .cards_cart {
-  flex: 3; /* Prend une plus grande partie de l'espace disponible */
+  flex: 3;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  gap: 1rem;           /* Ajoute un espace de 1rem entre les cards */
+  justify-content: flex-start; /* Aligne les cards au début, sans trop d'espace entre elles */
 }
 
 .total {
   flex: 1; /* Prend une partie plus petite de l'espace disponible */
   width: 200px; /* Largeur fixe */
   height: 200px; /* Hauteur fixe */
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;

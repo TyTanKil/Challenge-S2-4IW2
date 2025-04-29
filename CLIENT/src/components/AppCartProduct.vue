@@ -84,90 +84,131 @@ const deleteProduct = async () => {
 .card_product_cart {
   background-color: #575757;
   color: #fff;
-  width: 70%;
-  max-height: 10rem;
-  min-height: 8rem;
-  margin: 1rem;
-  padding: 0.8rem;
+  width: 95%;
+  min-width: 320px;
+  max-width: 600px;
+  min-height: 90px;
+  max-height: 150px;
+  height: auto;
+  margin: 1rem auto;
+  padding: 0.7rem 1rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 8px;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+  border-radius: 14px;
   border: 0.7px #C4F649 solid;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s;
+  box-sizing: border-box;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
 }
 
 .card_product_cart:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
 }
 
 .card_product_cart_img {
-  height: 7rem;
-  width: auto;
+  height: 100px;
+  width: 120px;
   object-fit: contain;
-  margin: 0 1rem 0 0;
+  margin-right: 1rem;
+  border-radius: 10px;
+  background: #fff;
+  flex-shrink: 0;
+  align-self: center;
+  border: none;
 }
 
 .infos {
-  width: 60%;
-  margin: 0.5rem 0;
+  flex: 2;
+  min-width: 0;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .infos h3 {
-  font-weight: 500;
-  margin: 0;
-  font-size: x-large;
+  font-weight: 600;
+  margin: 0 0 0.3rem 0;
+  font-size: 1.08rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .infos h4 {
   font-weight: 300;
   margin: 0;
-  font-size: medium;
+  font-size: 0.98rem;
+  color: #e0e0e0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
-  max-height: 60px;
+  max-height: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .buy_div_container {
+  flex: 0.8;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-direction: row;
-  width: 30%;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.7rem;
 }
 
 .price_quantity_container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin-right: 1rem;
+  align-items: flex-end;
+  margin-bottom: 0.2rem;
 }
 
 .price_quantity_container p {
-  font-size: large;
+  font-size: 1rem;
   font-weight: 500;
+  margin: 0.08rem 0;
 }
 
 .price_quantity_container p span {
-  font-size: medium;
-  font-weight: 300;
+  font-size: 0.96rem;
+  font-weight: 400;
+}
+
+.price_quantity_container button {
+  margin-left: 10px;
+  border: none;
+  background: #C4F649;
+  color: #222;
+  border-radius: 6px;
+  padding: 0.13rem 0.5rem;
+  font-size: 1.05rem;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.price_quantity_container button:hover {
+  background: #A0DB10;
+  cursor: pointer;
 }
 
 .action_div_container {
-  margin-right: 1rem;
+  margin-top: 0.2rem;
 }
 
 .action_div_container button {
   border: none;
-  width: 2rem;  /* Adjusted width */
-  height: 2rem; /* Adjusted height */
+  width: 1.7rem;
+  height: 1.7rem;
   background-color: #C4F649;
   border-radius: 8px;
   box-shadow: 1px 2px #3838385d;
-  padding: 0.2rem; /* Adjusted padding */
+  padding: 0.12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action_div_container button:hover {
@@ -176,14 +217,42 @@ const deleteProduct = async () => {
 }
 
 .action_div_container img {
-  width: 100%;
-  height: 100%;
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (max-width: 700px) {
+  .card_product_cart {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.7rem;
+    min-width: 160px;
+    max-width: 98vw;
+    min-height: 80px;
+    max-height: 220px;
+  }
+  .card_product_cart_img {
+    margin: 0 auto 0.7rem auto;
+    height: 80px;
+    width: 110px;
+  }
+  .infos, .buy_div_container {
+    margin-right: 0;
+    width: 100%;
+    align-items: flex-start;
+  }
+  .buy_div_container {
+    align-items: flex-start;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   .card_product_cart {
       background-color: #fff;
-      color: black;
+      color: #222;
+  }
+  .infos h4 {
+      color: #444;
   }
 }
 </style>

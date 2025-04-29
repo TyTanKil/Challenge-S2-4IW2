@@ -23,7 +23,6 @@ const fetchProduct = async () => {
     const response = await ApiClient.get(`/products/${route.params.id}`);
     product.value = response;
     productId = response.id;
-    console.log(product.value);
   } catch (err) {
     error.value = 'Erreur lors du chargement du produit.';
   } finally {
@@ -110,7 +109,7 @@ onMounted(async () => {
       <div class="images">
         <div class="main_img">
           <img
-          :link_img="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/image_not_available.png'">
+          :src="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/image_not_available.png'">
         </div>
       </div>
       <div class="text_description">
@@ -245,11 +244,13 @@ onMounted(async () => {
 }
 
 .quantity_selector select {
-  padding: 0.4rem;
+  padding: 0.15rem 0.5rem; /* réduit la hauteur */
   border-radius: 6px;
   border: 1px solid #ccc;
   background: var(--secondary-bg);
   color: var(--text-color);
+  font-size: 0.8rem; /* tu peux réduire à 0.95rem si tu veux encore plus petit */
+  height: 2rem; /* optionnel, force une hauteur max */
 }
 
 .buy_div_container {
@@ -261,7 +262,7 @@ onMounted(async () => {
   border: none;
   min-width: 4rem;
   height: 3.2rem;
-  background-color: var(--highlight-color);
+  background-color: #C4F649;
   border-radius: 8px;
   box-shadow: 1px 2px rgba(0, 0, 0, 0.3);
   padding: 0.4rem;
@@ -315,7 +316,7 @@ onMounted(async () => {
 
 .nav_description a:hover {
   text-decoration: underline;
-  color: var(--highlight-color);
+  color: #C4F649;
 }
 
 .section {
