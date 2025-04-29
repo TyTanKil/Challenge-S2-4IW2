@@ -14,7 +14,6 @@ const isVertical = ref(true); // mode par défaut : vertical
 const fetchProducts = async () => {
   try {
     const response = await ApiClient.get('/products');
-    console.log('Produits récupérés:', response);
     products.value = response;
   } catch (error) {
     console.error('Erreur lors de la récupération des produits:', error);
@@ -27,12 +26,7 @@ function handleSelect(product) {
   router.push({
     name: 'Product',
     params: {
-      id: product.id,
-      mongoId: product._id,
-      name: product.label,
-      description: product.description,
-      price: product.unit_price,
-      link_img: product.images.length ? product.images[0].url : ''
+      mongoId: product._id
     }
   });
 }

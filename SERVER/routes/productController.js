@@ -89,9 +89,9 @@ router.get("", async (req, res, next) => {
 });
 
 //Mongo ROUTE
-router.get("/:mongoId", async (req, res, next) => {
+router.get("/:_id", async (req, res, next) => {
   try {
-    const product = await Products.findById(req.params.mongoId);
+    const product = await Products.findById(req.params._id);
     if (!product) {
       return res.status(404).json({ message: "Produit non trouvé" });
     }
@@ -190,7 +190,7 @@ router.post(
 
 router.get("/show/:id", async (req, res, next) => {
   try {
-    const product = await Product.findByPk(parseInt(req.params.id), {
+    const product = await Product.findByPk(req.params.id, {
       include: [
         { model: Category },
         { model: Manufacturer },

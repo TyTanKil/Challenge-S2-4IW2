@@ -25,23 +25,34 @@ export default {
           throw new Error('L\'ID utilisateur est requis.');
         }
 
+        // 🔹 Récupération du panier
         const responseCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
+
         if (responseCart.status !== 200) {
           throw new Error('Erreur lors de la récupération du panier : ' + responseCart.statusText);
         }
 
         const id_cart = responseCart.data.id;
+
+        // 🔹 Récupération des produits du panier
         const responseCartProducts = await ApiClient.post(`/cartProduct/products`, { id_cart: id_cart });
+
         if (responseCartProducts.status !== 200) {
           throw new Error('Erreur lors de la récupération des produits du panier : ' + responseCartProducts.statusText);
         }
 
         const DataCartProducts = responseCartProducts.data;
 
-        const productDetailsPromises = DataCartProducts.map(async (cartProduct) => {
+        // 🔹 Récupération des détails de chaque produit
+        const productDetailsPromises = DataCartProducts.map(async (cartProduct, index) => {
           const { id_product, quantity } = cartProduct;
+          console.log(cartProduct);
+          console.log(`[fetchCartProducts] [${index}] Produit ID :`, id_product);
+
           try {
             const responseProduct = await ApiClient.get(`/product/show/${id_product}`);
+            console.log(`[fetchCartProducts] [${index}] Détails produit récupérés :`, responseProduct);
+
             return {
               label: responseProduct.label,
               description: responseProduct.description,
@@ -52,18 +63,20 @@ export default {
               updatedAt: cartProduct.updatedAt,
             };
           } catch (error) {
-            console.error(`Erreur lors de la récupération du produit ${id_product}:`, error);
+            console.error(`[fetchCartProducts] Erreur lors de la récupération du produit ${id_product}:`, error);
             return null;
           }
         });
 
         const productsArray = await Promise.all(productDetailsPromises);
+
         return productsArray.filter(product => product !== null);
       } catch (error) {
-        console.error('Erreur lors de la récupération des produits du panier:', error);
+        console.error('[fetchCartProducts] Erreur générale :', error);
         return [];
       }
     };
+
 
     const loadProducts = async () => {
       const id_user = store.state.user_id;

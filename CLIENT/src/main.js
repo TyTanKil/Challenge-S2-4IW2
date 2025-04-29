@@ -145,7 +145,7 @@ const routes = [
   { path: '/account', name: 'Account', component: MyAccount },
 
   {
-    path: '/product/:id',
+    path: '/product/:mongoId',
     name: 'Product',
     component: Product,
     props: (route) => ({

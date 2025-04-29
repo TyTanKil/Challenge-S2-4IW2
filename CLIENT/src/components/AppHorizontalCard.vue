@@ -1,90 +1,90 @@
 <script lang="ts" setup>
 import ApiClient from '@/assets/js/apiClient';
-import { defineProps, ref, onMounted } from 'vue';
+import { defineProps, defineEmits, ref, onMounted } from 'vue';
 import { useToast } from 'vue-toast-notification';
 import { useStore } from 'vuex';
 
-// Définition des propriétés passées au composant
-const props = defineProps({
-  id: Number,
-  mongoId: String,
-  label: String,
-  description: String,
-  price: String,
-  link: String,
-  link_img: String
-});
+const props = defineProps<{
+  id: number;
+  postgreId?: string;
+  mongoId: string;
+  label: string;
+  description: string;
+  price: string;
+  link?: string;
+  link_img: string;
+}>();
 
-const selectedQuantity = ref(1);
-const quantityOptions = ref<number[]>([]);
-const emits = defineEmits(['select', 'productAdded']);
+const emits = defineEmits<{
+  (e: 'select', product: {
+    id: number;
+    mongoId: string;
+    name: string;
+    description: string;
+    price: string;
+    link_img: string;
+  }): void;
+  (e: 'productAdded', id: number): void;
+}>();
 
 const store = useStore();
 const toast = useToast();
 
+const selectedQuantity = ref(1);
+const quantityOptions = ref<number[]>([]);
+
 onMounted(async () => {
   try {
-    const response = await ApiClient.post('/stock/ByIdProduct', { id_product: props.id });
-    if (response.status === 200 && response.data.length > 0) {
-      const maxQuantity = response.data[0].quantity;
-      quantityOptions.value = Array.from({ length: maxQuantity }, (_, i) => i + 1);
-    } else {
-      console.error('Erreur lors de la récupération de la quantité du produit');
+    const res = await ApiClient.post('/stock/ByIdProduct', { id_product: props.id });
+    if (res.status === 200 && res.data.length > 0) {
+      const max = res.data[0].quantity;
+      quantityOptions.value = Array.from({ length: max }, (_, i) => i + 1);
     }
   } catch (error) {
-    console.error('Erreur lors de la récupération de la quantité:', error);
+    console.error('Erreur récupération quantité :', error);
   }
 });
 
 const addToCart = async () => {
   const id_user = store.state.user_id;
-  console.log('User ID:', id_user);
-  const productId = props.id;
 
-  if (id_user == null) {
+  if (!id_user) {
     toast.error('Vous devez être connecté pour ajouter un produit au panier');
     return;
   }
 
   try {
-    let responseGetCart;
-    let cartId;
+    let cartId: number;
 
-    // Tenter de récupérer le panier existant
+    // Tente de récupérer le panier
     try {
-      responseGetCart = await ApiClient.post(`/cart/getByIDUser`, { id_user: id_user });
-      if (responseGetCart.status === 200) {
-        cartId = responseGetCart.data.id;
-      } else {
-        throw new Error('Unexpected response status');
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        // Créer un nouveau panier si inexistant
-        let responseCart = await ApiClient.put(`/cart`, { id_user: id_user });
-        cartId = responseCart.data.id;
+      const res = await ApiClient.post(`/cart/getByIDUser`, { id_user });
+      cartId = res.data.id;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        const res = await ApiClient.put(`/cart`, { id_user });
+        cartId = res.data.id;
       } else {
         throw error;
       }
     }
 
-    // Ajouter le produit avec la quantité sélectionnée
-    const responseAddCart = await ApiClient.post(`/cartProduct/addProduct`, { 
+    // Ajoute le produit au panier
+    const resAdd = await ApiClient.post(`/cartProduct/addProduct`, {
       id_cart: cartId,
-      id_product: productId,
+      id_product: props.id,
       quantity: selectedQuantity.value
     });
 
     toast.success('Produit ajouté au panier');
-    console.log('Product added:', responseAddCart.data);
-    emits('productAdded', responseAddCart.data.id);
+    emits('productAdded', resAdd.data.id);
   } catch (error) {
-    console.error('Erreur lors de l\'ajout au panier:', error);
-    toast.error('Une erreur est survenue lors de l\'ajout du produit au panier');
+    console.error('Erreur ajout panier :', error);
+    toast.error("Erreur lors de l'ajout au panier");
   }
-}
+};
 
-function selectCard() {
+const selectCard = () => {
   emits('select', {
     id: props.id,
     mongoId: props.mongoId,
@@ -93,12 +93,12 @@ function selectCard() {
     price: props.price,
     link_img: props.link_img
   });
-}
+};
 </script>
 
 <template>
-  <div class="card_horizontal" @click="selectCard">
-    <img class="card_horizontal_img" :src="props.link_img" :alt="props.label" />
+  <div class="card_horizontal">
+    <img @click="selectCard" class="card_horizontal_img" :src="props.link_img" :alt="props.label" />
 
     <div class="card_content">
       <div class="infos">

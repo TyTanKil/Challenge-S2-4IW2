@@ -19,13 +19,11 @@ const quantityOptions = ref<number[]>([]);
 let productId;
 
 const fetchProduct = async () => {
-  const mongoId = route.params.id;
-  console.log('Mongo ID:', mongoId);
+  const mongoId = route.params.mongoId;
   try {
     const response = await ApiClient.get(`/products/${mongoId}`);
-    product.value = response.data;
-    productId = response.data.id;
-    console.log(product.value);
+    product.value = response;
+    productId = response.id;
   } catch (err) {
     error.value = 'Erreur lors du chargement du produit.';
   } finally {
