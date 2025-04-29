@@ -1,11 +1,11 @@
 <template>
     <div class="p-6 bg-gray-100 min-h-screen">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Liste des Commandes</h1>
+            <h1 class="text-2xl font-bold color-dark">Liste des Commandes</h1>
         </div>
         <div class="mb-4">
             <input v-model="searchQuery" type="text" placeholder="Rechercher des commandes..."
-                class="w-full p-2 border border-gray-300 rounded-lg" />
+                class=" color-dark w-full p-2 border border-gray-300 rounded-lg" />
         </div>
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <table class="min-w-full bg-white">
@@ -171,5 +171,9 @@ onMounted(fetchOrders);
 </script>
 
 <style scoped>
-/* Ajoutez des styles supplémentaires si nécessaire */
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
+}
 </style>

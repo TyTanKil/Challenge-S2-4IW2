@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 bg-gray-100 min-h-screen flex justify-center items-center">
         <div class="w-full max-w-lg">
-            <h1 class="text-2xl font-bold mb-8">Modifier un Fabricant</h1>
+            <h1 class="text-2xl font-bold mb-8 color-dark">Modifier un Fabricant</h1>
             <form @submit.prevent="submitForm" class="bg-white p-8 rounded-lg shadow-md space-y-6">
                 <FormInput id="label" label="Nom du fabricant" type="text" :modelValue="manufacturer.label"
                     @update:modelValue="manufacturer.label = $event" required class="mb-4" />
@@ -75,3 +75,11 @@ const deleteManufacturer = async () => {
     }
 };
 </script>
+
+<style scoped>
+@media (prefers-color-scheme: dark) {
+  .color-dark {
+      color: #575757;
+  }
+}
+</style>

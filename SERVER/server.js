@@ -6,12 +6,14 @@ const { sendEmail } = require("./mailer");
 const app = express();
 const AccountRouter = require("./routes/accountController");
 const ProductRouter = require("./routes/productController");
+const NewsletterRouter = require("./routes/newsletterController");
 const CartRouter = require("./routes/cartController");
 const CartProductRouter = require("./routes/cartproductController");
 const StockRouter = require("./routes/stockController");
 const SecurityRouter = require("./routes/securityController");
 const PaymentRouter = require("./payment");
 const path = require("path");
+const deliveryController = require("./routes/deliveryController");
 
 // Import email templates
 const confirmationTemplate = require("./templates-mail/confirmation");
@@ -34,6 +36,7 @@ const stockController = require("./routes/stockController");
 const productimageController = require("./routes/productimageController");
 const orderController = require("./routes/orderController");
 const orderProductController = require("./routes/orderproductController");
+const stockHistoryController = require("./routes/stockHistoryController");
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
@@ -47,9 +50,12 @@ app.use("/productimage", productimageController);
 app.use("/order", orderController);
 app.use("/order-product", orderProductController);
 app.use("/payment", PaymentRouter);
-app.use("/stock", StockRouter);
+app.use("/stock-history", stockHistoryController);
+// app.use("/stock", StockRouter);
 // app.use("/upload", uploadController);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use("/delivery", deliveryController);
 
 // Utilisation des routes de paiement
 app.use(PaymentRouter);
@@ -124,6 +130,8 @@ app.use("/user", AccountRouter);
 app.use("/cart", CartRouter);
 app.use("/cartproduct", CartProductRouter);
 app.use("/product", ProductRouter);
+app.use("/stock", stockController);
+app.use("/newsletter", NewsletterRouter);
 app.use(SecurityRouter);
 
 app.get("/", (req, res, next) => {

@@ -39,57 +39,83 @@
 <style scoped>
 .footer {
   background-color: #575757;
-  color: white;
-  display: grid;
-  padding: 2rem;
+  color: #fff;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  height: auto;
+  text-align: center;
+  gap: 2rem;
   z-index: 1000;
-  place-items: center;
 }
 
+/* Logo en bas */
 .logo {
-  max-height: 8rem;
-  display: block;
-  margin: 0 auto;
-  padding-top: 20px;
+  max-height: 6rem;
+  margin-top: 1rem;
 }
 
+/* Contenu du footer */
 .grid-container {
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 5rem;
-  justify-content: center;
-  align-items: start;
-  margin-bottom: 20px;
-
-  h2 {
-    margin-bottom: 20px;
-  }
-
-  a {
-    text-decoration: none;
-    color: white;
-    margin-bottom: 10px;
-  }
-
-  a:hover {
-    text-decoration: underline; /* Add underline on hover */
-  }
-
-  ul {
-    list-style-type: none;
-    padding: 0;
-
-    li {
-      margin-bottom: 20px;
-    }
-  }
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  text-align: left;
 }
 
+.grid-container h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.grid-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.grid-container li {
+  margin-bottom: 0.75rem;
+}
+
+.grid-container a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease, text-decoration 0.2s;
+}
+
+.grid-container a:hover {
+  text-decoration: underline;
+  color: #C4F649;
+}
+
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   .footer {
-    background-color: #2a2a2a;
+    background-color: #1e1e1e;
+  }
+
+  .grid-container a {
+    color: #ddd;
+  }
+
+  .grid-container a:hover {
+    color: #C4F649;
+  }
+}
+
+/* Responsive sur petits écrans */
+@media (max-width: 600px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .grid-container h2 {
+    margin-top: 1rem;
   }
 }
 </style>

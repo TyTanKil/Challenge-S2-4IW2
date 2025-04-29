@@ -26,15 +26,10 @@ if (store.state.user_id == null) {
 const user = ref({});
 const isAdmin = ref(false);
 const fetchUserData = async () => {
-  const userId = store.state.user_id;
-  if(userId){
+  if(store.state.user_id){
     try {
-      user.value = await ApiClient.get(`/user/${userId}`);
-      if (user.value.roles.includes('ROLE_ADMIN')) {
-        isAdmin.value = true;
-      } else {
-        isAdmin.value = false;
-      }
+      user.value = await ApiClient.get('/user/me');
+      isAdmin.value = user.value.roles.includes('ROLE_ADMIN');
     } catch (error) {
       toast.error('Erreur lors de la récupération de l\'utilisateur');
     }
@@ -138,122 +133,147 @@ const goToSearchResults = () => {
 .header {
   background-color: #575757;
   display: flex;
-  padding: 2rem;
-  margin-bottom: 2rem;
   align-items: center;
-  height: 6rem;
-  z-index: 1000;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  height: auto;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
+/* Logo */
 .logo {
-  max-height: 7rem;
-  margin: 0.5rem 4rem;
+  height: 3.5rem;
+  max-width: 180px;
 }
 
-.dark_mode {
-  display: none;
-}
-
+/* Barre de recherche */
 .search_bar {
+  flex: 1;
   display: flex;
-  flex-direction: row;
-  width: 50%;
   align-items: center;
   position: relative;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .search_bar input {
-  border: none;
-  background-color: #d9d9d9;
-  border-radius: 5px;
-  min-width: 15rem;
-  width: 90%;
+  width: 100%;
   height: 2.5rem;
-  padding: 0 0.8rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0 1rem;
   font-size: 1rem;
-}
-
-.search_bar button {
-  height: 2.5rem;
-  border: none;
   background-color: #d9d9d9;
-  border-radius: 0 5px 5px 0;
-  padding: 0.5rem 0.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
-.search_bar button img {
-  height: 1.5rem;
+.search_bar input:focus {
+  outline: none;
 }
 
-.search_bar button:hover {
-  background-color: #b2b2b2;
-}
-
+/* Résultats de recherche */
 .search-results {
   list-style: none;
   padding: 0;
-  margin: 0;
-  margin-top: 0.1rem;
-  width: 95%; 
-  background-color: white;
-  border: 1px solid #d9d9d9;
+  margin: 0.3rem 0 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
-  border-radius: 0 0 5px 5px;
+  z-index: 10;
 }
 
 .search-results li {
-  padding: 0.5rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   white-space: nowrap;
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: background 0.2s;
 }
 
 .search-results li:hover {
-  background-color: #f0f0f0;
+  background-color: #eee;
 }
 
+/* Actions utilisateurs : compte, admin, panier */
 .actions_btn {
   display: flex;
   align-items: center;
-  width: 30%;
-  justify-content: center;
-  margin: 0 3rem;
-  gap: 2.5rem;
+  gap: 2rem;
   color: #C4F649;
 }
 
 .actions_btn a {
-  color: #C4F649;
   text-decoration: none;
+  color: inherit;
 }
 
-.actions_btn div {
+.account_div, .cart_div {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.account_div:hover,
+.cart_div:hover {
+  transform: scale(1.05);
 }
 
 .actions_btn img {
-  height: 2rem;
-  width: auto;
+  height: 1.8rem;
+  margin-bottom: 0.3rem;
 }
 
+/* Mode sombre */
 @media (prefers-color-scheme: dark) {
   .header {
-    background-color: #2a2a2a;
-  }
-  .search-results li {
-    color: #2a2a2a;
+    background-color: #1e1e1e;
   }
 
+  .search_bar input {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .search-results {
+    background-color: #2e2e2e;
+    color: #f0f0f0;
+    border-color: #444;
+  }
+
+  .search-results li:hover {
+    background-color: #444;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions_btn {
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .search_bar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .logo {
+    margin: 0 auto;
+  }
 }
 </style>

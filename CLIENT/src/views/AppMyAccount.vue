@@ -55,18 +55,26 @@
           <div class="orders-container">
             <div v-if="orders.length">
               <div v-for="order in orders" :key="order.id" class="order-card">
-                <h2>Commande #{{ order.id }}</h2>
-                <p><strong>Date de la commande :</strong> {{ formatDate(order.order_date) }}</p>
-                <p><strong>Statut de la livraison :</strong> {{ displayOrderStatus(order.delivery_status) }}</p>
-                <p><strong>Total TTC :</strong> {{ order.total_price }} €</p>
+                <div class="order-header">
+                  <h2>Commande #{{ order.id }}</h2>
+                  <span class="order-date">{{ formatDate(order.order_date) }}</span>
+                </div>
+                <span>
+                  <strong>Statut livraison :</strong> {{ order.deliveryStatus.toString() }}
+                  <button class="history-btn" @click="openHistoryModal(order)">Voir l'historique</button>
+                </span>
                 <div class="order-products">
-                  <h3>Produits :</h3>
-                  <div v-for="product in order.Order_products" :key="product.id" class="product-item">
-                    <p><strong>Nom :</strong> {{ product.label }}</p>
-                    <p><strong>Réf :</strong> {{ product.ref }}</p>
-                    <p><strong>Description :</strong> {{ product.description }}</p>
-                    <p><strong>Quantité :</strong> {{ product.quantity }}</p>
-                    <p><strong>Prix unitaire :</strong> {{ product.unit_price }} €</p>
+                  <h3>Produits</h3>
+                  <div
+                    v-for="product in order.Order_products"
+                    :key="product.id"
+                    class="product-item"
+                  >
+                    <div class="product-row">
+                      <span><strong>Nom :</strong> {{ product.label }}</span>
+                      <span><strong>Quantité :</strong> {{ product.quantity }}</span>
+                      <span><strong>Prix unitaire :</strong> {{ product.unit_price }} €</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -80,13 +88,28 @@
           <h4 class="parameters-item">Gérer mes notifications mails</h4>
           <div class="parameters-item mails-item">
             <div class="switch-container">
-              <span>Tout désactiver</span>
-              <label class="switch">
-                <input type="checkbox" v-model="isActivated" @change="toggleActivation">
-                <span class="slider"></span>
-              </label>
-              <span>Tout activer</span>
-            </div>         
+              <label>Mails d'informations : </label>
+              <div class="toggle_div">
+                <span>Désactiver</span>
+                <label class="switch">
+                  <input type="checkbox" v-model="isMailsActivated" @change="toggleMailsActivation">
+                  <span class="slider"></span>
+                </label>
+                <span>Activer</span>
+              </div>
+
+              <br>
+
+              <label>Abonnement à la newsletter : </label>
+              <div class="toggle_div">
+                <span>Désactiver</span>
+                <label class="switch">
+                  <input type="checkbox" v-model="isNewsletterActivated" @change="toggleNewsletterActivation">
+                  <span class="slider"></span>
+                </label>
+                <span>Activer</span>
+              </div>
+            </div>
           </div>
           <div class="parameters-item">
             <button class="change-password-button" @click="changePassword">Modifier le mot de passe</button>
@@ -98,6 +121,17 @@
       </div>
     </div>
   </div>
+  <div v-if="showHistoryModal" class="modal-overlay" @click.self="closeHistoryModal">
+  <div class="modal-content">
+    <h3>Historique de livraison - Commande #{{ selectedOrderId }}</h3>
+    <ul>
+      <li v-for="(item, idx) in selectedHistory" :key="idx">
+        <strong>{{ item.status.toString() }}</strong> - {{ new Date(item.date).toLocaleString('fr-FR') }}
+      </li>
+    </ul>
+    <button @click="closeHistoryModal">Fermer</button>
+  </div>
+</div>
 </template>
 
 <script>
@@ -116,7 +150,8 @@ export default {
       userProfilePhoto: '', 
       user: {},
       orders: [],
-      isActivated: false,
+      isMailsActivated: false,
+      isNewsletterActivated: false,
     };
   },
   setup() {
@@ -124,13 +159,30 @@ export default {
     const router = useRouter();
     const user = ref({});
     const orders = ref([]);
-    const isActivated = ref(false);
+    const isMailsActivated = ref(false);
+    const isNewsletterActivated = ref(false);
+
+    const showHistoryModal = ref(false);
+    const selectedHistory = ref([]);
+    const selectedOrderId = ref(null);
+
+    const openHistoryModal = (order) => {
+      selectedHistory.value = order.deliveryHistory || [];
+      selectedOrderId.value = order.id;
+      showHistoryModal.value = true;
+    };
+
+    const closeHistoryModal = () => {
+      showHistoryModal.value = false;
+      selectedHistory.value = [];
+      selectedOrderId.value = null;
+    };
 
     const fetchUserData = async () => {
-      const userId = store.state.user_id;
       try {
-        user.value = await ApiClient.get(`/user/${userId}`);
-        isActivated.value = user.value.notification;
+        user.value = await ApiClient.get('/user/me');
+        isMailsActivated.value = user.value.notification;
+        isNewsletterActivated.value = user.value.newsletter;
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
       }
@@ -145,7 +197,17 @@ export default {
 
       try {
         const response = await ApiClient.get(`/order/ByIdUser/${id_user}`);
-        orders.value = response;
+        const ordersWithDelivery = await Promise.all(
+          response.map(async (order) => {
+            try {
+              const deliveries = await ApiClient.get(`/delivery/${order.id}`);
+              return { ...order, deliveryStatus: deliveries[deliveries.length - 1]?.status, deliveryHistory: deliveries };              return { ...order, deliveryStatus: delivery.status };
+            } catch {
+              return { ...order, deliveryStatus: 'Inconnu' };
+            }
+          })
+        );
+        orders.value = ordersWithDelivery;
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
@@ -193,7 +255,7 @@ export default {
 
       if (newValue) {
         try {
-          await ApiClient.patch(`/user/${user.value.id}`, { [field]: newValue });
+          await ApiClient.patch('/user', { [field]: newValue });
           await fetchUserData();
           Swal.fire({
             title: 'Succès',
@@ -236,12 +298,11 @@ export default {
         if (newPassword === newPasswordConfirmation) {
           try {
             const verifyResponse = await ApiClient.post(`/user/verify-password`, {
-              accountId: user.value.id,
               password: oldPassword
             });
 
             if (verifyResponse.data.valid) {
-              await ApiClient.patch(`/user/${user.value.id}`, { password: newPassword });
+              await ApiClient.patch('/user', { password: newPassword });
               await fetchUserData();
               Swal.fire({
                 title: 'Succès',
@@ -285,7 +346,7 @@ export default {
 
       if (confirmDelete.isConfirmed) {
         try {
-          await ApiClient.delete(`/user/${user.value.id}`);
+          await ApiClient.delete(`/user`);
           Swal.fire({
             title: 'Compte supprimé',
             text: 'Votre compte a été anonymisé avec succès.',
@@ -303,19 +364,37 @@ export default {
       }
     };
 
-    const toggleActivation = async () => {
+    const toggleMailsActivation = async () => {
       try {
-        await ApiClient.patch(`/user/${user.value.id}`, { notification: isActivated.value });
+        await ApiClient.patch('/user', { notification: isMailsActivated.value });
         Swal.fire({
           title: 'Succès',
-          text: 'L\'état des notifications a été mis à jour avec succès.',
+          text: 'L\'état des envois d\'emails a été mis à jour avec succès.',
           icon: 'success'
         });
       } catch (error) {
-        console.error('Erreur lors de la mise à jour des notifications:', error);
+        console.error('Erreur lors de la mise à jour des envois d\'emails:', error);
         Swal.fire({
           title: 'Erreur',
-          text: 'Erreur lors de la mise à jour des notifications. Veuillez réessayer.',
+          text: 'Erreur lors de la mise à jour des envois d\'emails. Veuillez réessayer.',
+          icon: 'error'
+        });
+      }
+    };
+
+    const toggleNewsletterActivation = async () => {
+      try {
+        await ApiClient.patch('/user', { newsletter: isNewsletterActivated.value });
+        Swal.fire({
+          title: 'Succès',
+          text: 'L\'état de la newsletter a été mis à jour avec succès.',
+          icon: 'success'
+        });
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de la newsletter:', error);
+        Swal.fire({
+          title: 'Erreur',
+          text: 'Erreur lors de la mise à jour de la newsletter. Veuillez réessayer.',
           icon: 'error'
         });
       }
@@ -354,24 +433,77 @@ export default {
       formatDate, 
       editField, 
       changePassword, 
-      deleteAccount, 
-      toggleActivation, 
-      isActivated, 
+      deleteAccount,
+      toggleMailsActivation,
+      toggleNewsletterActivation,
+      isMailsActivated,
+      isNewsletterActivated,
       downloadPersonalDataAsPDF,
       orders,
       displayOrderStatus,
+      showHistoryModal,
+      selectedHistory,
+      selectedOrderId,
+      openHistoryModal,
+      closeHistoryModal,
     };
   },
 };
 </script>
 
 <style scoped>
+/* Modal Overlay */
+.history-btn {
+  margin-left: 10px;
+  background: #A0DB10;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  color: #222;
+  font-size: 0.95em;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  min-width: 300px;
+  max-width: 90vw;
+  color: #000;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 2px 0;
+  margin: 0;
+  li{
+    margin: 0.5rem 0;
+  }
+}
+
 /* Slider */
 .switch-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
   width: 70%;
+  gap: 1rem;
+}
+
+.toggle_div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 50%;
 }
 
 .switch {
@@ -535,6 +667,47 @@ input:checked + .slider:before {
   }
 }
 
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #A0DB10;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: #000;
+}
+
+.order-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #000;
+}
+
+.order-products {
+  margin-top: 10px;
+  color: #000;
+}
+
+.product-item {
+  background: #f1f8e9;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  padding: 10px 15px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  color: #000;
+}
+
+.product-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.98rem;
+}
+
 .tabs {
   display: flex;
   background-color: #A0DB10;
@@ -578,6 +751,7 @@ input:checked + .slider:before {
   border: 1px solid #ddd; /* Bordure des cartes de commande */
   background-color: #fff; /* Fond des cartes de commande */
   border-radius: 5px; /* Coins arrondis des cartes */
+  color: #000; /* Couleur du texte des cartes */
 }
 
 @media (prefers-color-scheme: dark) {

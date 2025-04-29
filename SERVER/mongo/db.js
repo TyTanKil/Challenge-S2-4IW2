@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const mongoUrl =
   process.env.MONGO_URL ||
-  "mongodb://root:password@mongo:27017/app?authSource=admin";
+  "mongodb://root:password@mongo:27018/app?authSource=admin";
 
 mongoose
-  .connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(mongoUrl)
   .then(() => {
     console.log("Successfully connected to MongoDB");
   })

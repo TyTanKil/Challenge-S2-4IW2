@@ -2,8 +2,12 @@ import { createApp, ref } from 'vue'
 import { createStore } from 'vuex'
 import App from './App.vue'
 
-
 import { createRouter, createWebHistory } from 'vue-router'
+
+import StockList from './views/admin/AppStockList.vue'
+import StockEvolution from './views/admin/AppStockEvolution.vue'
+import StockEvolutionProduct from './components/admin/StockEvolutionProduct.vue'
+import AppStockEvolutionProduct from './views/admin/AppStockEvolutionProduct.vue'
 import Identify from './views/AppIdentify.vue'
 import Validate from './views/AppValidateAccount.vue'
 import Create from './views/AppCreateAccount.vue'
@@ -27,17 +31,21 @@ import Users from './views/AppAdminUsers.vue'
 import ProductList from './views/AppAdminProducts.vue'
 import NewProduct from './views/admin/AppAddProduct.vue'
 import EditProduct from './views/admin/AppEditProduct.vue'
+import AppAddStock from './views/admin/AppAddStock.vue'
 
 import CategoryList from './views/admin/AppCategoryList.vue'
 import NewCategory from './views/admin/AppAddCategory.vue'
 import EditCategory from './views/admin/AppEditCategory.vue'
+
+import NewsletterList from './views/admin/AppNewsletterList.vue'
+import NewsletterAdd from './views/admin/AppAddNewsletter.vue'
+import NewsletterEdit from './views/admin/AppEditNewsletter.vue'
 
 import ManufacturerList from './views/admin/AppManufacturerList.vue'
 import NewManufacturer from './views/admin/AppAddManufacturer.vue'
 import EditManufacturer from './views/admin/AppEditManufacturer.vue'
 
 import SearchResults from './views/AppSearchResults.vue'
-
 
 import 'vue-toast-notification/dist/theme-sugar.css'
 import AppMainView from './views/AppMainView.vue'
@@ -50,8 +58,10 @@ import AppCGV from './views/AppCGV.vue'
 import AppDeclarationCookies from './views/AppDeclarationCookies.vue'
 import AppDonneesPersonnelles from './views/AppDonneesPersonnelles.vue'
 
+import Delivery from './views/Delivery.vue'
+
 import 'vue-toast-notification/dist/theme-sugar.css'
-import apiClient from './assets/js/apiClient';
+import apiClient from './assets/js/apiClient'
 
 const store = createStore({
   state() {
@@ -99,6 +109,13 @@ const routes = [
   },
   { path: '/create', component: Create },
 
+  { path: '/admin/stock', name: 'StockList', component: StockList },
+  {
+    path: '/admin/stock-evolution/:id',
+    name: 'StockEvolutionProduct',
+    component: AppStockEvolutionProduct
+  },
+
   { path: '/qui_sommes_nous', component: AppQuiSommesNous },
   { path: '/contact', component: AppContact },
   { path: '/admin', component: Admin },
@@ -111,6 +128,9 @@ const routes = [
   { path: '/admin/category/edit/:id', name: 'EditCategory', component: EditCategory, props: true },
   { path: '/admin/manufacturers/new', name: 'AddManufacturer', component: NewManufacturer },
   { path: '/admin/manufacturers', name: 'ManufacturerList', component: ManufacturerList },
+  { path: '/admin/newsletter', name: 'NewsletterList', component: NewsletterList },
+  { path: '/admin/newsletter/new', name: 'AddNewsletter', component: NewsletterAdd },
+  { path: '/admin/newsletter/edit/:id', name: 'EditNewsletter', component: NewsletterEdit },
   {
     path: '/admin/manufacturer/edit/:id',
     name: 'EditManufacturer',
@@ -121,6 +141,8 @@ const routes = [
   { path: '/admin/users/edit/:id', name: 'EditUser', component: EditUser },
   { path: '/admin/order', name: 'OrderList', component: OrderList },
   { path: '/admin/order/edit/:id', name: 'EditOrder', component: EditOrder },
+  { path: '/admin/stock/add/:id', name: 'AddStock', component: AppAddStock },
+  { path: '/admin/stock-evolution', name: 'StockEvolution', component: StockEvolution },
 
   { path: '/account', name: 'Account', component: MyAccount },
 
@@ -145,8 +167,15 @@ const routes = [
   { path: '/cgv', name: 'AppCGV', component: AppCGV },
   { path: '/declaration_cookies', name: 'DeclarationCookies', component: AppDeclarationCookies },
   { path: '/donnees_personnelles', name: 'DonneesPersonnelles', component: AppDonneesPersonnelles },
-  
-  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }, 
+
+  {
+    path: '/delivery/:id',
+    name: 'Delivery',
+    component: Delivery,
+    props: (route) => ({ deliveryId: route.params.id }) // Transmet l'ID comme prop
+  },
+
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
 ]
 
 const router = createRouter({
@@ -154,33 +183,29 @@ const router = createRouter({
   routes,
   scrollBehavior() {
     return { top: 0 }
-  },
+  }
 })
 
-
-
-const user = ref({});
-const isAdmin = ref(false);
+const user = ref({})
+const isAdmin = ref(false)
 
 const fetchUserData = async () => {
-  const userId = store.state.user_id;
-  if(userId){
+  if (store.state.user_id) {
     try {
-      const response = await apiClient.get(`/user/${userId}`);
-      user.value = response;
+      const response = await apiClient.get('/user/me/')
+      user.value = response
       if (user.value.roles.includes('ROLE_ADMIN')) {
-        isAdmin.value = true;
+        isAdmin.value = true
       } else {
-        isAdmin.value = false;
+        isAdmin.value = false
       }
     } catch (error) {
-      console.error('Erreur lors de la récupération de l\'utilisateur');
+      console.error("Erreur lors de la récupération de l'utilisateur")
     }
   }
-};
+}
 
-
-fetchUserData();
+fetchUserData()
 
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && store.state.user_id == null) {
@@ -198,19 +223,18 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.path.startsWith('/admin')) {
     if (store.state.user_id != null && isAdmin.value) {
-      await import('./assets/admin.css');
-      next();
+      await import('./assets/admin.css')
+      next()
     } else {
-      next({ path: '/login' });
+      next({ path: '/login' })
     }
   } else {
-    await import('./assets/main.css');
-    next();
+    await import('./assets/main.css')
+    next()
   }
 
   next()
 })
-
 
 const app = createApp(App)
 app.use(router)

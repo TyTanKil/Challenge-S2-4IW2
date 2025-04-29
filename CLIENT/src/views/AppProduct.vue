@@ -23,7 +23,6 @@ const fetchProduct = async () => {
     const response = await ApiClient.get(`/products/${route.params.id}`);
     product.value = response;
     productId = response.id;
-    console.log(product.value);
   } catch (err) {
     error.value = 'Erreur lors du chargement du produit.';
   } finally {
@@ -108,27 +107,9 @@ onMounted(async () => {
   <div class="content" v-if="!isLoading && product">
     <div class="main_infos">
       <div class="images">
-        <div class="all_images">
-          <div class="img1">
-            <img
-              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-              alt="">
-          </div>
-          <div class="img2">
-            <img
-              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-              alt="">
-          </div>
-          <div class="img3">
-            <img
-              :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-              alt="">
-          </div>
-        </div>
         <div class="main_img">
           <img
-            :src="product.images.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/default.png'"
-            alt="">
+          :src="product.images?.length ? store.state.api_endpoint + '/uploads/' + product.images[0].url : '/src/assets/img/products/image_not_available.png'">
         </div>
       </div>
       <div class="text_description">
@@ -164,15 +145,11 @@ onMounted(async () => {
       <div class="nav_description">
         <ul>
           <li><a href="#description">Description</a></li>
-          <li><a href="#autres-produits">Autres produits</a></li>
         </ul>
       </div>
       <div id="description" class="section">
         <h2>Description</h2>
         {{ product.description }}
-      </div>
-      <div id="autres-produits" class="section">
-        <h2>Produits Similaires</h2>
       </div>
     </div>
   </div>
@@ -183,120 +160,166 @@ onMounted(async () => {
   <p>{{ error }}</p>
 </div></template>
 
-
 <style scoped>
-.content{
-  padding: 0 2rem;
-  display: flex;
-}
-.main_infos{
-  display: flex;
-  flex-direction: column;
-  width: 50%;
+:root {
+  --bg-color: #f5f5f5;
+  --text-color: #222;
+  --secondary-bg: #e5e5e5;
 }
 
-.text_description{
-  display: flex;
-  flex-direction: column;
-  padding-right: 1rem;
-  margin-bottom: 2rem;
-  gap: 1rem;
-}
-.title h2{
-  font-size: 2rem;
-  color: black;
-}
-.description h3{
-  font-size: 1rem;
-  font-weight: 500;
-}
-.price h3{
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: black;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --text-color: #f5f5f5;
+    --secondary-bg: #1e1e1e;
+  }
 }
 
-.detailed_description{
-  background-color: #e5e5e5;
+.content {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main_infos {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
   width: 100%;
 }
 
-.nav_description{
-  background-color: #3a3a3a;
-  color: white;
-  padding: 1rem;
-  ul{
-    list-style-type: none;
-    display: flex;
-    justify-content: space-between;
-    margin: 0 3rem;
-    gap: 1rem;
-  }
-  li{
-    cursor: pointer;
-  }
-  a{
-    color: white;
-    text-decoration: none;
-  }
-  a:hover{
-    text-decoration: none;
-    color: #c4f649;
-  }
-}
-
-.section{
-  padding: 2rem;
-}
-
-.images{
-  display: flex;
-}
-.all_images{
+.images {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
-img{
-  width: 7rem;
+
+.main_img img {
+  width: 20rem;
   height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #ccc;
 }
-.main_img img{
-  width: 24rem;
-  height: auto;
+
+.text_description {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1rem;
 }
-.cart{
+
+.title h2 {
+  font-size: 2rem;
+  color: var(--text-color);
+}
+
+.description h3 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-color);
+}
+
+.price h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.cart {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 1rem;
 }
+
+.quantity_selector label {
+  margin-right: 0.5rem;
+}
+
+.quantity_selector select {
+  padding: 0.15rem 0.5rem; /* réduit la hauteur */
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: var(--secondary-bg);
+  color: var(--text-color);
+  font-size: 0.8rem; /* tu peux réduire à 0.95rem si tu veux encore plus petit */
+  height: 2rem; /* optionnel, force une hauteur max */
+}
+
 .buy_div_container {
-  margin: 1rem 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
-.buy_div_container p {
-  font-size: large;
-  font-weight: 500;
-}
-.cart_img_container {
-  margin-right: 1rem;
-}
+
 .cart_img_container button {
   border: none;
   min-width: 4rem;
   height: 3.2rem;
   background-color: #C4F649;
   border-radius: 8px;
-  box-shadow: 1px 2px #3838385d;
+  box-shadow: 1px 2px rgba(0, 0, 0, 0.3);
   padding: 0.4rem;
+  transition: background-color 0.2s, transform 0.2s ease;
 }
+
 .cart_img_container button:hover {
   cursor: pointer;
-  background-color: #A0DB10;
+  background-color: #a0db10;
+  transform: scale(1.1);
 }
+
 .cart_card {
   width: 100%;
   height: 100%;
+}
+
+.detailed_description {
+  background-color: var(--secondary-bg);
+  width: 100%;
+  margin-top: 2rem;
+  border-radius: 12px;
+}
+
+.nav_description {
+  background-color: #3a3a3a;
+  color: white;
+  padding: 1rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.nav_description ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.nav_description li {
+  cursor: pointer;
+}
+
+.nav_description a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav_description a:hover {
+  text-decoration: underline;
+  color: #C4F649;
+}
+
+.section {
+  padding: 2rem;
 }
 </style>

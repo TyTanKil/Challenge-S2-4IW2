@@ -41,17 +41,19 @@ router.get("/getByIds/:id_cart/:id_product", async (req, res, next) => {
   }
 });
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id_cart/:id_product", async (req, res, next) => {
   try {
-    const [nbUpdated, cartsProduct] = await CartProduct.update(req.body, {
+    const { id_cart, id_product } = req.params;
+    const cartProduct = await CartProduct.findOne({
       where: {
-        id: parseInt(req.params.id),
+        id_cart: parseInt(id_cart),
+        id_product: parseInt(id_product),
       },
-      returning: true,
-      individualHooks: true,
     });
-    if (cartsProduct[0]) {
-      res.json(cartsProduct[0]);
+
+    if (cartProduct) {
+      await cartProduct.update(req.body);
+      res.json(cartProduct);
     } else {
       res.sendStatus(404);
     }
@@ -60,16 +62,16 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id_cart/:id_product", async (req, res, next) => {
   try {
+    const { id_cart, id_product } = req.params;
     const nbDeleted = await CartProduct.destroy({
       where: {
-        id_cart: parseInt(req.params.id),
+        id_cart: parseInt(id_cart),
+        id_product: parseInt(id_product),
       },
     });
-
-    res.sendStatus(204);
-
+    res.sendStatus(nbDeleted ? 204 : 404);
   } catch (e) {
     next(e);
   }
